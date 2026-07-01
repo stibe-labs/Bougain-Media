@@ -89,11 +89,11 @@ export function Hero() {
               variants={fadeUp}
               className="mt-10 flex flex-wrap items-center gap-4"
             >
-              <Button href="/#contact" variant="primary" size="lg">
+              <Button href="/contact" variant="primary" size="lg">
                 {hero.primaryCta}
                 <ArrowRight size={18} />
               </Button>
-              <Button href="/#services" variant="outline" size="lg">
+              <Button href="/services" variant="outline" size="lg">
                 {hero.secondaryCta}
               </Button>
             </motion.div>

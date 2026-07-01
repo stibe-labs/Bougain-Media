@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
-import { MessageCircle } from "lucide-react";
+import { WhatsAppIcon } from "@/components/ui/WhatsAppIcon";
 import { contact } from "@/lib/constants";
 
 export function WhatsAppFloat() {
@@ -26,7 +26,7 @@ export function WhatsAppFloat() {
           aria-label="Chat on WhatsApp"
           className="flex h-14 w-14 items-center justify-center rounded-full bg-whatsapp text-white shadow-lg shadow-whatsapp/30 transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-whatsapp focus-visible:ring-offset-2"
         >
-          <MessageCircle size={26} fill="currentColor" />
+          <WhatsAppIcon size={28} />
         </Link>
       </motion.div>
     </motion.div>

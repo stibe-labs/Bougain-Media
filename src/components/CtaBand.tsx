@@ -47,7 +47,7 @@ export function CtaBand() {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2, ease }}
           >
-            <Button href="/#contact" variant="primary" size="lg">
+            <Button href="/contact" variant="primary" size="lg">
               Get a Free Consultation
               <ArrowRight size={18} />
             </Button>

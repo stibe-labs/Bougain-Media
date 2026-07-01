@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Mail, Phone, MessageCircle, Send } from "lucide-react";
+import { Mail, Phone, Send } from "lucide-react";
+import { WhatsAppIcon } from "@/components/ui/WhatsAppIcon";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { AnimatedCard } from "@/components/ui/AnimatedCard";
 import { Button } from "@/components/ui/Button";
@@ -13,7 +14,7 @@ import { cn } from "@/lib/utils";
 const contactPills = [
   { icon: Mail, label: "Email", value: contact.email, href: `mailto:${contact.email}` },
   { icon: Phone, label: "Phone", value: contact.phone, href: contact.phoneHref },
-  { icon: MessageCircle, label: "WhatsApp", value: contact.whatsapp, href: contact.whatsappHref },
+  { icon: WhatsAppIcon, label: "WhatsApp", value: contact.whatsapp, href: contact.whatsappHref },
 ];
 
 function ContactHero() {

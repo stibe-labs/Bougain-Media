@@ -15,12 +15,12 @@ export const contact = {
 };
 
 export const navLinks = [
-  { label: "Home", href: "/#home" },
-  { label: "About", href: "/#about" },
-  { label: "Services", href: "/#services" },
-  { label: "Portfolio", href: "/#portfolio" },
+  { label: "Home", href: "/" },
+  { label: "About", href: "/about" },
+  { label: "Services", href: "/services" },
+  { label: "Portfolio", href: "/portfolio" },
   { label: "Careers", href: "/careers" },
-  { label: "Contact", href: "/#contact" },
+  { label: "Contact", href: "/contact" },
 ] as const;
 
 export const hero = {
@@ -264,7 +264,7 @@ export const footer = {
   quickLinks: navLinks,
   supportLinks: [
     { label: "Privacy Policy", href: "#" },
-    { label: "Get a Quote", href: "/#contact" },
+    { label: "Get a Quote", href: "/contact" },
   ],
   copyright: `© ${new Date().getFullYear()} Bougain Mediaa. All rights reserved.`,
 };

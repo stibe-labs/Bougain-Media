@@ -9,27 +9,29 @@ import { Button } from "@/components/ui/Button";
 import { navLinks } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
-function isActiveLink(pathname: string, href: string) {
-  if (href === "/#home" || href === "/") return pathname === "/";
-  if (href.startsWith("/#")) return pathname === "/";
-  if (href === "/careers") return pathname.startsWith("/careers");
-  return pathname === href || pathname.startsWith(`${href}/`);
+const darkHeroPaths = ["/", "/services", "/portfolio"];
+
+function hasDarkHero(pathname: string) {
+  return darkHeroPaths.some(
+    (p) => pathname === p || (p !== "/" && pathname.startsWith(p)),
+  );
 }
 
-function resolveHref(href: string, onHome: boolean) {
-  if (onHome && href.startsWith("/#")) return href.slice(1);
-  return href;
+function isActiveLink(pathname: string, href: string) {
+  if (href === "/") return pathname === "/";
+  return pathname === href || pathname.startsWith(`${href}/`);
 }
 
 export function Navbar() {
   const pathname = usePathname();
   const isHome = pathname === "/";
-  const [scrolled, setScrolled] = useState(!isHome);
+  const darkHero = hasDarkHero(pathname);
+  const [scrolled, setScrolled] = useState(!darkHero);
   const [mobileOpen, setMobileOpen] = useState(false);
   const ticking = useRef(false);
 
   useEffect(() => {
-    if (!isHome) {
+    if (!darkHero) {
       setScrolled(true);
       return;
     }
@@ -46,7 +48,7 @@ export function Navbar() {
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, [isHome, pathname]);
+  }, [darkHero, pathname]);
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? "hidden" : "";
@@ -59,15 +61,14 @@ export function Navbar() {
     setMobileOpen(false);
   }, [pathname]);
 
-  const onHero = isHome && !scrolled;
+  const onHero = darkHero && !scrolled;
+  const navbarLinks = navLinks.filter((link) => link.href !== "/careers");
 
   return (
     <header
       className={cn(
         "fixed inset-x-0 top-0 z-50 transition-all duration-500",
-        onHero
-          ? "bg-transparent"
-          : "glass-nav shadow-sm",
+        onHero ? "bg-transparent" : "glass-nav shadow-sm",
       )}
     >
       <div className="container-wide flex h-20 items-center justify-between px-5 md:px-8 lg:px-12">
@@ -79,13 +80,12 @@ export function Navbar() {
         />
 
         <nav className="hidden items-center gap-6 lg:flex">
-          {navLinks.map((link) => {
+          {navbarLinks.map((link) => {
             const active = isActiveLink(pathname, link.href);
-            const href = resolveHref(link.href, isHome);
             return (
               <Link
                 key={link.href}
-                href={href}
+                href={link.href}
                 className={cn(
                   "relative font-sans text-sm font-medium transition-colors duration-200",
                   active
@@ -113,7 +113,7 @@ export function Navbar() {
 
         <div className="hidden lg:block">
           <Button
-            href={isHome ? "#contact" : "/#contact"}
+            href="/contact"
             size="sm"
             variant={onHero ? "secondary" : "primary"}
           >
@@ -145,13 +145,12 @@ export function Navbar() {
         )}
       >
         <nav className="flex flex-col gap-2 px-6 py-8">
-          {navLinks.map((link) => {
+          {navbarLinks.map((link) => {
             const active = isActiveLink(pathname, link.href);
-            const href = resolveHref(link.href, isHome);
             return (
               <Link
                 key={link.href}
-                href={href}
+                href={link.href}
                 onClick={() => setMobileOpen(false)}
                 className={cn(
                   "rounded-xl px-4 py-4 font-sans text-lg font-medium transition-colors",
@@ -165,7 +164,7 @@ export function Navbar() {
             );
           })}
           <Button
-            href={isHome ? "#contact" : "/#contact"}
+            href="/contact"
             className="mt-4 w-full"
             onClick={() => setMobileOpen(false)}
           >
