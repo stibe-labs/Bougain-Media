@@ -13,6 +13,13 @@ export function PageLoader() {
   const [phase, setPhase] = useState<"loading" | "exit" | "done">("loading");
 
   useEffect(() => {
+    document.documentElement.dataset.loaderPhase = phase;
+    return () => {
+      delete document.documentElement.dataset.loaderPhase;
+    };
+  }, [phase]);
+
+  useEffect(() => {
     if (phase !== "done") {
       document.body.style.overflow = "hidden";
     } else {
@@ -85,7 +92,7 @@ export function PageLoader() {
       aria-hidden={phase === "exit"}
       aria-label="Loading"
     >
-      <div className="loader-logo-pulse relative h-36 w-60 sm:h-48 sm:w-[22rem] md:h-56 md:w-[26rem] lg:h-64 lg:w-[30rem]">
+      <div className="loader-logo-pulse relative h-28 w-48 sm:h-36 sm:w-60 md:h-44 md:w-72 lg:h-48 lg:w-80">
         <Image
           src={logos.fullWhite}
           alt="Bougain Mediaa"

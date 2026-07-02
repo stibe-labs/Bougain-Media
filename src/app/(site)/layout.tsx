@@ -12,11 +12,13 @@ export default function SiteLayout({
   return (
     <>
       <PageLoader />
-      <ScrollOptimizer />
-      <Navbar />
-      <main>{children}</main>
-      <Footer />
-      <WhatsAppFloat />
+      <div className="site-shell">
+        <ScrollOptimizer />
+        <Navbar />
+        <main>{children}</main>
+        <Footer />
+        <WhatsAppFloat />
+      </div>
     </>
   );
 }
