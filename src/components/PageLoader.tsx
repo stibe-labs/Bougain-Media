@@ -5,36 +5,25 @@ import Image from "next/image";
 import { logos } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
-const LOADER_KEY = "bougain-loader-shown";
-const MIN_DISPLAY_MS = 500;
-const FADE_MS = 300;
-const MAX_DISPLAY_MS = 2500;
-
-function wasLoaderShown() {
-  try {
-    return sessionStorage.getItem(LOADER_KEY) === "1";
-  } catch {
-    return false;
-  }
-}
-
-function markLoaderShown() {
-  try {
-    sessionStorage.setItem(LOADER_KEY, "1");
-  } catch {
-    // sessionStorage unavailable (e.g. private mode)
-  }
-}
+const MIN_DISPLAY_MS = 3500;
+const FADE_MS = 500;
+const MAX_DISPLAY_MS = 5000;
 
 export function PageLoader() {
   const [phase, setPhase] = useState<"loading" | "exit" | "done">("loading");
 
   useEffect(() => {
-    if (wasLoaderShown()) {
-      setPhase("done");
-      return;
+    if (phase !== "done") {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
     }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [phase]);
 
+  useEffect(() => {
     const startedAt = Date.now();
     let exitTimer: ReturnType<typeof setTimeout> | undefined;
     let doneTimer: ReturnType<typeof setTimeout> | undefined;
@@ -50,7 +39,6 @@ export function PageLoader() {
       exitTimer = setTimeout(() => {
         setPhase("exit");
         doneTimer = setTimeout(() => {
-          markLoaderShown();
           setPhase("done");
         }, FADE_MS);
       }, wait);
@@ -97,18 +85,18 @@ export function PageLoader() {
       aria-hidden={phase === "exit"}
       aria-label="Loading"
     >
-      <div className="loader-logo-pulse relative h-48 w-[22rem] sm:h-56 sm:w-[26rem] md:h-64 md:w-[30rem]">
+      <div className="loader-logo-pulse relative h-36 w-60 sm:h-48 sm:w-[22rem] md:h-56 md:w-[26rem] lg:h-64 lg:w-[30rem]">
         <Image
           src={logos.fullWhite}
           alt="Bougain Mediaa"
           fill
           priority
-          sizes="(max-width: 640px) 352px, 480px"
+          sizes="(max-width: 640px) 256px, 480px"
           className="object-contain"
         />
       </div>
 
-      <div className="loader-progress-track absolute bottom-16 left-1/2 h-0.5 w-48 -translate-x-1/2 overflow-hidden rounded-full bg-white/10 md:bottom-20 md:w-56">
+      <div className="loader-progress-track absolute bottom-12 left-1/2 h-0.5 w-40 -translate-x-1/2 overflow-hidden rounded-full bg-white/10 sm:bottom-16 sm:w-48 md:bottom-20 md:w-56">
         <div className="loader-progress-bar h-full rounded-full bg-sage-light" />
       </div>
     </div>

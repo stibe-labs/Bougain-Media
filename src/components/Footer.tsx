@@ -10,8 +10,8 @@ export function Footer() {
       <div className="bg-grid absolute inset-0 opacity-10" />
 
       <div className="container-wide relative section-padding !pb-10">
-        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
-          <div className="lg:col-span-1">
+        <div className="grid gap-10 sm:gap-12 md:grid-cols-2 lg:grid-cols-4">
+          <div className="md:col-span-2 lg:col-span-1">
             <Logo onDarkBg className="mb-5" size="xl" />
             <p className="max-w-xs font-serif text-sm leading-relaxed text-white/50">
               Big ideas. Bigger Results. Digital marketing that helps your brand
@@ -63,7 +63,7 @@ export function Footer() {
               <li>
                 <a
                   href={`mailto:${contact.email}`}
-                  className="inline-flex items-center gap-3 font-sans transition-colors hover:text-sage-light"
+                  className="inline-flex items-center gap-3 break-all font-sans transition-colors hover:text-sage-light sm:break-normal"
                 >
                   <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/5">
                     <Mail size={14} />

@@ -36,7 +36,7 @@ function ServicesHero() {
       <div className="absolute inset-0 bg-gradient-to-b from-forest-deep/60 via-forest-deep/90 to-forest-deep" />
       <div className="bg-grid absolute inset-0 opacity-30" />
 
-      <div className="container-wide relative z-10 px-5 pb-20 pt-32 md:px-8 md:pb-24 md:pt-40 lg:px-12">
+      <div className="container-wide relative z-10 px-4 pb-16 pt-24 sm:px-5 sm:pb-20 sm:pt-32 md:px-8 md:pb-24 md:pt-40 lg:px-12">
         <div className="grid items-end gap-10 lg:grid-cols-2 lg:gap-16">
           <motion.div
             initial={{ opacity: 0, y: 40 }}

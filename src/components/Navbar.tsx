@@ -68,15 +68,15 @@ export function Navbar() {
     <header
       className={cn(
         "fixed inset-x-0 top-0 z-50 transition-all duration-500",
-        onHero ? "bg-transparent" : "glass-nav shadow-sm",
+        onHero ? "bg-transparent" : "glass-nav shadow-sm max-md:!backdrop-blur-none max-md:bg-cream/95",
       )}
     >
-      <div className="container-wide flex h-20 items-center justify-between px-5 md:px-8 lg:px-12">
+      <div className="container-wide flex h-16 items-center justify-between px-4 sm:h-20 sm:px-5 md:px-8 lg:px-12">
         <Logo
           onDarkBg={onHero}
           type={isHome && onHero ? "icon" : "full"}
-          size="2xl"
-          className="shrink-0"
+          size={isHome && onHero ? "md" : "lg"}
+          className="shrink-0 sm:!w-auto"
         />
 
         <nav className="hidden items-center gap-6 lg:flex">
@@ -138,7 +138,7 @@ export function Navbar() {
 
       <div
         className={cn(
-          "fixed inset-0 top-20 z-40 bg-forest-deep transition-all duration-300 lg:hidden",
+          "fixed inset-0 top-16 z-40 bg-forest-deep transition-all duration-300 sm:top-20 lg:hidden",
           mobileOpen
             ? "pointer-events-auto opacity-100"
             : "pointer-events-none opacity-0",

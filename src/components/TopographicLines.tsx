@@ -25,12 +25,12 @@ export function TopographicLines() {
             stroke="#B8DBD4"
             strokeWidth="1"
             opacity={0.55 - i * 0.08}
-            className="animate-pulse-glow"
+            className="max-md:animate-none animate-pulse-glow"
             style={{ animationDelay: `${i * 0.5}s` }}
           />
         ))}
       </svg>
-      <div className="topo-drift absolute inset-0">
+      <div className="topo-drift absolute inset-0 max-md:hidden">
         <svg
           className="h-full w-full"
           viewBox="0 0 1200 800"

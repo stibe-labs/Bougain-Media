@@ -35,7 +35,7 @@ function PortfolioHero() {
       <div className="absolute inset-0 bg-gradient-to-b from-forest-deep/50 via-forest-deep/85 to-forest-deep" />
       <div className="bg-grid absolute inset-0 opacity-25" />
 
-      <div className="container-wide relative z-10 px-5 pb-20 pt-32 md:px-8 md:pb-24 md:pt-40 lg:px-12">
+      <div className="container-wide relative z-10 px-4 pb-16 pt-24 sm:px-5 sm:pb-20 sm:pt-32 md:px-8 md:pb-24 md:pt-40 lg:px-12">
         <ScrollReveal className="max-w-2xl">
           <SectionLabel dark>{portfolio.label}</SectionLabel>
           <h1 className="font-display text-4xl font-bold tracking-tight text-white md:text-6xl lg:text-7xl">

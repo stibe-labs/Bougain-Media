@@ -45,7 +45,7 @@ export function Hero() {
       <div className="absolute inset-0 bg-gradient-to-t from-forest-deep/60 via-transparent to-forest-deep/30" />
       <div className="bg-grid absolute inset-0 opacity-20" />
 
-      <div className="container-wide relative z-10 section-padding !pb-16 !pt-28 md:!pt-36">
+      <div className="container-wide relative z-10 section-padding !pb-12 !pt-24 sm:!pb-16 sm:!pt-28 md:!pt-36">
         <div className="grid items-center lg:grid-cols-2 lg:gap-16">
           <div className="max-w-2xl">
             <motion.div
@@ -53,7 +53,7 @@ export function Hero() {
               initial="hidden"
               animate="visible"
               variants={fadeUp}
-              className="mb-6 inline-flex items-center gap-2 rounded-full border border-sage/30 bg-forest-deep/40 px-4 py-2 font-sans text-xs font-semibold uppercase tracking-wider text-sage-light backdrop-blur-sm"
+              className="mb-4 inline-flex items-center gap-2 rounded-full border border-sage/30 bg-forest-deep/40 px-3 py-1.5 font-sans text-[10px] font-semibold uppercase tracking-wider text-sage-light backdrop-blur-sm sm:mb-6 sm:px-4 sm:py-2 sm:text-xs"
             >
               <Sparkles size={14} className="text-sage" />
               Digital Marketing Agency
@@ -64,7 +64,7 @@ export function Hero() {
               initial="hidden"
               animate="visible"
               variants={fadeUp}
-              className="font-display text-5xl font-bold leading-[1.05] tracking-tight text-white sm:text-6xl md:text-7xl lg:text-[5.5rem]"
+              className="font-display text-4xl font-bold leading-[1.08] tracking-tight text-white sm:text-5xl sm:leading-[1.05] md:text-6xl md:text-7xl lg:text-[5.5rem]"
             >
               {hero.headline[0]}
               <br />
@@ -77,7 +77,7 @@ export function Hero() {
               initial="hidden"
               animate="visible"
               variants={fadeUp}
-              className="mt-8 max-w-lg font-serif text-lg leading-relaxed text-white/75 md:text-xl"
+              className="mt-6 max-w-lg font-serif text-base leading-relaxed text-white/75 sm:mt-8 sm:text-lg md:text-xl"
             >
               {hero.subheadline}
             </motion.p>
@@ -87,13 +87,13 @@ export function Hero() {
               initial="hidden"
               animate="visible"
               variants={fadeUp}
-              className="mt-10 flex flex-wrap items-center gap-4"
+              className="mt-8 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4"
             >
-              <Button href="/contact" variant="primary" size="lg">
+              <Button href="/contact" variant="primary" size="lg" className="w-full sm:w-auto">
                 {hero.primaryCta}
                 <ArrowRight size={18} />
               </Button>
-              <Button href="/services" variant="outline" size="lg">
+              <Button href="/services" variant="outline" size="lg" className="w-full sm:w-auto">
                 {hero.secondaryCta}
               </Button>
             </motion.div>

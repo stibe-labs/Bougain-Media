@@ -15,12 +15,12 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
   return (
     <motion.div
       key={pathname}
-      initial={reducedMotion ? false : { opacity: 0, y: 14 }}
+      initial={reducedMotion ? false : { opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={
         reducedMotion
           ? { duration: 0 }
-          : { duration: 0.32, ease: [0.22, 1, 0.36, 1] }
+          : { duration: 0.25, ease: [0.22, 1, 0.36, 1] }
       }
     >
       {children}

@@ -27,14 +27,14 @@ export function CtaBand() {
       <div className="bg-grid absolute inset-0 opacity-30" />
 
       <motion.div
-        className="absolute left-1/2 top-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-sage/10 blur-3xl"
+        className="absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-sage/10 blur-3xl max-md:hidden"
         animate={reduceMotion ? undefined : { scale: [1, 1.15, 1], opacity: [0.3, 0.5, 0.3] }}
         transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
       />
 
       <div className="container-wide relative z-10 text-center">
         <ScrollReveal>
-          <h2 className="font-display text-3xl font-bold tracking-tight text-white md:text-5xl lg:text-6xl">
+          <h2 className="font-display text-2xl font-bold tracking-tight text-white sm:text-3xl md:text-5xl lg:text-6xl">
             {ctaBand.headline}
           </h2>
           <p className="mx-auto mt-5 max-w-xl font-serif text-lg text-white/60">
