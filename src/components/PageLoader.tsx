@@ -5,8 +5,8 @@ import Image from "next/image";
 import { logos } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
-const MIN_DISPLAY_MS = 3500;
-const FADE_MS = 500;
+const MIN_DISPLAY_MS = 2600;
+const FADE_MS = 800;
 const MAX_DISPLAY_MS = 5000;
 
 export function PageLoader() {
