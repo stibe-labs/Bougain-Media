@@ -6,7 +6,7 @@ import { logos } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
 const MIN_DISPLAY_MS = 2600;
-const FADE_MS = 800;
+const FADE_MS = 450;
 const MAX_DISPLAY_MS = 5000;
 
 export function PageLoader() {
