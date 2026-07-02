@@ -269,7 +269,6 @@
   @keyframes loader-splash-out {
     to {
       opacity: 0;
-      visibility: hidden;
       transform: scale3d(1.015, 1.015, 1);
     }
   }
@@ -296,8 +295,8 @@
   }
 
   html[data-loader-phase="exit"] .site-shell {
-    opacity: 0.65;
-    transform: translate3d(0, 6px, 0) scale3d(0.997, 0.997, 1);
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale3d(1, 1, 1);
   }
 
   html[data-loader-phase="done"] .site-shell {
