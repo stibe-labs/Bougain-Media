@@ -1,9 +1,11 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Check, PenTool, Share2, Target, type LucideIcon } from "lucide-react";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { Button } from "@/components/ui/Button";
 import { services } from "@/lib/constants";
+
+const featuredIcons: LucideIcon[] = [Target, PenTool, Share2];
 
 export function ServicesPreview() {
   const featured = services.items.slice(0, 3);
@@ -31,22 +33,65 @@ export function ServicesPreview() {
           </ScrollReveal>
         </div>
 
-        <div className="mt-12 grid gap-4 md:grid-cols-3">
-          {featured.map((service, i) => (
-            <ScrollReveal key={service.title} delay={i * 80}>
-              <div className="glass group rounded-2xl p-6 transition-all duration-300 hover:bg-white/10">
-                <span className="font-sans text-xs font-semibold uppercase tracking-wider text-sage">
-                  0{i + 1}
-                </span>
-                <h3 className="mt-3 font-sans text-lg font-semibold capitalize text-white">
-                  {service.title}
-                </h3>
-                <p className="mt-2 text-sm leading-relaxed text-white/50">
-                  {service.description}
-                </p>
-              </div>
-            </ScrollReveal>
-          ))}
+        <div className="mt-12 grid gap-5 md:grid-cols-3">
+          {featured.map((service, i) => {
+            const Icon = featuredIcons[i] ?? Target;
+
+            return (
+              <ScrollReveal key={service.title} delay={i * 80}>
+                <div className="glass group flex h-full flex-col rounded-2xl p-6 transition-all duration-300 hover:border-sage/25 hover:bg-white/10">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="inline-flex rounded-xl border border-white/10 bg-white/5 p-3 transition-colors duration-300 group-hover:border-sage/30 group-hover:bg-sage/15">
+                      <Icon
+                        size={22}
+                        className="text-sage-light transition-colors duration-300 group-hover:text-sage"
+                        strokeWidth={1.75}
+                      />
+                    </div>
+                    <span className="font-sans text-xs font-semibold uppercase tracking-wider text-sage">
+                      0{i + 1}
+                    </span>
+                  </div>
+
+                  <span className="mt-5 inline-flex w-fit rounded-full border border-sage/25 bg-sage/10 px-2.5 py-0.5 font-sans text-[10px] font-semibold uppercase tracking-wider text-sage-light">
+                    {service.tag}
+                  </span>
+
+                  <h3 className="mt-3 font-sans text-lg font-semibold capitalize text-white">
+                    {service.title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-white/55">
+                    {service.description}
+                  </p>
+
+                  <ul className="mt-5 space-y-2.5 border-t border-white/10 pt-5">
+                    {service.features.slice(0, 3).map((feature) => (
+                      <li
+                        key={feature}
+                        className="flex items-start gap-2.5 font-sans text-sm text-white/70"
+                      >
+                        <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-sage/20">
+                          <Check size={10} className="text-sage-light" strokeWidth={2.5} />
+                        </span>
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+
+                  <Link
+                    href="/services"
+                    className="mt-6 inline-flex items-center gap-1.5 font-sans text-sm font-semibold text-sage transition-colors duration-300 group-hover:text-sage-light"
+                  >
+                    Learn more
+                    <ArrowRight
+                      size={14}
+                      className="transition-transform duration-300 group-hover:translate-x-0.5"
+                    />
+                  </Link>
+                </div>
+              </ScrollReveal>
+            );
+          })}
         </div>
 
         <ScrollReveal delay={200} className="mt-10 text-center md:hidden">
