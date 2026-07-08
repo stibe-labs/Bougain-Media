@@ -1,6 +1,6 @@
 export const siteConfig = {
   name: "Bougain Mediaa",
-  tagline: "Big ideas. Bigger Results.",
+  tagline: "Big Ideas. Bigger Results.",
   description:
     "Digital marketing agency built around storytelling, strategy, and helping businesses grow in the digital world.",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
@@ -12,6 +12,11 @@ export const contact = {
   phoneHref: "tel:+918138869120",
   whatsapp: "+91 97787-37896",
   whatsappHref: "https://wa.me/919778737896",
+  responseTime: "Usually within 2 hours",
+  businessHours: "Mon – Sat, 10:00 AM – 7:00 PM IST",
+  office: "Kerala, India",
+  mapEmbedUrl:
+    "https://www.google.com/maps?q=Kerala,+India&output=embed",
 };
 
 export const navLinks = [
@@ -24,23 +29,64 @@ export const navLinks = [
 ] as const;
 
 export const hero = {
-  headline: ["Big ideas.", "Bigger", "Results."],
+  brand: "Bougain Mediaa",
+  headline: ["Big Ideas.", "Bigger", "Results."],
   subheadline:
     "We blend storytelling, strategy, and data-driven marketing to help your business grow in the digital world.",
-  primaryCta: "Get a Free Consultation",
-  secondaryCta: "View Our Services",
+  primaryCta: "Start a Conversation",
+  secondaryCta: "Explore Services",
 };
 
 export const about = {
   label: "About Us",
   headline: "Marketing that means something",
   intro:
-    "We're Bougain Mediaa — a digital marketing agency built around storytelling, strategy, and helping businesses truly grow in the digital world. We're thinkers, creators, and problem-solvers who believe marketing should be meaningful — not just about metrics.",
+    "We're Bougain Mediaa — thinkers, creators, and problem-solvers who believe marketing should be meaningful, not just measurable.",
   extended:
-    "We know the digital landscape shifts fast — and we're here to help you stay one step ahead. Whether you're trying to increase visibility, generate qualified leads, or build a brand that resonates, our focus is always on results that matter.",
+    "The digital landscape shifts fast. Whether you need visibility, qualified leads, or a brand that resonates — our focus is always on results that matter.",
   consultation:
-    "We'd love to learn more about your business and explore how we can support your goals. Let's start with a free consultation — feel free to reach out anytime to get a feel for who we are and what we do.",
-  closing: "Thanks for considering us. We're looking forward to connecting.",
+    "We'd love to learn about your business. Start with a free consultation and get a feel for who we are.",
+  closing: "Looking forward to connecting.",
+  mission:
+    "To deliver tailored, data-driven strategies that help brands connect, engage, and thrive online.",
+  vision:
+    "To make marketing meaningful — where creativity meets measurable results.",
+  values: [
+    {
+      title: "Story first",
+      description: "Every campaign begins with a narrative people care about.",
+    },
+    {
+      title: "Clarity over noise",
+      description: "Fewer moves, sharper decisions, measurable progress.",
+    },
+    {
+      title: "Human craft",
+      description: "Strategy shaped by people, refined by data — never the reverse.",
+    },
+  ],
+  timeline: [
+    {
+      year: "01",
+      title: "Listen deeply",
+      description: "We learn your brand, audience, and the real business problem.",
+    },
+    {
+      year: "02",
+      title: "Shape the narrative",
+      description: "Positioning, messaging, and creative direction built to last.",
+    },
+    {
+      year: "03",
+      title: "Activate channels",
+      description: "Paid, organic, and owned media working as one system.",
+    },
+    {
+      year: "04",
+      title: "Measure & refine",
+      description: "Transparent reporting and continuous optimization.",
+    },
+  ],
   cards: [
     {
       title: "Our Story",
@@ -62,80 +108,109 @@ export const about = {
 
 export const services = {
   label: "What We Do",
-  headlineScript: "our",
-  headline: "SERVICES",
-  subtitle: "Six ways we help brands win online",
+  headline: "Services",
+  subtitle:
+    "Helping ambitious brands grow through strategy, creativity & digital experiences.",
   items: [
     {
-      title: "ppc advertising management",
+      title: "PPC Advertising",
       description:
         "Paid campaigns across Google, Meta, and more — optimized for ROI.",
       tag: "Paid Media",
+      image: "/images/WhatsApp Image 2026-07-08 at 1.56.33 PM.jpeg",
       features: [
         "Google & Meta campaign setup",
         "Audience targeting & retargeting",
         "Conversion tracking & optimization",
-        "Transparent performance reports",
+      ],
+      stats: [
+        { value: "250+", label: "Campaigns" },
+        { value: "500M+", label: "Reach" },
+        { value: "3.2×", label: "Avg. ROAS" },
       ],
     },
     {
-      title: "content creation",
-      description:
-        "Visual and written content that tells your brand story.",
+      title: "Content Creation",
+      description: "Visual and written content that tells your brand story.",
       tag: "Creative",
+      image: "/images/WhatsApp Image 2026-07-08 at 4.05.27 PM.jpeg",
       features: [
         "Brand-aligned copywriting",
         "Social & ad creative assets",
         "Video & graphic production",
-        "Content calendars & planning",
+      ],
+      stats: [
+        { value: "1.2K+", label: "Assets Created" },
+        { value: "40+", label: "Brand Systems" },
+        { value: "98%", label: "Client Retention" },
       ],
     },
     {
-      title: "social media management",
+      title: "Social Media",
       description:
         "Strategy, posting, and community growth across platforms.",
       tag: "Social",
+      image: "/images/WhatsApp Image 2026-07-08 at 4.08.32 PM.jpeg",
       features: [
         "Platform-specific strategies",
         "Daily posting & scheduling",
         "Community engagement",
-        "Analytics & growth tracking",
+      ],
+      stats: [
+        { value: "2M+", label: "Followers Grown" },
+        { value: "180+", label: "Accounts Managed" },
+        { value: "4.8×", label: "Engagement Lift" },
       ],
     },
     {
-      title: "website maintenance & development",
+      title: "Web Development",
       description:
         "Fast, modern websites that convert visitors into customers.",
       tag: "Web",
+      image: "/images/WhatsApp Image 2026-07-08 at 4.10.35 PM.jpeg",
       features: [
         "Custom design & development",
         "Speed & mobile optimization",
-        "Ongoing maintenance & updates",
-        "SEO-ready architecture",
+        "Conversion-focused UX",
+      ],
+      stats: [
+        { value: "60+", label: "Sites Launched" },
+        { value: "98", label: "Avg. PageSpeed" },
+        { value: "2.1×", label: "Conversion Lift" },
       ],
     },
     {
-      title: "seo services",
+      title: "SEO Services",
       description:
         "Organic visibility that brings qualified traffic over time.",
       tag: "Organic",
+      image: "/images/WhatsApp Image 2026-07-08 at 4.11.56 PM.jpeg",
       features: [
         "Keyword & competitor research",
         "On-page & technical SEO",
-        "Content optimization",
-        "Ranking & traffic reports",
+        "Local & national SEO",
+      ],
+      stats: [
+        { value: "850+", label: "Keywords Ranked" },
+        { value: "3×", label: "Organic Growth" },
+        { value: "120+", label: "Sites Optimized" },
       ],
     },
     {
-      title: "email marketing",
+      title: "Email Marketing",
       description:
         "Nurture leads and retain customers with targeted email campaigns.",
       tag: "Email",
+      image: "/images/WhatsApp Image 2026-07-08 at 4.14.20 PM.jpeg",
       features: [
         "List building & segmentation",
         "Automated drip sequences",
-        "Newsletter design & copy",
-        "Open rate & ROI tracking",
+        "A/B tested campaigns",
+      ],
+      stats: [
+        { value: "42%", label: "Avg. Open Rate" },
+        { value: "150K+", label: "Emails Sent/Mo" },
+        { value: "5.4×", label: "ROI Average" },
       ],
     },
   ],
@@ -167,41 +242,54 @@ export const stats = [
 
 export const portfolio = {
   label: "Work We're Proud Of",
-  headline: "Projects We've Delivered",
+  headline: "Selected Work",
+  subtitle: "Campaigns, content, and digital experiences crafted for real brands.",
   items: [
     {
       title: "Brand Campaign",
       category: "Social Media",
+      industry: "Lifestyle",
+      result: "4.8× engagement lift across channels",
       image: "/images/portfolio-social.png",
       span: "lg" as const,
     },
     {
       title: "Product Launch",
       category: "Content Creation",
+      industry: "Consumer",
+      result: "National awareness in 6 weeks",
       image: "/images/portfolio-product.png",
       span: "sm" as const,
     },
     {
       title: "SEO Growth",
       category: "SEO",
+      industry: "SaaS",
+      result: "3× organic traffic in 9 months",
       image: "/images/portfolio-seo.png",
       span: "sm" as const,
     },
     {
       title: "PPC Drive",
       category: "Advertising",
+      industry: "E-commerce",
+      result: "3.2× average ROAS",
       image: "/images/portfolio-ppc.png",
       span: "md" as const,
     },
     {
       title: "Web Redesign",
       category: "Web Development",
+      industry: "Services",
+      result: "2.1× conversion rate lift",
       image: "/images/portfolio-web.png",
       span: "md" as const,
     },
     {
       title: "Email Series",
       category: "Email Marketing",
+      industry: "Retail",
+      result: "42% average open rate",
       image: "/images/portfolio-email.png",
       span: "md" as const,
     },
@@ -228,9 +316,9 @@ export const ctaBand = {
 };
 
 export const contactSection = {
-  headline: "CONTACT US",
+  headline: "Let's make something exceptional",
   supporting:
-    "Reach out to our dedicated team for any inquiries, assistance, or information you need.",
+    "Tell us about your brand. We'll respond personally — usually within a few hours.",
 };
 
 export const careers = {
@@ -256,7 +344,8 @@ export const careers = {
   filters: ["All", "Full-time", "Remote", "Part-time", "Internship"],
   ctaBand: {
     headline: "Don't see a fit?",
-    subheadline: "Send us your resume — we're always interested in meeting talented people.",
+    subheadline:
+      "Send us your resume — we're always interested in meeting talented people.",
   },
 };
 

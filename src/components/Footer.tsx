@@ -13,8 +13,8 @@ export function Footer() {
         <div className="grid gap-10 sm:gap-12 md:grid-cols-2 lg:grid-cols-4">
           <div className="md:col-span-2 lg:col-span-1">
             <Logo onDarkBg className="mb-5" size="xl" />
-            <p className="max-w-xs font-serif text-sm leading-relaxed text-white/50">
-              Big ideas. Bigger Results. Digital marketing that helps your brand
+            <p className="max-w-xs font-sans text-sm leading-relaxed text-white/50">
+              Big Ideas. Bigger Results. Digital marketing that helps your brand
               grow beyond boundaries.
             </p>
           </div>
@@ -28,7 +28,7 @@ export function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="font-sans text-sm text-white/50 transition-colors hover:text-sage-light"
+                    className="font-sans text-sm text-white/50 transition-colors hover:text-sage-light link-underline"
                   >
                     {link.label}
                   </Link>
@@ -46,7 +46,7 @@ export function Footer() {
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="font-sans text-sm text-white/50 transition-colors hover:text-sage-light"
+                    className="font-sans text-sm text-white/50 transition-colors hover:text-sage-light link-underline"
                   >
                     {link.label}
                   </Link>

@@ -1,102 +1,100 @@
 import Link from "next/link";
-import {
-  ArrowRight,
-  ArrowUpRight,
-  Briefcase,
-  Layers,
-  MessageCircle,
-  Users,
-} from "lucide-react";
+import Image from "next/image";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { ScrollReveal } from "@/components/ScrollReveal";
-import { SectionLabel } from "@/components/ui/SectionLabel";
+import { images, portfolio } from "@/lib/constants";
 
 const highlights = [
   {
-    title: "About Us",
-    description:
-      "Storytelling, strategy, and a promise to help your business succeed in the digital world.",
+    title: "Our Story",
+    description: "Storytelling, strategy, and growth with meaning.",
     href: "/about",
-    icon: Users,
-    accent: "from-sage/20 to-sage/5",
+    image: images.about,
+    span: "lg" as const,
   },
   {
-    title: "Our Services",
-    description:
-      "PPC, content, social media, SEO, web development, and email marketing — tailored to your goals.",
-    href: "/services",
-    icon: Layers,
-    accent: "from-forest-deep/10 to-sage/10",
-  },
-  {
-    title: "Portfolio",
-    description:
-      "Campaigns, content, and digital experiences crafted for real brands.",
+    title: "Selected Work",
+    description: portfolio.subtitle,
     href: "/portfolio",
-    icon: Briefcase,
-    accent: "from-sage-light/30 to-sage/10",
+    image: portfolio.items[0].image,
+    span: "sm" as const,
   },
   {
-    title: "Contact",
-    description:
-      "Reach out for a free consultation — we'd love to learn about your business.",
-    href: "/contact",
-    icon: MessageCircle,
-    accent: "from-forest-deep/8 to-sage/15",
+    title: "Capabilities",
+    description: "Six specialized practices. One coherent system.",
+    href: "/services",
+    image: images.cta,
+    span: "sm" as const,
   },
-] as const;
+];
 
 export function HomeHighlights() {
   return (
-    <section className="content-auto relative overflow-hidden bg-white section-padding">
+    <section className="content-auto relative overflow-hidden bg-cream section-padding">
       <div className="bg-mesh absolute inset-0" />
 
       <div className="container-wide relative">
-        <ScrollReveal className="text-center">
-          <SectionLabel className="text-center">Explore</SectionLabel>
-          <h2 className="font-sans text-3xl font-bold tracking-tight text-forest-deep md:text-5xl">
-            Everything you need to grow
-          </h2>
-          <p className="mx-auto mt-4 max-w-xl text-grey-muted">
-            Dive into our story, services, work, and ways to get in touch.
-          </p>
-        </ScrollReveal>
+        <div className="grid items-end gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-20">
+          <ScrollReveal>
+            <p className="font-sans text-xs font-semibold uppercase tracking-[0.28em] text-sage">
+              Explore
+            </p>
+            <h2 className="mt-4 max-w-xl font-display text-4xl font-bold tracking-tight text-forest-deep md:text-5xl lg:text-6xl">
+              A studio of ideas,
+              <br />
+              <span className="text-sage">built for results.</span>
+            </h2>
+          </ScrollReveal>
 
-        <div className="mt-14 grid gap-5 sm:grid-cols-2">
+          <ScrollReveal delay={80}>
+            <p className="max-w-md font-sans text-base leading-relaxed text-grey-muted md:text-lg">
+              Dive into our story, work, and ways of working — then start a
+              conversation when you&apos;re ready.
+            </p>
+          </ScrollReveal>
+        </div>
+
+        <div className="mt-16 grid auto-rows-fr gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
           {highlights.map((item, i) => (
-            <ScrollReveal key={item.href} delay={i * 60}>
+            <ScrollReveal
+              key={item.href}
+              delay={i * 70}
+              className={item.span === "lg" ? "sm:col-span-2 lg:col-span-1 lg:row-span-1" : ""}
+            >
               <Link
                 href={item.href}
-                className="card-modern group relative flex h-full flex-col overflow-hidden p-8"
+                className="group relative flex h-full min-h-[320px] flex-col justify-end overflow-hidden rounded-3xl shadow-[0_20px_60px_rgba(15,61,46,0.1)] md:min-h-[380px]"
               >
-                <div
-                  className={`absolute inset-0 bg-gradient-to-br ${item.accent} opacity-0 transition-opacity duration-300 group-hover:opacity-100`}
+                <Image
+                  src={item.image}
+                  alt=""
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                 />
-                <div className="relative">
-                  <div className="mb-5 inline-flex rounded-xl bg-forest-deep/5 p-3 transition-colors group-hover:bg-sage/20">
-                    <item.icon
-                      size={22}
-                      className="text-forest-deep transition-colors group-hover:text-sage"
-                      strokeWidth={1.75}
-                    />
-                  </div>
-                  <h3 className="font-sans text-xl font-semibold text-forest-deep">
+                <div className="absolute inset-0 bg-gradient-to-t from-forest-deep via-forest-deep/40 to-transparent opacity-90 transition-opacity duration-500 group-hover:opacity-95" />
+
+                <ArrowUpRight
+                  size={22}
+                  strokeWidth={1.5}
+                  className="absolute right-5 top-5 text-white/50 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-sage-light"
+                />
+
+                <div className="relative z-10 p-7 md:p-8">
+                  <h3 className="font-display text-2xl font-bold text-white md:text-3xl">
                     {item.title}
                   </h3>
-                  <p className="mt-3 flex-1 text-sm leading-relaxed text-grey-muted">
+                  <p className="mt-3 max-w-xs font-sans text-sm leading-relaxed text-white/65">
                     {item.description}
                   </p>
-                  <span className="mt-6 inline-flex items-center gap-2 font-sans text-sm font-semibold text-sage transition-colors group-hover:text-forest-deep">
-                    Explore
+                  <span className="mt-6 inline-flex items-center gap-2 font-sans text-sm font-semibold text-sage-light">
+                    Discover
                     <ArrowRight
-                      size={16}
-                      className="transition-transform group-hover:translate-x-1"
+                      size={15}
+                      className="transition-transform duration-300 group-hover:translate-x-1"
                     />
                   </span>
                 </div>
-                <ArrowUpRight
-                  size={20}
-                  className="absolute right-6 top-6 text-forest-deep/20 transition-all group-hover:text-sage group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                />
               </Link>
             </ScrollReveal>
           ))}

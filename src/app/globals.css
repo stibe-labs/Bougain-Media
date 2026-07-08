@@ -15,8 +15,6 @@
 
   --font-display: var(--font-playfair);
   --font-sans: var(--font-dm-sans);
-  --font-serif: var(--font-source-serif);
-  --font-script: var(--font-pinyon);
 }
 
 @layer base {
@@ -46,19 +44,25 @@
   }
 
   body {
-    @apply bg-forest-deep font-serif text-black antialiased;
+    @apply bg-forest-deep font-sans text-black antialiased;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
   }
 
-  /* Pause expensive effects while the user is actively scrolling */
-  html.is-scrolling .topo-drift,
   html.is-scrolling .animate-pulse-glow {
     animation-play-state: paused !important;
   }
 
   ::selection {
     @apply bg-sage/30 text-forest-deep;
+  }
+
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    @apply outline-none ring-2 ring-sage ring-offset-2 ring-offset-cream;
   }
 }
 
@@ -68,7 +72,7 @@
   }
 
   .section-padding {
-    @apply px-4 py-20 sm:px-5 sm:py-24 md:px-8 md:py-32 lg:px-12;
+    @apply px-4 py-24 sm:px-5 sm:py-28 md:px-8 md:py-36 lg:px-12 lg:py-40;
   }
 
   .container-wide {
@@ -105,21 +109,23 @@
 
   .bg-mesh {
     background-image:
-      radial-gradient(at 0% 0%, rgba(107, 158, 143, 0.12) 0px, transparent 50%),
-      radial-gradient(at 100% 0%, rgba(184, 219, 212, 0.1) 0px, transparent 50%),
-      radial-gradient(at 50% 100%, rgba(15, 61, 46, 0.06) 0px, transparent 50%);
+      radial-gradient(at 0% 0%, rgba(107, 158, 143, 0.1) 0px, transparent 55%),
+      radial-gradient(at 100% 0%, rgba(184, 219, 212, 0.08) 0px, transparent 50%),
+      radial-gradient(at 50% 100%, rgba(15, 61, 46, 0.05) 0px, transparent 55%);
   }
 
   .bg-grid {
     background-image:
-      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-    background-size: 64px 64px;
+      linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+    background-size: 72px 72px;
   }
 
-  .bg-dots {
-    background-image: radial-gradient(rgba(107, 158, 143, 0.12) 1px, transparent 1px);
-    background-size: 24px 24px;
+  .bg-grid-light {
+    background-image:
+      linear-gradient(rgba(15, 61, 46, 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(15, 61, 46, 0.035) 1px, transparent 1px);
+    background-size: 72px 72px;
   }
 
   .grain-texture {
@@ -130,37 +136,54 @@
     content: "";
     position: absolute;
     inset: 0;
-    opacity: 0.35;
+    opacity: 0.22;
     pointer-events: none;
+    z-index: 1;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
     background-repeat: repeat;
     background-size: 128px 128px;
-    mix-blend-mode: multiply;
+    mix-blend-mode: soft-light;
   }
 
   .glass {
-    @apply border border-white/10 bg-white/10 backdrop-blur-md;
+    @apply border border-white/10 bg-white/[0.08] backdrop-blur-xl;
   }
 
   .glass-light {
-    @apply border border-forest-deep/8 bg-white/85 backdrop-blur-md;
+    @apply border border-forest-deep/6 bg-white/80 backdrop-blur-xl;
   }
 
   .glass-nav {
-    @apply border border-forest-deep/5 bg-cream/80 backdrop-blur-xl;
+    @apply border border-forest-deep/5 bg-cream/85 backdrop-blur-xl;
+  }
+
+  .card-premium {
+    @apply rounded-3xl border border-white/10 bg-white/[0.07] shadow-[0_24px_80px_rgba(0,0,0,0.18)] backdrop-blur-xl;
   }
 
   .card-modern {
-    @apply rounded-2xl border border-forest-deep/8 bg-white shadow-sm;
+    @apply rounded-3xl border border-forest-deep/6 bg-white shadow-[0_16px_48px_rgba(15,61,46,0.06)];
   }
 
   .glow-sage {
-    box-shadow: 0 0 40px rgba(107, 158, 143, 0.25);
+    box-shadow: 0 0 48px rgba(107, 158, 143, 0.28);
   }
 
   .gpu-layer {
     transform: translateZ(0);
     will-change: transform;
+  }
+
+  .link-underline {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    background-size: 0 1px;
+    transition: background-size 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .link-underline:hover {
+    background-size: 100% 1px;
   }
 
   .reveal-on-scroll {
@@ -183,40 +206,6 @@
     transform: translate3d(0, 0, 0);
   }
 
-  @keyframes topo-drift {
-    0%,
-    100% {
-      transform: translate3d(0, 0, 0);
-    }
-    50% {
-      transform: translate3d(-20px, 12px, 0);
-    }
-  }
-
-  .topo-drift {
-    animation: topo-drift 24s ease-in-out infinite;
-  }
-
-  @keyframes shimmer {
-    0% {
-      background-position: -200% center;
-    }
-    100% {
-      background-position: 200% center;
-    }
-  }
-
-  .shimmer-border {
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(184, 219, 212, 0.4),
-      transparent
-    );
-    background-size: 200% 100%;
-    animation: shimmer 3s ease-in-out infinite;
-  }
-
   @keyframes float {
     0%,
     100% {
@@ -234,15 +223,31 @@
   @keyframes pulse-glow {
     0%,
     100% {
-      opacity: 0.35;
+      opacity: 0.28;
     }
     50% {
-      opacity: 0.65;
+      opacity: 0.55;
     }
   }
 
   .animate-pulse-glow {
-    animation: pulse-glow 4s ease-in-out infinite;
+    animation: pulse-glow 5s ease-in-out infinite;
+  }
+
+  @keyframes hero-glow {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0) scale(1);
+      opacity: 0.35;
+    }
+    50% {
+      transform: translate3d(4%, -3%, 0) scale(1.08);
+      opacity: 0.55;
+    }
+  }
+
+  .animate-hero-glow {
+    animation: hero-glow 10s ease-in-out infinite;
   }
 
   @keyframes loader-pulse {
@@ -321,6 +326,15 @@
       transform: none;
       transition: none;
     }
+  }
+
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
   }
 
   .bento-lg {

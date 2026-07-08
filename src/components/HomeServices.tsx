@@ -19,12 +19,9 @@ export function HomeServices() {
         <ScrollReveal className="mx-auto max-w-3xl text-center">
           <SectionLabel className="text-center">{services.label}</SectionLabel>
           <h2 className="font-display text-4xl font-bold tracking-tight text-forest-deep md:text-6xl">
-            <span className="font-script text-5xl font-normal text-sage md:text-6xl">
-              {services.headlineScript}
-            </span>{" "}
             {services.headline}
           </h2>
-          <p className="mx-auto mt-5 max-w-xl font-serif text-lg text-grey-muted">
+          <p className="mx-auto mt-5 max-w-xl font-sans text-lg text-grey-muted">
             {services.subtitle}
           </p>
         </ScrollReveal>

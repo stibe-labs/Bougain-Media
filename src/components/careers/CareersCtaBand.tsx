@@ -14,7 +14,7 @@ export function CareersCtaBand() {
           <h2 className="font-display text-3xl font-bold tracking-tight text-white md:text-4xl">
             {careers.ctaBand.headline}
           </h2>
-          <p className="mx-auto mt-4 max-w-xl font-serif text-lg text-white/60">
+          <p className="mx-auto mt-4 max-w-xl font-sans text-lg text-white/60">
             {careers.ctaBand.subheadline}
           </p>
           <Button href={`mailto:${contact.email}`} variant="primary" size="lg" className="mt-8">

@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/Button";
 import { navLinks } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
-const darkHeroPaths = ["/", "/services", "/portfolio"];
+const darkHeroPaths = ["/", "/services", "/portfolio", "/contact"];
 
 function hasDarkHero(pathname: string) {
   return darkHeroPaths.some(
@@ -88,24 +88,16 @@ export function Navbar() {
                 href={link.href}
                 className={cn(
                   "relative font-sans text-sm font-medium transition-colors duration-200",
-                  active
-                    ? onHero
-                      ? "text-white"
-                      : "text-forest-deep"
-                    : onHero
-                      ? "text-white/70 hover:text-white"
-                      : "text-forest-deep/60 hover:text-forest-deep",
+                  "after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:transition-transform after:duration-300 after:ease-out",
+                  "hover:after:scale-x-100",
+                  active && "after:scale-x-100",
+                  onHero
+                    ? "text-white/70 after:bg-sage-light hover:text-white"
+                    : "text-forest-deep/60 after:bg-sage hover:text-forest-deep",
+                  active && (onHero ? "text-white" : "text-forest-deep"),
                 )}
               >
                 {link.label}
-                {active && (
-                  <span
-                    className={cn(
-                      "absolute -bottom-1 left-0 h-px w-full",
-                      onHero ? "bg-sage-light" : "bg-sage",
-                    )}
-                  />
-                )}
               </Link>
             );
           })}

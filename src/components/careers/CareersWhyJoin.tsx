@@ -35,7 +35,7 @@ export function CareersWhyJoin() {
             >
               <div className="glass h-full rounded-2xl p-8 text-center transition-colors duration-300 hover:border-sage/30 hover:bg-white/15">
                 <h3 className="font-sans text-lg font-semibold text-white">{item.title}</h3>
-                <p className="mt-3 font-serif text-sm leading-relaxed text-white/50">
+                <p className="mt-3 font-sans text-sm leading-relaxed text-white/50">
                   {item.description}
                 </p>
               </div>

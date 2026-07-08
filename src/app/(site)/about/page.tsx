@@ -13,7 +13,7 @@ export default function AboutPage() {
   return (
     <>
       <About standalone />
-      <Stats />
+      <Stats variant="dark" />
       <CtaBand />
     </>
   );

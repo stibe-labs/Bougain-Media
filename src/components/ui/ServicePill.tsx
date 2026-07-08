@@ -46,7 +46,7 @@ export function ServicePill({ title, description, tag, index }: ServicePillProps
           className="overflow-hidden"
         >
           <motion.p
-            className="mt-0 max-h-0 font-serif text-sm leading-relaxed text-white/0 transition-all duration-500 group-hover:mt-3 group-hover:max-h-24 group-hover:text-white/70"
+            className="mt-0 max-h-0 font-sans text-sm leading-relaxed text-white/0 transition-all duration-500 group-hover:mt-3 group-hover:max-h-24 group-hover:text-white/70"
           >
             {description}
           </motion.p>

@@ -1,10 +1,5 @@
 import type { Metadata } from "next";
-import {
-  DM_Sans,
-  Playfair_Display,
-  Pinyon_Script,
-  Source_Serif_4,
-} from "next/font/google";
+import { DM_Sans, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { siteConfig } from "@/lib/constants";
 
@@ -17,19 +12,6 @@ const dmSans = DM_Sans({
 const playfair = Playfair_Display({
   subsets: ["latin"],
   variable: "--font-playfair",
-  display: "swap",
-});
-
-const sourceSerif = Source_Serif_4({
-  subsets: ["latin"],
-  variable: "--font-source-serif",
-  display: "swap",
-});
-
-const pinyon = Pinyon_Script({
-  subsets: ["latin"],
-  weight: "400",
-  variable: "--font-pinyon",
   display: "swap",
 });
 
@@ -66,11 +48,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${dmSans.variable} ${playfair.variable} ${sourceSerif.variable} ${pinyon.variable}`}
-    >
-      <body className="min-h-screen">{children}</body>
+    <html lang="en" className={`${dmSans.variable} ${playfair.variable}`}>
+      <body className="min-h-screen font-sans">{children}</body>
     </html>
   );
 }

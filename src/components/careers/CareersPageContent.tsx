@@ -28,7 +28,7 @@ export function CareersPageContent() {
             <h1 className="font-display text-4xl font-bold tracking-tight text-forest-deep md:text-6xl">
               {careers.headline}
             </h1>
-            <p className="mx-auto mt-6 max-w-2xl font-serif text-lg leading-relaxed text-grey-muted">
+            <p className="mx-auto mt-6 max-w-2xl font-sans text-lg leading-relaxed text-grey-muted">
               {careers.subheadline}
             </p>
           </ScrollReveal>
@@ -70,7 +70,7 @@ export function CareersPageContent() {
                       <p className="font-sans text-sm font-semibold uppercase tracking-wider text-sage">
                         We&apos;re hiring talent
                       </p>
-                      <p className="mx-auto mt-4 max-w-lg font-serif text-lg leading-relaxed text-grey-muted lg:mx-0">
+                      <p className="mx-auto mt-4 max-w-lg font-sans text-lg leading-relaxed text-grey-muted lg:mx-0">
                         {careers.emptyState}
                       </p>
                       <Button

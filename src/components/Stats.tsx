@@ -3,8 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { ScrollReveal } from "@/components/ScrollReveal";
-import { SectionLabel } from "@/components/ui/SectionLabel";
 import { stats } from "@/lib/constants";
+import { cn } from "@/lib/utils";
 
 const ease = [0.22, 1, 0.36, 1] as [number, number, number, number];
 
@@ -12,8 +12,14 @@ function Counter({ value, suffix }: { value: number; suffix: string }) {
   const ref = useRef<HTMLSpanElement>(null);
   const [count, setCount] = useState(0);
   const started = useRef(false);
+  const reduceMotion = useReducedMotion();
 
   useEffect(() => {
+    if (reduceMotion) {
+      setCount(value);
+      return;
+    }
+
     const el = ref.current;
     if (!el) return;
 
@@ -40,7 +46,7 @@ function Counter({ value, suffix }: { value: number; suffix: string }) {
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, [value]);
+  }, [value, reduceMotion]);
 
   return (
     <span ref={ref}>
@@ -50,44 +56,83 @@ function Counter({ value, suffix }: { value: number; suffix: string }) {
   );
 }
 
-export function Stats() {
+export function Stats({ variant = "light" }: { variant?: "light" | "dark" }) {
   const reduceMotion = useReducedMotion();
+  const isDark = variant === "dark";
 
   return (
-    <section className="content-auto relative overflow-hidden bg-forest-deep section-padding">
-      <div className="bg-grid absolute inset-0 opacity-40" />
-      <div className="absolute inset-0 bg-gradient-to-r from-sage/10 via-transparent to-sage/5" />
+    <section
+      className={cn(
+        "content-auto relative overflow-hidden section-padding !py-20 md:!py-28",
+        isDark
+          ? "bg-forest-deep"
+          : "border-y border-forest-deep/6 bg-cream",
+      )}
+    >
+      <div
+        className={cn(
+          "absolute inset-0",
+          isDark ? "bg-grid opacity-25" : "bg-grid-light opacity-60",
+        )}
+      />
+      {isDark && (
+        <div
+          className="pointer-events-none absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-sage/15 blur-3xl"
+          aria-hidden
+        />
+      )}
 
       <div className="container-wide relative">
-        <ScrollReveal className="mb-14 text-center">
-          <SectionLabel dark className="text-center">
-            Track Record
-          </SectionLabel>
-          <h2 className="font-display text-3xl font-bold tracking-tight text-white md:text-4xl">
-            Numbers that speak for themselves
-          </h2>
-        </ScrollReveal>
-
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
-          {stats.map((stat, i) => (
-            <motion.div
-              key={stat.label}
-              initial={reduceMotion ? false : { opacity: 0, y: 28 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-40px" }}
-              transition={{ duration: 0.55, delay: i * 0.1, ease }}
-              whileHover={reduceMotion ? undefined : { y: -4, scale: 1.02 }}
+        <div className="grid items-end gap-12 lg:grid-cols-[1fr_2fr] lg:gap-20">
+          <ScrollReveal>
+            <p
+              className={cn(
+                "font-sans text-xs font-semibold uppercase tracking-[0.28em]",
+                "text-sage",
+              )}
             >
-              <div className="glass group rounded-2xl p-6 text-center transition-colors duration-300 hover:border-sage/30 hover:bg-white/15 md:p-8">
-                <div className="font-sans text-4xl font-bold text-gradient md:text-5xl lg:text-6xl">
+              Track Record
+            </p>
+            <h2
+              className={cn(
+                "mt-4 max-w-xs font-display text-3xl font-bold leading-tight tracking-tight md:text-4xl",
+                isDark ? "text-white" : "text-forest-deep",
+              )}
+            >
+              Numbers that speak quietly —
+              <span className="text-sage"> and clearly.</span>
+            </h2>
+          </ScrollReveal>
+
+          <div className="grid grid-cols-2 gap-x-8 gap-y-10 md:grid-cols-4 md:gap-x-6">
+            {stats.map((stat, i) => (
+              <motion.div
+                key={stat.label}
+                initial={reduceMotion ? false : { opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-40px" }}
+                transition={{ duration: 0.55, delay: i * 0.08, ease }}
+                className="relative"
+              >
+                <div
+                  className={cn(
+                    "font-display text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl",
+                    isDark ? "text-gradient" : "text-forest-deep",
+                  )}
+                >
                   <Counter value={stat.value} suffix={stat.suffix} />
                 </div>
-                <p className="mt-3 font-sans text-xs font-medium uppercase tracking-wider text-white/60">
+                <p
+                  className={cn(
+                    "mt-3 font-sans text-xs font-medium uppercase tracking-[0.18em]",
+                    isDark ? "text-white/55" : "text-grey-muted",
+                  )}
+                >
                   {stat.label}
                 </p>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
