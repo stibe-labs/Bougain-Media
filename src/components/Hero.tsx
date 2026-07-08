@@ -26,7 +26,7 @@ export function Hero() {
   return (
     <section
       id="home"
-      className="relative flex min-h-[100svh] items-center overflow-hidden bg-forest-deep content-auto"
+      className="relative flex min-h-[100svh] items-end overflow-hidden bg-forest-deep content-auto sm:items-center"
     >
       <video
         autoPlay
@@ -34,7 +34,7 @@ export function Hero() {
         loop
         playsInline
         preload="auto"
-        className="absolute inset-0 h-full w-full object-cover object-center lg:object-[72%_center]"
+        className="absolute inset-0 h-full w-full object-cover object-center"
         aria-hidden
       >
         <source src={HERO_VIDEO} type="video/webm" />
@@ -54,14 +54,14 @@ export function Hero() {
       <div className="bg-grid absolute inset-0 opacity-[0.15]" />
       <div className="grain-texture absolute inset-0" />
 
-      <div className="container-wide relative z-10 section-padding !pb-20 !pt-28 sm:!pb-24 sm:!pt-32 md:!pt-40">
+      <div className="container-wide relative z-10 px-4 pb-20 pt-28 sm:px-5 sm:pb-24 sm:pt-36 md:px-8 md:pb-28 md:pt-44 lg:px-12">
         <div className="max-w-3xl">
           <motion.p
             custom={0}
             initial="hidden"
             animate="visible"
             variants={fadeUp}
-            className="mb-8 font-sans text-[11px] font-semibold uppercase tracking-[0.32em] text-sage-light sm:mb-10 sm:text-xs"
+            className="font-sans text-xs font-semibold uppercase tracking-[0.28em] text-sage"
           >
             {siteConfig.name}
           </motion.p>
@@ -71,7 +71,7 @@ export function Hero() {
             initial="hidden"
             animate="visible"
             variants={fadeUp}
-            className="font-display text-[clamp(2.75rem,8vw,6.75rem)] font-bold leading-[0.95] tracking-tight text-white"
+            className="mt-5 font-display text-5xl font-bold tracking-tight text-white md:text-6xl lg:text-7xl"
           >
             {hero.headline[0]}
             <br />
@@ -84,7 +84,7 @@ export function Hero() {
             initial="hidden"
             animate="visible"
             variants={fadeUp}
-            className="mt-8 max-w-md font-sans text-base leading-relaxed text-white/70 sm:mt-10 sm:text-lg md:text-xl"
+            className="mt-6 max-w-lg font-sans text-lg leading-relaxed text-white/55 md:text-xl"
           >
             {hero.subheadline}
           </motion.p>
@@ -94,7 +94,7 @@ export function Hero() {
             initial="hidden"
             animate="visible"
             variants={fadeUp}
-            className="mt-10 flex flex-col gap-4 sm:mt-12 sm:flex-row sm:items-center sm:gap-6"
+            className="mt-8 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:items-center sm:gap-4"
           >
             <Button href="/contact" variant="primary" size="lg" className="w-full sm:w-auto">
               {hero.primaryCta}
