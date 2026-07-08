@@ -5,9 +5,7 @@ import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { hero, siteConfig } from "@/lib/constants";
 
-const HERO_VIDEO = encodeURI(
-  "/videos/Firefly Ultra-realistic cinematic luxury digital marketing agency office, modern Scandinavian creati.webm",
-);
+const HERO_VIDEO = "/videos/hero-intro.webm";
 
 const ease = [0.22, 1, 0.36, 1] as [number, number, number, number];
 
