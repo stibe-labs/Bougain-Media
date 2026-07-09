@@ -24,7 +24,6 @@ function isActiveLink(pathname: string, href: string) {
 
 export function Navbar() {
   const pathname = usePathname();
-  const isHome = pathname === "/";
   const darkHero = hasDarkHero(pathname);
   const [scrolled, setScrolled] = useState(!darkHero);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -74,31 +73,37 @@ export function Navbar() {
       <div className="container-wide flex h-16 items-center justify-between px-4 sm:h-20 sm:px-5 md:px-8 lg:px-12">
         <Logo
           onDarkBg={onHero}
-          type={isHome && onHero ? "icon" : "full"}
-          size={isHome && onHero ? "md" : "lg"}
-          className="shrink-0 sm:!w-auto"
+          type="icon"
+          size="md"
+          className="shrink-0 bg-transparent"
         />
 
-        <nav className="hidden items-center gap-6 lg:flex">
-          {navbarLinks.map((link) => {
+        <nav className="hidden items-center gap-1 lg:flex">
+          {navbarLinks.map((link, index) => {
             const active = isActiveLink(pathname, link.href);
             return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={cn(
-                  "relative font-sans text-sm font-medium transition-colors duration-200",
-                  "after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:transition-transform after:duration-300 after:ease-out",
-                  "hover:after:scale-x-100",
-                  active && "after:scale-x-100",
-                  onHero
-                    ? "text-white/70 after:bg-sage-light hover:text-white"
-                    : "text-forest-deep/60 after:bg-sage hover:text-forest-deep",
-                  active && (onHero ? "text-white" : "text-forest-deep"),
+              <span key={link.href} className="flex items-center">
+                {index > 0 && (
+                  <span className="mx-3 text-[10px] text-white/25" aria-hidden>
+                    •
+                  </span>
                 )}
-              >
-                {link.label}
-              </Link>
+                <Link
+                  href={link.href}
+                  className={cn(
+                    "relative font-sans text-sm font-medium transition-colors duration-200",
+                    "after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:transition-transform after:duration-300 after:ease-out",
+                    "hover:after:scale-x-100",
+                    active && "after:scale-x-100",
+                    onHero
+                      ? "text-white/70 after:bg-emerald-accent/60 hover:text-white"
+                      : "text-forest-deep/60 after:bg-sage hover:text-forest-deep",
+                    active && (onHero ? "text-white" : "text-forest-deep"),
+                  )}
+                >
+                  {link.label}
+                </Link>
+              </span>
             );
           })}
         </nav>
@@ -107,7 +112,8 @@ export function Navbar() {
           <Button
             href="/contact"
             size="sm"
-            variant={onHero ? "secondary" : "primary"}
+            variant={onHero ? "outline" : "primary"}
+            className={onHero ? "rounded-full border-white/30 px-6 hover:border-white/50" : "rounded-full px-6"}
           >
             Let&apos;s Talk
           </Button>

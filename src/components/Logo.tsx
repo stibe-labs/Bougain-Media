@@ -45,7 +45,7 @@ export function Logo({
     <Link
       href="/"
       className={cn(
-        "relative inline-block shrink-0 transition-opacity hover:opacity-90",
+        "relative inline-block shrink-0 bg-transparent transition-opacity hover:opacity-90",
         className,
       )}
       style={{ width: dim.w, height: dim.h }}
@@ -55,8 +55,8 @@ export function Logo({
         alt="Bougain Mediaa"
         fill
         sizes={`${dim.w}px`}
-        className="object-contain object-left"
-        priority={type === "icon" || size === "md"}
+        className="bg-transparent object-contain object-left"
+        priority
       />
     </Link>
   );

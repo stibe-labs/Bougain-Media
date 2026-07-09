@@ -12,9 +12,11 @@
   --color-grey-muted: #9ca3a0;
   --color-whatsapp: #25d366;
   --color-black: #1a1a1a;
+  --color-emerald-accent: #6eeb83;
 
   --font-display: var(--font-playfair);
   --font-sans: var(--font-dm-sans);
+  --font-hero: var(--font-outfit);
 }
 
 @layer base {
@@ -126,6 +128,38 @@
       linear-gradient(rgba(15, 61, 46, 0.035) 1px, transparent 1px),
       linear-gradient(90deg, rgba(15, 61, 46, 0.035) 1px, transparent 1px);
     background-size: 72px 72px;
+  }
+
+  .bg-hero-gradient {
+    background: linear-gradient(
+      160deg,
+      var(--color-forest-deep) 0%,
+      var(--color-forest-dark) 100%
+    );
+  }
+
+  .bg-hero-vignette {
+    background: radial-gradient(
+      ellipse 80% 70% at 50% 50%,
+      transparent 40%,
+      rgba(0, 0, 0, 0.45) 100%
+    );
+  }
+
+  .bg-hero-grid {
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 64px 64px;
+  }
+
+  .font-hero {
+    font-family: var(--font-hero), var(--font-sans), system-ui, sans-serif;
+  }
+
+  .hero-grain::before {
+    opacity: 0.12;
+    mix-blend-mode: overlay;
   }
 
   .grain-texture {

@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Check } from "lucide-react";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { Button } from "@/components/ui/Button";
+import { ServiceMedia } from "@/components/ui/ServiceMedia";
 import { services } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
@@ -75,32 +75,36 @@ function ServiceCard({
       viewport={{ once: true, amount: 0.15 }}
       transition={{ duration: 0.7, delay: reduced ? 0 : (index % 2) * 0.1, ease: easeOut }}
       whileHover={
-        reduced ? undefined : { y: -10, transition: { duration: 0.35, ease: easeOut } }
+        reduced
+          ? undefined
+          : {
+              y: -12,
+              scale: 1.02,
+              transition: { duration: 0.4, ease: easeOut },
+            }
       }
       className={cn(
         "group flex h-full flex-col overflow-hidden rounded-3xl",
         "border border-forest-deep/6 bg-white/90 backdrop-blur-xl",
         "shadow-[0_20px_60px_rgba(15,61,46,0.08)]",
-        "transition-shadow duration-500",
-        "hover:shadow-[0_32px_80px_rgba(107,158,143,0.22)]",
+        "transition-[border-color,box-shadow] duration-500",
+        "hover:border-sage/35 hover:shadow-[0_36px_90px_rgba(107,158,143,0.28)]",
       )}
     >
       <div className="relative aspect-[4/3] overflow-hidden">
-        <Image
-          src={service.image}
-          alt={service.title}
-          fill
+        <ServiceMedia
+          title={service.title}
+          image={service.image}
           sizes="(min-width: 1024px) 45vw, 100vw"
-          className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-forest-deep/40 via-transparent to-transparent" />
-        <span className="absolute left-5 top-5 rounded-full border border-white/25 bg-forest-deep/45 px-3.5 py-1 font-sans text-[10px] font-semibold uppercase tracking-[0.18em] text-sage-light backdrop-blur-md">
+        <div className="absolute inset-0 bg-gradient-to-t from-forest-deep/45 via-forest-deep/5 to-transparent transition-opacity duration-500 group-hover:from-forest-deep/60 group-hover:via-forest-deep/10" />
+        <span className="absolute left-5 top-5 rounded-full border border-white/25 bg-forest-deep/45 px-3.5 py-1 font-sans text-[10px] font-semibold uppercase tracking-[0.18em] text-sage-light backdrop-blur-md transition-all duration-500 group-hover:-translate-y-0.5 group-hover:border-sage/40 group-hover:bg-forest-deep/70">
           {service.tag}
         </span>
       </div>
 
       <div className="flex flex-1 flex-col p-7 md:p-8">
-        <h3 className="font-display text-2xl font-bold tracking-tight text-forest-deep md:text-3xl">
+        <h3 className="font-display text-2xl font-bold tracking-tight text-forest-deep transition-colors duration-300 group-hover:text-sage md:text-3xl">
           {service.title}
         </h3>
         <p className="mt-3 font-sans text-[15px] leading-relaxed text-grey-muted md:text-base">

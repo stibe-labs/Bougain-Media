@@ -1,6 +1,6 @@
 export const siteConfig = {
   name: "Bougain Mediaa",
-  tagline: "Big Ideas. Bigger Results.",
+  tagline: "Your growth, our grind.",
   description:
     "Digital marketing agency built around storytelling, strategy, and helping businesses grow in the digital world.",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
@@ -21,20 +21,20 @@ export const contact = {
 
 export const navLinks = [
   { label: "Home", href: "/" },
-  { label: "About", href: "/about" },
   { label: "Services", href: "/services" },
   { label: "Portfolio", href: "/portfolio" },
+  { label: "About", href: "/about" },
   { label: "Careers", href: "/careers" },
   { label: "Contact", href: "/contact" },
 ] as const;
 
 export const hero = {
   brand: "Bougain Mediaa",
-  headline: ["Big Ideas.", "Bigger", "Results."],
+  headline: ["Your", "Growth.", "Our", "Grind."],
   subheadline:
-    "We blend storytelling, strategy, and data-driven marketing to help your business grow in the digital world.",
+    "We blend strategy, storytelling, performance marketing, AI automation, and web experiences to help ambitious brands grow.",
   primaryCta: "Start a Conversation",
-  secondaryCta: "Explore Services",
+  secondaryCta: "View Our Work",
 };
 
 export const about = {
@@ -113,31 +113,15 @@ export const services = {
     "Helping ambitious brands grow through strategy, creativity & digital experiences.",
   items: [
     {
-      title: "PPC Advertising",
-      description:
-        "Paid campaigns across Google, Meta, and more — optimized for ROI.",
-      tag: "Paid Media",
-      image: "/images/WhatsApp Image 2026-07-08 at 1.56.33 PM.jpeg",
-      features: [
-        "Google & Meta campaign setup",
-        "Audience targeting & retargeting",
-        "Conversion tracking & optimization",
-      ],
-      stats: [
-        { value: "250+", label: "Campaigns" },
-        { value: "500M+", label: "Reach" },
-        { value: "3.2×", label: "Avg. ROAS" },
-      ],
-    },
-    {
       title: "Content Creation",
-      description: "Visual and written content that tells your brand story.",
+      description:
+        "Creative concepts and branded content designed to tell your story clearly.",
       tag: "Creative",
-      image: "/images/WhatsApp Image 2026-07-08 at 4.05.27 PM.jpeg",
+      image: "/images/sevices/content creation.png",
       features: [
-        "Brand-aligned copywriting",
-        "Social & ad creative assets",
-        "Video & graphic production",
+        "Content strategy and ideation",
+        "Brand-first copy and captions",
+        "Platform-ready creative assets",
       ],
       stats: [
         { value: "1.2K+", label: "Assets Created" },
@@ -146,71 +130,89 @@ export const services = {
       ],
     },
     {
-      title: "Social Media",
+      title: "Video Production",
       description:
-        "Strategy, posting, and community growth across platforms.",
-      tag: "Social",
-      image: "/images/WhatsApp Image 2026-07-08 at 4.08.32 PM.jpeg",
+        "End-to-end video production for campaigns, social content, and branded storytelling.",
+      tag: "Video",
+      image: "/images/sevices/video production.png",
       features: [
-        "Platform-specific strategies",
-        "Daily posting & scheduling",
-        "Community engagement",
+        "Creative direction and scripting",
+        "Shoot planning and production",
+        "Editing, motion, and delivery",
       ],
       stats: [
-        { value: "2M+", label: "Followers Grown" },
+        { value: "300+", label: "Videos Produced" },
+        { value: "50+", label: "Campaign Films" },
+        { value: "95%", label: "On-Time Delivery" },
+      ],
+    },
+    {
+      title: "Visual Ads",
+      description:
+        "High-impact ad creatives crafted to stop the scroll and drive action.",
+      tag: "Design",
+      image: "/images/sevices/visualadss.png",
+      features: [
+        "Static and motion ad creatives",
+        "Multi-format ad variants",
+        "Creative testing support",
+      ],
+      stats: [
+        { value: "900+", label: "Ad Creatives" },
+        { value: "120+", label: "Campaign Sets" },
+        { value: "3.9×", label: "CTR Lift" },
+      ],
+    },
+    {
+      title: "Social Media Management",
+      description:
+        "Consistent social presence through strategy, posting, and audience engagement.",
+      tag: "Social",
+      image: "/images/sevices/social media management.png",
+      features: [
+        "Monthly social media planning",
+        "Content calendar and publishing",
+        "Community management",
+      ],
+      stats: [
         { value: "180+", label: "Accounts Managed" },
+        { value: "2M+", label: "Audience Reach" },
         { value: "4.8×", label: "Engagement Lift" },
       ],
     },
     {
-      title: "Web Development",
+      title: "Brand Shoots",
       description:
-        "Fast, modern websites that convert visitors into customers.",
-      tag: "Web",
-      image: "/images/WhatsApp Image 2026-07-08 at 4.10.35 PM.jpeg",
+        "Professional photo and video shoots that elevate your brand identity.",
+      tag: "Branding",
+      image: "/images/sevices/brand shoots.png",
       features: [
-        "Custom design & development",
-        "Speed & mobile optimization",
-        "Conversion-focused UX",
+        "Concept and moodboard planning",
+        "On-location or studio shoots",
+        "Brand-ready media selection",
       ],
       stats: [
-        { value: "60+", label: "Sites Launched" },
-        { value: "98", label: "Avg. PageSpeed" },
-        { value: "2.1×", label: "Conversion Lift" },
+        { value: "120+", label: "Brand Shoots" },
+        { value: "2.5K+", label: "Final Visuals" },
+        { value: "96%", label: "Client Satisfaction" },
       ],
     },
     {
-      title: "SEO Services",
+      title: "Performance Marketing",
       description:
-        "Organic visibility that brings qualified traffic over time.",
-      tag: "Organic",
-      image: "/images/WhatsApp Image 2026-07-08 at 4.11.56 PM.jpeg",
+        "Data-driven paid and retention campaigns focused on conversions and measurable growth.",
+      tag: "Paid Growth",
+      image: "/images/sevices/perfomance marketing.png",
       features: [
-        "Keyword & competitor research",
-        "On-page & technical SEO",
-        "Local & national SEO",
+        "Meta Ads",
+        "Google Ads",
+        "WhatsApp Campaigns",
+        "Email Marketing",
       ],
       stats: [
-        { value: "850+", label: "Keywords Ranked" },
-        { value: "3×", label: "Organic Growth" },
-        { value: "120+", label: "Sites Optimized" },
-      ],
-    },
-    {
-      title: "Email Marketing",
-      description:
-        "Nurture leads and retain customers with targeted email campaigns.",
-      tag: "Email",
-      image: "/images/WhatsApp Image 2026-07-08 at 4.14.20 PM.jpeg",
-      features: [
-        "List building & segmentation",
-        "Automated drip sequences",
-        "A/B tested campaigns",
-      ],
-      stats: [
-        { value: "42%", label: "Avg. Open Rate" },
-        { value: "150K+", label: "Emails Sent/Mo" },
-        { value: "5.4×", label: "ROI Average" },
+        { value: "250+", label: "Campaigns" },
+        { value: "500M+", label: "Reach" },
+        { value: "3.2×", label: "Avg. ROAS" },
       ],
     },
   ],
@@ -306,8 +308,8 @@ export const images = {
 export const logos = {
   fullGreen: "/logos/logo-full-green.png",
   fullWhite: "/logos/logo-full-white.png",
-  iconGreen: "/logos/logo-icon-green.png",
-  iconWhite: "/logos/logo-icon-white.png",
+  iconGreen: "/logos/BM%20LOGO%20icon%20G-01.png",
+  iconWhite: "/logos/BM%20LOGO%20Icon%20W-01-01.png",
 };
 
 export const ctaBand = {

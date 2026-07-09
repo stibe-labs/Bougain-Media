@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Check } from "lucide-react";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { Button } from "@/components/ui/Button";
+import { ServiceMedia } from "@/components/ui/ServiceMedia";
 import { services } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
@@ -29,31 +29,34 @@ function ServicePreviewCard({
       whileHover={
         reduceMotion
           ? undefined
-          : { y: -8, transition: { duration: 0.35, ease } }
+          : {
+              y: -10,
+              scale: 1.02,
+              transition: { duration: 0.4, ease },
+            }
       }
       className={cn(
         "group relative flex h-full min-w-[85vw] max-w-md flex-col overflow-hidden rounded-3xl sm:min-w-0 sm:max-w-none",
         "border border-white/10 bg-white/[0.07] backdrop-blur-xl",
         "shadow-[0_24px_60px_rgba(0,0,0,0.2)]",
-        "transition-shadow duration-500 hover:shadow-[0_32px_80px_rgba(107,158,143,0.22)]",
+        "transition-[border-color,box-shadow] duration-500",
+        "hover:border-sage/30 hover:shadow-[0_36px_90px_rgba(107,158,143,0.3)]",
       )}
     >
       <div className="relative aspect-[4/3] overflow-hidden">
-        <Image
-          src={service.image}
-          alt={service.title}
-          fill
+        <ServiceMedia
+          title={service.title}
+          image={service.image}
           sizes="(max-width: 640px) 85vw, (max-width: 1024px) 45vw, 33vw"
-          className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-forest-deep/50 via-transparent to-transparent" />
-        <span className="absolute left-4 top-4 rounded-full border border-white/20 bg-forest-deep/40 px-3 py-1 font-sans text-[10px] font-semibold uppercase tracking-[0.18em] text-sage-light backdrop-blur-md">
+        <div className="absolute inset-0 bg-gradient-to-t from-forest-deep/55 via-forest-deep/10 to-transparent transition-opacity duration-500 group-hover:from-forest-deep/70 group-hover:via-forest-deep/15" />
+        <span className="absolute left-4 top-4 rounded-full border border-white/20 bg-forest-deep/40 px-3 py-1 font-sans text-[10px] font-semibold uppercase tracking-[0.18em] text-sage-light backdrop-blur-md transition-all duration-500 group-hover:-translate-y-0.5 group-hover:border-sage/40 group-hover:bg-forest-deep/60">
           {service.tag}
         </span>
       </div>
 
       <div className="flex flex-1 flex-col p-6 md:p-8">
-        <h3 className="font-display text-2xl font-bold tracking-tight text-white md:text-[1.65rem]">
+        <h3 className="font-display text-2xl font-bold tracking-tight text-white transition-colors duration-300 group-hover:text-sage-light md:text-[1.65rem]">
           {service.title}
         </h3>
         <p className="mt-3 font-sans text-sm leading-relaxed text-white/55 md:text-[15px]">
