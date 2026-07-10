@@ -8,6 +8,7 @@ import { BackgroundEffects } from "@/components/hero/BackgroundEffects";
 import { GridOverlay } from "@/components/hero/GridOverlay";
 import { MouseGlow } from "@/components/hero/MouseGlow";
 import { ParticleField } from "@/components/hero/ParticleField";
+import { HeroCards } from "@/components/hero/HeroCards";
 import { hero, siteConfig } from "@/lib/constants";
 
 const ease = [0.22, 1, 0.36, 1] as [number, number, number, number];
@@ -32,7 +33,7 @@ export function Hero() {
   return (
     <section
       id="home"
-      className="hero-grain grain-texture relative flex min-h-[100svh] items-center overflow-hidden bg-hero-gradient content-auto"
+      className="hero-grain grain-texture relative flex h-[100svh] items-start overflow-hidden bg-hero-gradient content-auto"
       onMouseMove={(event) => {
         if (reduceMotion) return;
         const rect = event.currentTarget.getBoundingClientRect();
@@ -59,9 +60,9 @@ export function Hero() {
 
       <ParticleField mouseRef={mouseRef} />
 
-      <div className="container-wide relative z-10 w-full px-4 pt-28 sm:px-5 sm:pt-32 md:px-8 md:pt-36 lg:px-12">
+      <div className="container-wide relative z-10 grid w-full grid-cols-1 px-4 pt-24 sm:px-5 sm:pt-28 md:px-8 md:pt-32 lg:grid-cols-[1fr_auto] lg:items-center lg:gap-8 lg:px-12">
         <motion.div
-          className="max-w-3xl md:ml-[4vw] lg:ml-[6vw]"
+          className="max-w-3xl"
           style={{ x: parallaxX, y: parallaxY }}
           transition={{ type: "spring", stiffness: 50, damping: 22 }}
         >
@@ -80,12 +81,12 @@ export function Hero() {
             initial="hidden"
             animate="visible"
             variants={fadeUp}
-            className="font-hero mt-6 text-[clamp(2.75rem,9vw,7.5rem)] font-black uppercase leading-[0.88] tracking-[-0.04em] text-white"
+            className="font-hero mt-5 text-[clamp(2.75rem,9vw,7.5rem)] font-black uppercase leading-[0.92] tracking-[-0.04em] text-white"
           >
-            <span className="block">Your</span>
-            <span className="block text-emerald-accent">Growth.</span>
-            <span className="mt-1 block sm:mt-2">Our</span>
-            <span className="block">Grind.</span>
+            <span className="block">
+              Your <span className="text-emerald-accent">Growth.</span>
+            </span>
+            <span className="block">Our Grind.</span>
           </motion.h1>
 
           <motion.p
@@ -93,7 +94,7 @@ export function Hero() {
             initial="hidden"
             animate="visible"
             variants={fadeUp}
-            className="mt-8 max-w-lg font-sans text-base leading-relaxed text-white/60 sm:mt-10 sm:text-lg md:max-w-xl"
+            className="mt-6 max-w-lg font-sans text-base leading-relaxed text-white/60 sm:mt-7 sm:text-lg md:max-w-xl"
           >
             {hero.subheadline}
           </motion.p>
@@ -103,7 +104,7 @@ export function Hero() {
             initial="hidden"
             animate="visible"
             variants={fadeUp}
-            className="mt-10 flex flex-col gap-3 sm:mt-12 sm:flex-row sm:items-center sm:gap-4"
+            className="mt-8 flex flex-col gap-3 sm:mt-9 sm:flex-row sm:items-center sm:gap-4"
           >
             <Link
               href="/contact"
@@ -123,6 +124,8 @@ export function Hero() {
             </Link>
           </motion.div>
         </motion.div>
+
+        <HeroCards mouse={pointer} />
       </div>
 
       <motion.div
