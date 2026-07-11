@@ -63,22 +63,16 @@ export function Stats({ variant = "light" }: { variant?: "light" | "dark" }) {
   return (
     <section
       className={cn(
-        "content-auto relative overflow-hidden section-padding !pb-16 !pt-14 md:!pb-24 md:!pt-20",
-        isDark ? "bg-forest-deep" : "section-blend-cream",
+        "content-auto relative overflow-hidden section-padding !py-20 md:!py-28",
+        isDark ? "bg-forest-deep" : "bg-cream",
       )}
     >
       <div
         className={cn(
           "absolute inset-0",
-          isDark ? "bg-grid opacity-25" : "bg-grid-light opacity-50",
+          isDark ? "bg-grid opacity-25" : "bg-grid-light opacity-60",
         )}
       />
-      {!isDark && (
-        <>
-          <div className="section-edge-fade-top" aria-hidden />
-          <div className="section-edge-fade-bottom" aria-hidden />
-        </>
-      )}
       {isDark && (
         <div
           className="pointer-events-none absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-sage/15 blur-3xl"
@@ -86,7 +80,7 @@ export function Stats({ variant = "light" }: { variant?: "light" | "dark" }) {
         />
       )}
 
-      <div className="container-wide relative z-[3]">
+      <div className="container-wide relative">
         <div className="grid items-end gap-12 lg:grid-cols-[1fr_2fr] lg:gap-20">
           <ScrollReveal>
             <p
