@@ -104,21 +104,21 @@ export function Hero() {
             initial="hidden"
             animate="visible"
             variants={fadeUp}
-            className="mt-8 flex flex-col gap-3 sm:mt-9 sm:flex-row sm:items-center sm:gap-4"
+            className="mt-8 flex flex-row gap-2 sm:mt-9 sm:items-center sm:gap-4"
           >
             <Link
               href="/contact"
-              className="group/btn inline-flex min-h-14 w-full items-center justify-center gap-2.5 rounded-2xl border border-white bg-white px-9 py-4 font-sans text-base font-semibold text-forest-deep transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_20px_48px_rgba(110,235,131,0.25)] sm:w-auto"
+              className="group/btn inline-flex min-h-14 flex-1 items-center justify-center gap-1.5 rounded-2xl border border-white bg-white px-2 py-4 font-sans text-[13px] font-semibold text-forest-deep transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_20px_48px_rgba(110,235,131,0.25)] sm:flex-none sm:w-auto sm:gap-2.5 sm:px-9 sm:text-base"
             >
               {hero.primaryCta}
               <ArrowRight
-                size={18}
+                size={16}
                 className="transition-transform duration-300 group-hover/btn:translate-x-1"
               />
             </Link>
             <Link
               href="/portfolio"
-              className="inline-flex min-h-14 w-full items-center justify-center gap-2.5 rounded-2xl border border-white/35 bg-transparent px-9 py-4 font-sans text-base font-semibold text-white transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-white/60 hover:bg-white/8 sm:w-auto"
+              className="inline-flex min-h-14 flex-1 items-center justify-center gap-1.5 rounded-2xl border border-white/35 bg-transparent px-2 py-4 font-sans text-[13px] font-semibold text-white transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-white/60 hover:bg-white/8 sm:flex-none sm:w-auto sm:gap-2.5 sm:px-9 sm:text-base"
             >
               {hero.secondaryCta}
             </Link>
