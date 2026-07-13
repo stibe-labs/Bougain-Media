@@ -2,6 +2,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 import { ScrollOptimizer } from "@/components/ScrollOptimizer";
+import { PageLoader } from "@/components/PageLoader";
 
 export default function SiteLayout({
   children,
@@ -10,6 +11,7 @@ export default function SiteLayout({
 }) {
   return (
     <>
+      <PageLoader />
       <div className="site-shell">
         <ScrollOptimizer />
         <Navbar />

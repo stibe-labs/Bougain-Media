@@ -16,7 +16,7 @@ type Step = "intro" | "countdown" | "loading" | "exit" | "done";
 
 export function PageLoader() {
   const reduceMotion = useReducedMotion();
-  const [step, setStep] = useState<Step>("intro");
+  const [step, setStep] = useState<Step>("loading");
   const [count, setCount] = useState(COUNTDOWN_START);
 
   useEffect(() => {
