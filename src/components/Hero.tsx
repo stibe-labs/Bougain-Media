@@ -33,7 +33,7 @@ export function Hero() {
   return (
     <section
       id="home"
-      className="hero-grain grain-texture relative flex h-[100svh] items-center overflow-hidden bg-hero-gradient content-auto"
+      className="hero-grain grain-texture relative flex h-[100svh] items-center md:items-start overflow-hidden bg-hero-gradient content-auto"
       onMouseMove={(event) => {
         if (reduceMotion) return;
         const rect = event.currentTarget.getBoundingClientRect();
@@ -60,7 +60,7 @@ export function Hero() {
 
       <ParticleField mouseRef={mouseRef} />
 
-      <div className="container-wide relative z-10 grid w-full grid-cols-1 px-4 sm:px-5 md:px-8 lg:grid-cols-[1fr_auto] lg:items-center lg:gap-8 lg:px-12">
+      <div className="container-wide relative z-10 grid w-full grid-cols-1 px-4 sm:px-5 md:px-8 md:pt-32 lg:grid-cols-[1fr_auto] lg:items-center lg:gap-8 lg:px-12">
         <motion.div
           className="max-w-3xl"
           style={{ x: parallaxX, y: parallaxY }}
