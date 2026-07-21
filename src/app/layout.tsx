@@ -44,8 +44,8 @@ export const metadata: Metadata = {
     locale: "en_IN",
   },
   icons: {
-    icon: "/logos/logo-icon-green.png",
-    apple: "/logos/logo-icon-green.png",
+    icon: "/logos/logo-icon-green-square.png",
+    apple: "/logos/logo-icon-green-square.png",
   },
 };
 
