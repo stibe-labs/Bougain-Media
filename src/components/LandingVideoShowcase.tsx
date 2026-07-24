@@ -24,6 +24,101 @@ const featuredVideos = portfolio.items.filter(
     item.type === "video" && Boolean(item.videoSrc),
 );
 
+interface MobileReelCardProps {
+  video: PortfolioItem & { videoSrc: string };
+  index: number;
+  isActive: boolean;
+  onSelect: (index: number, e?: React.MouseEvent<HTMLButtonElement>) => void;
+}
+
+function MobileReelCard({ video, index, isActive, onSelect }: MobileReelCardProps) {
+  const [isHovered, setIsHovered] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const el = videoRef.current;
+    if (!el) return;
+    if (isHovered) {
+      el.muted = true;
+      el.play().catch(() => {});
+    } else {
+      el.pause();
+    }
+  }, [isHovered]);
+
+  return (
+    <button
+      onClick={(e) => onSelect(index, e)}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className={cn(
+        "group relative flex flex-col shrink-0 w-[200px] sm:w-[230px] transition-all duration-500 text-left",
+        isActive ? "scale-105" : "hover:scale-[1.02] opacity-85 hover:opacity-100"
+      )}
+    >
+      {/* Smartphone Frame Body */}
+      <div
+        className={cn(
+          "relative aspect-[9/16] w-full overflow-hidden rounded-[2.5rem] p-2 bg-gradient-to-b border-2 transition-all duration-500 shadow-2xl",
+          isActive
+            ? "from-white/30 via-sage/40 to-sage/20 border-sage shadow-[0_0_35px_rgba(77,184,154,0.35)]"
+            : "from-white/15 via-white/10 to-white/5 border-white/20 hover:border-white/40"
+        )}
+      >
+        {/* Inner Phone Screen */}
+        <div className="relative h-full w-full overflow-hidden rounded-[2rem] bg-black">
+          {/* Speaker Notch */}
+          <div className="absolute top-2 left-1/2 z-20 h-1 w-10 -translate-x-1/2 rounded-full bg-black/60 backdrop-blur-md border border-white/20" />
+
+          {/* Hover-only Video Preview inside Smartphone Screen */}
+          <video
+            ref={(el) => {
+              if (el) el.muted = true;
+              videoRef.current = el;
+            }}
+            src={`${encodeURI(video.videoSrc)}#t=0.5`}
+            muted
+            playsInline
+            preload="metadata"
+            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 pointer-events-none"
+          />
+
+          {/* Screen Overlay Gradient */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+
+          {/* Status / Play Icon Overlay */}
+          <div className="absolute top-4 right-3 z-10">
+            {isActive ? (
+              <span className="rounded-full bg-sage px-2 py-0.5 font-sans text-[9px] font-extrabold uppercase tracking-wider text-forest-deep">
+                Active
+              </span>
+            ) : (
+              <div
+                className={cn(
+                  "flex h-7 w-7 items-center justify-center rounded-full transition-colors backdrop-blur-md",
+                  isHovered ? "bg-sage text-forest-deep" : "bg-black/50 text-white"
+                )}
+              >
+                <Play size={12} fill="currentColor" />
+              </div>
+            )}
+          </div>
+
+          {/* Phone Screen Bottom Info */}
+          <div className="absolute bottom-4 left-3 right-3 z-10">
+            <p className="font-sans text-[9px] font-bold uppercase tracking-wider text-sage-light">
+              {video.client}
+            </p>
+            <p className="mt-0.5 truncate font-display text-xs font-bold text-white">
+              {video.title}
+            </p>
+          </div>
+        </div>
+      </div>
+    </button>
+  );
+}
+
 export function LandingVideoShowcase() {
   const [activeVideoIndex, setActiveVideoIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
@@ -45,7 +140,7 @@ export function LandingVideoShowcase() {
     const video = videoRef.current;
     if (!video) return;
     video.muted = isMuted;
-    
+
     const playVideo = async () => {
       try {
         await video.play();
@@ -58,6 +153,28 @@ export function LandingVideoShowcase() {
     video.load();
     playVideo();
   }, [currentVideo.id, isMuted]);
+
+  // Continuous Playback: Auto-advance to next video when main video ends
+  const handleMainVideoEnded = () => {
+    setActiveVideoIndex((prevIndex) => {
+      const nextIndex = (prevIndex + 1) % featuredVideos.length;
+
+      // Feather-glide new active card into center view
+      if (sliderRef.current) {
+        const container = sliderRef.current;
+        const card = container.children[nextIndex] as HTMLElement;
+        if (card) {
+          const cardOffsetLeft = card.offsetLeft;
+          const cardWidth = card.clientWidth;
+          const containerWidth = container.clientWidth;
+          const targetScroll = cardOffsetLeft - containerWidth / 2 + cardWidth / 2;
+          smoothScrollTo(Math.max(0, targetScroll), 750);
+        }
+      }
+
+      return nextIndex;
+    });
+  };
 
   // Feather-light smooth scroll animation
   const smoothScrollTo = (targetScrollLeft: number, duration = 750) => {
@@ -207,6 +324,7 @@ export function LandingVideoShowcase() {
                   transition={{ duration: 0.4 }}
                   className="h-full w-full"
                 >
+                  {/* Main Video plays continuously reel after reel */}
                   <video
                     ref={(el) => {
                       if (el) el.muted = isMuted;
@@ -214,10 +332,10 @@ export function LandingVideoShowcase() {
                     }}
                     src={encodeURI(currentVideo.videoSrc)}
                     autoPlay
-                    loop
                     muted={isMuted}
                     playsInline
                     preload="auto"
+                    onEnded={handleMainVideoEnded}
                     className="h-full w-full object-cover"
                   />
                 </motion.div>
@@ -287,7 +405,7 @@ export function LandingVideoShowcase() {
                   Mobile Screen Showcase
                 </p>
                 <h3 className="mt-0.5 font-display text-xl font-bold text-white md:text-2xl">
-                  Tap to Preview Mobile Video Reels
+                  Hover to Preview Mobile Video Reels
                 </h3>
               </div>
             </div>
@@ -327,70 +445,13 @@ export function LandingVideoShowcase() {
             {featuredVideos.map((video, idx) => {
               const isActive = idx === activeVideoIndex;
               return (
-                <button
+                <MobileReelCard
                   key={video.id}
-                  onClick={(e) => handleSelectVideo(idx, e)}
-                  className={cn(
-                    "group relative flex flex-col shrink-0 w-[200px] sm:w-[230px] transition-all duration-500 text-left",
-                    isActive ? "scale-105" : "hover:scale-[1.02] opacity-85 hover:opacity-100"
-                  )}
-                >
-                  {/* Smartphone Frame Body */}
-                  <div
-                    className={cn(
-                      "relative aspect-[9/16] w-full overflow-hidden rounded-[2.5rem] p-2 bg-gradient-to-b border-2 transition-all duration-500 shadow-2xl",
-                      isActive
-                        ? "from-white/30 via-sage/40 to-sage/20 border-sage shadow-[0_0_35px_rgba(77,184,154,0.35)]"
-                        : "from-white/15 via-white/10 to-white/5 border-white/20 hover:border-white/40"
-                    )}
-                  >
-                    {/* Inner Phone Screen */}
-                    <div className="relative h-full w-full overflow-hidden rounded-[2rem] bg-black">
-                      {/* Speaker Notch */}
-                      <div className="absolute top-2 left-1/2 z-20 h-1 w-10 -translate-x-1/2 rounded-full bg-black/60 backdrop-blur-md border border-white/20" />
-
-                      {/* Live Muted Video inside Smartphone Screen */}
-                      <video
-                        ref={(el) => {
-                          if (el) el.muted = true;
-                        }}
-                        src={encodeURI(video.videoSrc)}
-                        autoPlay
-                        muted
-                        loop
-                        playsInline
-                        preload="auto"
-                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 pointer-events-none"
-                      />
-
-                      {/* Screen Overlay Gradient */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
-
-                      {/* Status / Play Icon Overlay */}
-                      <div className="absolute top-4 right-3 z-10">
-                        {isActive ? (
-                          <span className="rounded-full bg-sage px-2 py-0.5 font-sans text-[9px] font-extrabold uppercase tracking-wider text-forest-deep">
-                            Active
-                          </span>
-                        ) : (
-                          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-md group-hover:bg-sage group-hover:text-forest-deep transition-colors">
-                            <Play size={12} fill="currentColor" />
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Phone Screen Bottom Info */}
-                      <div className="absolute bottom-4 left-3 right-3 z-10">
-                        <p className="font-sans text-[9px] font-bold uppercase tracking-wider text-sage-light">
-                          {video.client}
-                        </p>
-                        <p className="mt-0.5 truncate font-display text-xs font-bold text-white">
-                          {video.title}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </button>
+                  video={video}
+                  index={idx}
+                  isActive={isActive}
+                  onSelect={handleSelectVideo}
+                />
               );
             })}
           </div>
