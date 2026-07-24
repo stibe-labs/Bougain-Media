@@ -177,25 +177,19 @@ export function Services({ standalone = false }: { standalone?: boolean }) {
             ))}
           </div>
 
-          {/* Desktop asymmetrical / editorial grid */}
+          {/* Desktop normalized 3-column grid */}
           <div
             className={cn(
-              "hidden gap-7 md:grid md:grid-cols-2",
-              !standalone && "mt-20",
+              "hidden gap-6 md:grid md:grid-cols-2 lg:grid-cols-3 lg:gap-8",
+              !standalone && "mt-16",
             )}
           >
             {services.items.map((service, i) => (
-              <div
-                key={service.title}
-                className={cn(i % 3 === 0 && "md:col-span-2 lg:col-span-1", i === 0 && "lg:mt-0", i === 1 && "lg:mt-16")}
-              >
-                <ServiceCard service={service} index={i} />
-              </div>
+              <ServiceCard key={service.title} service={service} index={i} />
             ))}
           </div>
 
           {standalone && <ServicesApproach />}
-          <ServicesCtaStrip />
         </div>
       </section>
     </>

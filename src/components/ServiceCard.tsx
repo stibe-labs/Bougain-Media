@@ -58,20 +58,20 @@ export function ServiceCard({
           )}
         >
           {/* Visual Header */}
-          <div className="relative aspect-[4/3] overflow-hidden">
+          <div className="relative aspect-[16/10] overflow-hidden">
             <ServiceMedia
               title={service.title}
               image={service.image}
-              sizes="(min-width: 1024px) 45vw, 100vw"
+              sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-forest-deep/50 via-forest-deep/10 to-transparent transition-opacity duration-500 group-hover:from-forest-deep/65 group-hover:via-forest-deep/15" />
-            <span className="absolute left-5 top-5 rounded-full border border-white/30 bg-forest-deep/45 px-3.5 py-1.5 font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-sage-light backdrop-blur-md transition-all duration-500 group-hover:border-sage/40 group-hover:bg-forest-deep/75">
+            <span className="absolute left-4 top-4 rounded-full border border-white/30 bg-forest-deep/45 px-3 py-1 font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-sage-light backdrop-blur-md transition-all duration-500 group-hover:border-sage/40 group-hover:bg-forest-deep/75">
               {service.tag}
             </span>
           </div>
 
           {/* Card Details */}
-          <div className="flex flex-1 flex-col p-7 md:p-8">
+          <div className="flex flex-1 flex-col p-6 sm:p-7">
             <h3 className="font-display text-2xl font-bold tracking-tight text-forest-deep transition-colors duration-300 group-hover:text-sage md:text-3xl">
               {service.title}
             </h3>
