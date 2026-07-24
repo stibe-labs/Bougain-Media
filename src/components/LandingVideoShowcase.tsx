@@ -38,13 +38,16 @@ function MobileReelCard({ video, index, isActive, onSelect }: MobileReelCardProp
   useEffect(() => {
     const el = videoRef.current;
     if (!el) return;
-    if (isHovered) {
+    if (isHovered || isActive) {
+      el.setAttribute("playsinline", "true");
+      el.setAttribute("webkit-playsinline", "true");
+      el.setAttribute("muted", "true");
       el.muted = true;
       el.play().catch(() => {});
     } else {
       el.pause();
     }
-  }, [isHovered]);
+  }, [isHovered, isActive]);
 
   return (
     <button
@@ -327,7 +330,12 @@ export function LandingVideoShowcase() {
                   {/* Main Video plays continuously reel after reel */}
                   <video
                     ref={(el) => {
-                      if (el) el.muted = isMuted;
+                      if (el) {
+                        el.setAttribute("playsinline", "true");
+                        el.setAttribute("webkit-playsinline", "true");
+                        el.setAttribute("muted", "true");
+                        el.muted = isMuted;
+                      }
                       videoRef.current = el;
                     }}
                     src={encodeURI(currentVideo.videoSrc)}
@@ -336,13 +344,26 @@ export function LandingVideoShowcase() {
                     playsInline
                     preload="auto"
                     onEnded={handleMainVideoEnded}
-                    className="h-full w-full object-cover"
+                    onClick={togglePlay}
+                    className="h-full w-full object-cover cursor-pointer"
                   />
                 </motion.div>
               </AnimatePresence>
 
+              {/* Big Centered Tap-to-Play Overlay Button (Visible when paused or blocked by mobile low-power mode) */}
+              {!isPlaying && (
+                <div
+                  onClick={togglePlay}
+                  className="absolute inset-0 z-20 flex items-center justify-center bg-black/40 cursor-pointer backdrop-blur-[2px]"
+                >
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-sage text-forest-deep shadow-2xl transition-transform hover:scale-110 active:scale-95">
+                    <Play size={28} fill="currentColor" className="ml-1" />
+                  </div>
+                </div>
+              )}
+
               {/* Gradient Overlay (Desktop only to prevent video blockage on mobile) */}
-              <div className="absolute inset-0 bg-gradient-to-t from-forest-deep via-forest-deep/20 to-transparent opacity-95 hidden md:block" />
+              <div className="absolute inset-0 bg-gradient-to-t from-forest-deep via-forest-deep/20 to-transparent opacity-95 hidden md:block pointer-events-none" />
 
               {/* Status Badge */}
               <div className="absolute top-3 left-3 sm:top-6 sm:left-6 z-10 flex items-center gap-2 rounded-full bg-black/60 px-3 py-1 sm:px-3.5 sm:py-1.5 backdrop-blur-md border border-white/10 text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-white">
