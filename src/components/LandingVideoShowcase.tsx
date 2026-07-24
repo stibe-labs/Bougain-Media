@@ -208,8 +208,11 @@ export function LandingVideoShowcase() {
                   className="h-full w-full"
                 >
                   <video
-                    ref={videoRef}
-                    src={currentVideo.videoSrc}
+                    ref={(el) => {
+                      if (el) el.muted = isMuted;
+                      videoRef.current = el;
+                    }}
+                    src={encodeURI(currentVideo.videoSrc)}
                     autoPlay
                     loop
                     muted={isMuted}
@@ -348,7 +351,10 @@ export function LandingVideoShowcase() {
 
                       {/* Live Muted Video inside Smartphone Screen */}
                       <video
-                        src={video.videoSrc}
+                        ref={(el) => {
+                          if (el) el.muted = true;
+                        }}
+                        src={encodeURI(video.videoSrc)}
                         autoPlay
                         muted
                         loop
@@ -391,13 +397,13 @@ export function LandingVideoShowcase() {
         </ScrollReveal>
 
         {/* Bottom CTA */}
-        <ScrollReveal delay={200} className="mt-12 flex flex-col justify-between gap-4 border-t border-white/10 pt-8 sm:flex-row sm:items-center">
+        <ScrollReveal delay={200} className="mt-12 flex flex-col justify-between gap-4 border-t border-white/10 pt-8 text-center sm:flex-row sm:items-center sm:text-left">
           <p className="font-sans text-sm text-white/70">
             Need custom video production or brand shoots for your business?
           </p>
           <Link
             href="/portfolio"
-            className="inline-flex items-center gap-2 font-sans text-sm font-semibold text-sage link-underline"
+            className="inline-flex items-center justify-center gap-2 font-sans text-sm font-semibold text-sage link-underline sm:justify-start"
           >
             Explore all portfolio videos
             <ArrowUpRight size={16} />

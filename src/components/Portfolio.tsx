@@ -136,13 +136,16 @@ function LightboxModal({
           {item.type === "video" && item.videoSrc ? (
             <div className="relative h-full w-full flex items-center justify-center">
               <video
-                ref={videoRef}
-                src={item.videoSrc}
+                ref={(el) => {
+                  if (el) el.muted = isMuted;
+                  videoRef.current = el;
+                }}
+                src={encodeURI(item.videoSrc)}
                 autoPlay
                 loop
                 muted={isMuted}
                 playsInline
-                preload="metadata"
+                preload="auto"
                 className="max-h-[70vh] w-full object-contain"
               />
 
@@ -281,8 +284,12 @@ function PortfolioCard({
       {/* Video Background Thumbnail & Hover Preview */}
       {item.type === "video" && item.videoSrc ? (
         <video
-          ref={videoRef}
-          src={item.videoSrc}
+          ref={(el) => {
+            if (el) el.muted = true;
+            videoRef.current = el;
+          }}
+          src={encodeURI(item.videoSrc)}
+          autoPlay
           muted
           loop
           playsInline

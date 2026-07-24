@@ -49,11 +49,11 @@ export function ServicesPreview() {
           {services.items.map((service, i) => (
             <motion.div
               key={service.title}
-              initial={reduceMotion ? false : { opacity: 0, y: 30 }}
+              initial={reduceMotion ? false : { opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-40px" }}
-              transition={{ duration: 0.6, delay: i * 0.08 }}
-              className="group relative flex flex-col overflow-hidden rounded-3xl bg-white/[0.06] border border-white/10 backdrop-blur-md transition-all duration-500 hover:border-sage/40 hover:bg-white/[0.09] hover:shadow-[0_20px_50px_rgba(0,0,0,0.3)]"
+              viewport={{ once: true, amount: 0.1 }}
+              transition={{ duration: 0.5, delay: i * 0.06 }}
+              className="group relative flex flex-col overflow-hidden rounded-3xl bg-white/[0.07] border border-white/10 transform-gpu will-change-transform transition-all duration-300 hover:border-sage/40 hover:bg-white/[0.1] hover:shadow-[0_20px_50px_rgba(0,0,0,0.3)]"
             >
               {/* Card Image Area */}
               <div className="relative aspect-[16/10] w-full overflow-hidden bg-black/40">
