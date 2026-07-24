@@ -16,7 +16,8 @@ const highlights = [
     title: "Selected Work",
     description: portfolio.subtitle,
     href: "/portfolio",
-    image: portfolio.items[0].image,
+    videoSrc: portfolio.items[0]?.videoSrc,
+    image: portfolio.items[0]?.image,
     span: "sm" as const,
   },
   {
@@ -65,13 +66,23 @@ export function HomeHighlights() {
                 href={item.href}
                 className="group relative flex h-full min-h-[320px] flex-col justify-end overflow-hidden rounded-3xl shadow-[0_20px_60px_rgba(15,61,46,0.1)] md:min-h-[380px]"
               >
-                <Image
-                  src={item.image}
-                  alt=""
-                  fill
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                />
+                {item.videoSrc ? (
+                  <video
+                    src={`${item.videoSrc}#t=0.5`}
+                    muted
+                    playsInline
+                    preload="metadata"
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                  />
+                ) : (
+                  <Image
+                    src={item.image!}
+                    alt=""
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                  />
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-forest-deep via-forest-deep/40 to-transparent opacity-90 transition-opacity duration-500 group-hover:opacity-95" />
 
                 <ArrowUpRight

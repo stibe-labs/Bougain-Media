@@ -1,161 +1,119 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Check } from "lucide-react";
-import { ScrollReveal } from "@/components/ScrollReveal";
-import { Button } from "@/components/ui/Button";
-import { ServiceMedia } from "@/components/ui/ServiceMedia";
 import { services } from "@/lib/constants";
-import { cn } from "@/lib/utils";
 
-const ease = [0.22, 1, 0.36, 1] as [number, number, number, number];
-
-function ServicePreviewCard({
-  service,
-  index,
-}: {
-  service: (typeof services.items)[number];
-  index: number;
-}) {
+export function ServicesPreview() {
   const reduceMotion = useReducedMotion();
 
   return (
-    <motion.article
-      initial={reduceMotion ? false : { opacity: 0, y: 32 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-40px" }}
-      transition={{ duration: 0.65, delay: index * 0.1, ease }}
-      whileHover={
-        reduceMotion
-          ? undefined
-          : {
-              y: -10,
-              scale: 1.02,
-              transition: { duration: 0.4, ease },
-            }
-      }
-      className={cn(
-        "group relative flex h-full min-w-[85vw] max-w-md flex-col overflow-hidden rounded-3xl sm:min-w-0 sm:max-w-none",
-        "border border-white/10 bg-white/[0.07] backdrop-blur-xl",
-        "shadow-[0_24px_60px_rgba(0,0,0,0.2)]",
-        "transition-[border-color,box-shadow] duration-500",
-        "hover:border-sage/30 hover:shadow-[0_36px_90px_rgba(107,158,143,0.3)]",
-      )}
-    >
-      <div className="relative aspect-[4/3] overflow-hidden">
-        <ServiceMedia
-          title={service.title}
-          image={service.image}
-          sizes="(max-width: 640px) 85vw, (max-width: 1024px) 45vw, 33vw"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-forest-deep/55 via-forest-deep/10 to-transparent transition-opacity duration-500 group-hover:from-forest-deep/70 group-hover:via-forest-deep/15" />
-        <span className="absolute left-4 top-4 rounded-full border border-white/20 bg-forest-deep/40 px-3 py-1 font-sans text-[10px] font-semibold uppercase tracking-[0.18em] text-sage-light backdrop-blur-md transition-all duration-500 group-hover:-translate-y-0.5 group-hover:border-sage/40 group-hover:bg-forest-deep/60">
-          {service.tag}
-        </span>
-      </div>
+    <section className="relative overflow-hidden bg-forest-deep section-padding text-white">
+      {/* Background accents */}
+      <div className="pointer-events-none absolute left-1/2 top-1/3 h-[45rem] w-[45rem] -translate-x-1/2 rounded-full bg-sage/10 blur-[140px]" aria-hidden />
+      <div className="bg-grid absolute inset-0 opacity-15" aria-hidden />
+      <div className="grain-texture absolute inset-0" aria-hidden />
 
-      <div className="flex flex-1 flex-col p-6 md:p-8">
-        <h3 className="font-display text-2xl font-bold tracking-tight text-white transition-colors duration-300 group-hover:text-sage-light md:text-[1.65rem]">
-          {service.title}
-        </h3>
-        <p className="mt-3 font-sans text-sm leading-relaxed text-white/55 md:text-[15px]">
-          {service.description}
-        </p>
-
-        <ul className="mt-6 space-y-2.5 border-t border-white/10 pt-5">
-          {service.features.slice(0, 3).map((feature) => (
-            <li
-              key={feature}
-              className="flex items-start gap-2.5 font-sans text-sm text-white/70"
-            >
-              <Check
-                size={15}
-                className="mt-0.5 shrink-0 text-sage"
-                strokeWidth={1.75}
-              />
-              {feature}
-            </li>
-          ))}
-        </ul>
-
-        <Link
-          href="/services"
-          className="mt-auto inline-flex items-center gap-2 pt-7 font-sans text-sm font-semibold text-sage transition-colors group-hover:text-sage-light"
-        >
-          Explore service
-          <ArrowRight
-            size={15}
-            className="transition-transform duration-300 group-hover:translate-x-1"
-          />
-        </Link>
-      </div>
-    </motion.article>
-  );
-}
-
-export function ServicesPreview() {
-  const featured = services.items.slice(0, 3);
-
-  return (
-    <section className="content-auto relative overflow-hidden bg-forest-deep section-padding">
-      <div
-        className="pointer-events-none absolute left-1/2 top-0 h-[40rem] w-[40rem] -translate-x-1/2 rounded-full bg-sage/10 blur-[120px]"
-        aria-hidden
-      />
-      <div className="bg-grid absolute inset-0 opacity-20" />
-
-      <div className="container-wide relative">
-        <div className="flex flex-col items-start justify-between gap-10 md:flex-row md:items-end">
-          <ScrollReveal>
-            <p className="font-sans text-xs font-semibold uppercase tracking-[0.28em] text-sage">
+      <div className="container-wide relative z-10">
+        {/* Section Header */}
+        <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-end mb-12 md:mb-16">
+          <motion.div
+            initial={reduceMotion ? false : { opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <p className="font-sans text-xs font-semibold uppercase tracking-[0.28em] text-sage-light">
               {services.label}
             </p>
-            <h2 className="mt-4 max-w-lg font-display text-3xl font-bold tracking-tight text-white md:text-5xl">
-              Full-funnel digital marketing
+            <h2 className="mt-3 font-display text-4xl font-extrabold tracking-tight text-white md:text-5xl lg:text-6xl">
+              {services.headline}
             </h2>
-            <p className="mt-5 max-w-md font-sans text-base leading-relaxed text-white/55">
-              From paid ads to organic growth — every channel that drives results,
-              crafted with editorial precision.
-            </p>
-          </ScrollReveal>
+          </motion.div>
 
-          <ScrollReveal delay={80} className="hidden md:block">
-            <Button href="/services" variant="secondary" size="md" className="!text-white !border-white/25 hover:!bg-white/10">
-              View all services
-              <ArrowRight
-                size={16}
-                className="transition-transform duration-300 group-hover/btn:translate-x-1"
-              />
-            </Button>
-          </ScrollReveal>
-        </div>
-
-        {/* Mobile carousel */}
-        <div className="mt-14 flex gap-5 overflow-x-auto pb-4 snap-x snap-mandatory hide-scrollbar sm:hidden">
-          {featured.map((service, i) => (
-            <div key={service.title} className="snap-center">
-              <ServicePreviewCard service={service} index={i} />
-            </div>
-          ))}
-        </div>
-
-        {/* Desktop / tablet grid */}
-        <div className="mt-14 hidden gap-6 sm:grid sm:grid-cols-2 lg:grid-cols-3 lg:gap-7">
-          {featured.map((service, i) => (
-            <ServicePreviewCard key={service.title} service={service} index={i} />
-          ))}
-        </div>
-
-        <ScrollReveal delay={160} className="mt-12 text-center md:hidden">
-          <Link
-            href="/services"
-            className="inline-flex min-h-11 items-center gap-2 font-sans text-sm font-semibold text-sage hover:text-sage-light"
+          <motion.p
+            initial={reduceMotion ? false : { opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="max-w-md font-sans text-base leading-relaxed text-white/70 md:text-lg"
           >
-            View all services
-            <ArrowRight size={16} />
-          </Link>
-        </ScrollReveal>
+            {services.subtitle}
+          </motion.p>
+        </div>
+
+        {/* 3-Column Service Card Grid */}
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
+          {services.items.map((service, i) => (
+            <motion.div
+              key={service.title}
+              initial={reduceMotion ? false : { opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-40px" }}
+              transition={{ duration: 0.6, delay: i * 0.08 }}
+              className="group relative flex flex-col overflow-hidden rounded-3xl bg-white/[0.06] border border-white/10 backdrop-blur-md transition-all duration-500 hover:border-sage/40 hover:bg-white/[0.09] hover:shadow-[0_20px_50px_rgba(0,0,0,0.3)]"
+            >
+              {/* Card Image Area */}
+              <div className="relative aspect-[16/10] w-full overflow-hidden bg-black/40">
+                <Image
+                  src={service.image}
+                  alt={service.title}
+                  fill
+                  quality={85}
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-forest-deep/80 via-transparent to-transparent opacity-60" />
+
+                {/* Badge Tag */}
+                <div className="absolute left-4 top-4 z-10">
+                  <span className="rounded-full bg-forest-deep/80 border border-white/20 px-3.5 py-1 backdrop-blur-md font-sans text-[10px] font-bold uppercase tracking-widest text-white">
+                    {service.tag}
+                  </span>
+                </div>
+              </div>
+
+              {/* Card Content Area */}
+              <div className="flex flex-1 flex-col justify-between p-6 sm:p-8">
+                <div>
+                  <h3 className="font-display text-2xl font-bold text-white md:text-3xl">
+                    {service.title}
+                  </h3>
+                  <p className="mt-3 font-sans text-sm leading-relaxed text-white/70">
+                    {service.description}
+                  </p>
+
+                  <div className="my-6 h-px w-full bg-white/10" />
+
+                  {/* Feature Checklist */}
+                  <div className="space-y-3">
+                    {service.features.map((feature) => (
+                      <div key={feature} className="flex items-center gap-3">
+                        <Check size={16} className="text-sage shrink-0" />
+                        <span className="font-sans text-xs font-medium text-white/85 sm:text-sm">
+                          {feature}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Explore Link */}
+                <div className="mt-8 border-t border-white/10 pt-6">
+                  <Link
+                    href="/services"
+                    className="inline-flex items-center gap-2 font-sans text-sm font-semibold text-white transition-colors hover:text-sage-light"
+                  >
+                    <span>Explore service</span>
+                    <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
       </div>
     </section>
   );

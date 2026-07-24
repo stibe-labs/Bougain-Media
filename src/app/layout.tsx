@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { DM_Sans, Outfit, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { siteConfig } from "@/lib/constants";
+import { SmoothScroll } from "@/components/SmoothScroll";
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -43,7 +44,6 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_IN",
   },
-
 };
 
 export default function RootLayout({
@@ -53,7 +53,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${dmSans.variable} ${playfair.variable} ${outfit.variable}`}>
-      <body className="min-h-screen font-sans">{children}</body>
+      <body className="min-h-screen font-sans">
+        <SmoothScroll>{children}</SmoothScroll>
+      </body>
     </html>
   );
 }
