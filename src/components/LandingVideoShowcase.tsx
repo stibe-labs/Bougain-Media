@@ -341,35 +341,35 @@ export function LandingVideoShowcase() {
                 </motion.div>
               </AnimatePresence>
 
-              {/* Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-forest-deep via-forest-deep/20 to-transparent opacity-95" />
+              {/* Gradient Overlay (Desktop only to prevent video blockage on mobile) */}
+              <div className="absolute inset-0 bg-gradient-to-t from-forest-deep via-forest-deep/20 to-transparent opacity-95 hidden md:block" />
 
               {/* Status Badge */}
-              <div className="absolute top-6 left-6 z-10 flex items-center gap-2 rounded-full bg-black/60 px-3.5 py-1.5 backdrop-blur-md border border-white/10 text-[11px] font-semibold uppercase tracking-wider text-white">
+              <div className="absolute top-3 left-3 sm:top-6 sm:left-6 z-10 flex items-center gap-2 rounded-full bg-black/60 px-3 py-1 sm:px-3.5 sm:py-1.5 backdrop-blur-md border border-white/10 text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-white">
                 <span className="h-2 w-2 rounded-full bg-sage animate-pulse" />
                 <span>Now Playing • {activeVideoIndex + 1} of {featuredVideos.length}</span>
               </div>
 
               {/* Controls at Top Right */}
-              <div className="absolute top-6 right-6 z-10 flex items-center gap-3">
+              <div className="absolute top-3 right-3 sm:top-6 sm:right-6 z-10 flex items-center gap-2 sm:gap-3">
                 <button
                   onClick={toggleMute}
                   aria-label={isMuted ? "Unmute video" : "Mute video"}
-                  className="flex h-11 w-11 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-md border border-white/10 transition-all hover:bg-white/20 hover:scale-105"
+                  className="flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-md border border-white/10 transition-all hover:bg-white/20 hover:scale-105"
                 >
-                  {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+                  {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
                 </button>
                 <button
                   onClick={togglePlay}
                   aria-label={isPlaying ? "Pause video" : "Play video"}
-                  className="flex h-11 w-11 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-md border border-white/10 transition-all hover:bg-white/20 hover:scale-105"
+                  className="flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-md border border-white/10 transition-all hover:bg-white/20 hover:scale-105"
                 >
-                  {isPlaying ? <Pause size={18} /> : <Play size={18} />}
+                  {isPlaying ? <Pause size={16} /> : <Play size={16} />}
                 </button>
               </div>
 
-              {/* Video Info Overlay */}
-              <div className="absolute bottom-6 left-6 right-6 md:bottom-10 md:left-10 md:right-10 z-10 flex flex-col justify-between gap-6 md:flex-row md:items-end">
+              {/* Desktop Video Info Overlay (Hidden on Mobile for 100% Clear Video Playback) */}
+              <div className="hidden md:flex absolute bottom-6 left-6 right-6 md:bottom-10 md:left-10 md:right-10 z-10 flex-col justify-between gap-6 md:flex-row md:items-end">
                 <div className="max-w-2xl">
                   <p className="font-sans text-xs font-semibold uppercase tracking-widest text-sage-light">
                     Client: {currentVideo.client}
@@ -391,6 +391,24 @@ export function LandingVideoShowcase() {
                   </p>
                 </div>
               </div>
+            </div>
+
+            {/* Mobile Video Info (Clean layout below card so main video is 100% unblocked) */}
+            <div className="p-5 md:hidden bg-white/5 border-t border-white/10">
+              <div className="flex items-center justify-between">
+                <p className="font-sans text-[10px] font-semibold uppercase tracking-widest text-sage-light">
+                  Client: {currentVideo.client}
+                </p>
+                <span className="rounded-full bg-sage/20 px-2.5 py-0.5 font-sans text-[10px] font-bold text-sage-light border border-sage/30">
+                  {currentVideo.result}
+                </span>
+              </div>
+              <h3 className="mt-1.5 font-display text-xl font-bold text-white">
+                {currentVideo.title}
+              </h3>
+              <p className="mt-1 font-sans text-xs leading-relaxed text-white/75">
+                {currentVideo.description}
+              </p>
             </div>
           </div>
         </ScrollReveal>
