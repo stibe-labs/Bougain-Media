@@ -1,19 +1,24 @@
 "use client";
 
-import { useRef } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Check, ChevronLeft, ChevronRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowRight, Check, ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
 import { services } from "@/lib/constants";
 import { ScrollReveal } from "@/components/ScrollReveal";
+import { cn } from "@/lib/utils";
 
 export function ServicesPreview() {
-  const sliderRef = useRef<HTMLDivElement>(null);
+  const [activeServiceIndex, setActiveServiceIndex] = useState(0);
+  const activeService = services.items[activeServiceIndex] || services.items[0];
 
-  const scrollSlider = (direction: "left" | "right") => {
-    if (!sliderRef.current) return;
-    const scrollAmount = direction === "left" ? -340 : 340;
-    sliderRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
+  const handleNext = () => {
+    setActiveServiceIndex((prev) => (prev + 1) % services.items.length);
+  };
+
+  const handlePrev = () => {
+    setActiveServiceIndex((prev) => (prev - 1 + services.items.length) % services.items.length);
   };
 
   return (
@@ -24,91 +29,104 @@ export function ServicesPreview() {
       <div className="grain-texture absolute inset-0" aria-hidden />
 
       <div className="container-wide relative z-10">
-        {/* Section Header with Navigation Arrows */}
-        <ScrollReveal className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-end mb-10 md:mb-14">
+        {/* Section Header */}
+        <ScrollReveal className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-end mb-8 md:mb-12">
           <div>
-            <p className="font-sans text-xs font-semibold uppercase tracking-[0.28em] text-sage-light">
-              {services.label}
-            </p>
-            <h2 className="mt-3 font-display text-4xl font-extrabold tracking-tight text-white md:text-5xl lg:text-6xl">
+            <div className="inline-flex items-center gap-2 rounded-full bg-sage/20 px-3.5 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-sage-light">
+              <Sparkles size={14} />
+              <span>{services.label}</span>
+            </div>
+            <h2 className="mt-4 font-display text-4xl font-extrabold tracking-tight text-white md:text-5xl lg:text-6xl">
               {services.headline}
             </h2>
           </div>
 
-          <div className="flex items-center justify-between w-full md:w-auto gap-6">
-            <p className="max-w-md font-sans text-sm leading-relaxed text-white/70 md:text-base hidden sm:block">
-              {services.subtitle}
-            </p>
+          <p className="max-w-md font-sans text-base leading-relaxed text-white/70 md:text-lg">
+            {services.subtitle}
+          </p>
+        </ScrollReveal>
 
-            {/* Side-Scrolling Nav Arrow Buttons */}
-            <div className="flex items-center gap-2 shrink-0">
-              <button
-                onClick={() => scrollSlider("left")}
-                aria-label="Previous services"
-                className="flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-md transition-all hover:bg-white/25 active:scale-95 border border-white/15"
-              >
-                <ChevronLeft size={20} />
-              </button>
-              <button
-                onClick={() => scrollSlider("right")}
-                aria-label="Next services"
-                className="flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-md transition-all hover:bg-white/25 active:scale-95 border border-white/15"
-              >
-                <ChevronRight size={20} />
-              </button>
-            </div>
+        {/* Scrollable Category Tabs Bar */}
+        <ScrollReveal delay={80}>
+          <div className="flex items-center gap-2.5 overflow-x-auto pb-4 pt-1 scrollbar-none overscroll-x-contain select-none">
+            {services.items.map((service, idx) => {
+              const isActive = idx === activeServiceIndex;
+              return (
+                <button
+                  key={service.title}
+                  onClick={() => setActiveServiceIndex(idx)}
+                  className={cn(
+                    "flex shrink-0 items-center gap-2 rounded-full px-4 py-2.5 text-xs sm:text-sm font-semibold transition-all duration-300 border",
+                    isActive
+                      ? "bg-sage text-forest-deep border-sage shadow-[0_0_20px_rgba(77,184,154,0.35)] scale-105"
+                      : "bg-white/10 text-white/80 border-white/15 hover:bg-white/20 hover:text-white"
+                  )}
+                >
+                  <span className="h-1.5 w-1.5 rounded-full bg-current opacity-70" />
+                  <span>{service.title}</span>
+                </button>
+              );
+            })}
           </div>
         </ScrollReveal>
 
-        {/* Horizontal Side-Scrolling Service Cards Carousel */}
-        <ScrollReveal delay={100}>
-          <div
-            ref={sliderRef}
-            className="-mx-4 px-4 sm:-mx-6 sm:px-6 md:-mx-8 md:px-8 flex gap-6 overflow-x-auto py-4 scrollbar-none scroll-smooth snap-x snap-mandatory select-none"
-          >
-            {services.items.map((service) => (
-              <div
-                key={service.title}
-                className="group relative flex flex-col shrink-0 w-[290px] sm:w-[340px] md:w-[380px] snap-start overflow-hidden rounded-3xl bg-white/[0.07] border border-white/10 transition-all duration-300 hover:border-sage/40 hover:bg-white/[0.12] hover:shadow-[0_20px_50px_rgba(0,0,0,0.3)]"
+        {/* Dynamic Showcase Card */}
+        <ScrollReveal delay={120} className="mt-4 md:mt-8">
+          <div className="relative overflow-hidden rounded-3xl bg-white/[0.07] border border-white/15 p-6 sm:p-8 md:p-10 shadow-[0_25px_80px_rgba(0,0,0,0.5)] backdrop-blur-md">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeService.title}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                transition={{ duration: 0.35, ease: "easeOut" }}
+                className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-center lg:gap-12"
               >
-                {/* Card Image Area */}
-                <div className="relative aspect-[16/10] w-full overflow-hidden bg-black/40">
+                {/* Left Media Area */}
+                <div className="relative aspect-[16/10] w-full lg:col-span-6 overflow-hidden rounded-2xl bg-black/40 border border-white/10 shadow-2xl">
                   <Image
-                    src={service.image}
-                    alt={service.title}
+                    src={activeService.image}
+                    alt={activeService.title}
                     fill
-                    quality={85}
-                    sizes="(max-width: 640px) 290px, 380px"
-                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                    quality={90}
+                    priority
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                    className="object-cover transition-transform duration-700 hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-forest-deep/80 via-transparent to-transparent opacity-60" />
 
                   {/* Badge Tag */}
                   <div className="absolute left-4 top-4 z-10">
                     <span className="rounded-full bg-forest-deep/80 border border-white/20 px-3.5 py-1 backdrop-blur-md font-sans text-[10px] font-bold uppercase tracking-widest text-white">
-                      {service.tag}
+                      {activeService.tag}
                     </span>
                   </div>
                 </div>
 
-                {/* Card Content Area */}
-                <div className="flex flex-1 flex-col justify-between p-6 sm:p-7">
+                {/* Right Content Area */}
+                <div className="flex flex-col justify-between lg:col-span-6">
                   <div>
-                    <h3 className="font-display text-2xl font-bold text-white">
-                      {service.title}
+                    <div className="flex items-center justify-between">
+                      <span className="font-sans text-xs font-bold uppercase tracking-widest text-sage">
+                        Service 0{activeServiceIndex + 1} of 0{services.items.length}
+                      </span>
+                    </div>
+
+                    <h3 className="mt-2 font-display text-3xl font-bold text-white sm:text-4xl">
+                      {activeService.title}
                     </h3>
-                    <p className="mt-2.5 font-sans text-xs sm:text-sm leading-relaxed text-white/70 line-clamp-3">
-                      {service.description}
+                    <p className="mt-3 font-sans text-sm sm:text-base leading-relaxed text-white/75">
+                      {activeService.description}
                     </p>
 
-                    <div className="my-5 h-px w-full bg-white/10" />
+                    <div className="my-6 h-px w-full bg-white/10" />
 
-                    {/* Feature Checklist */}
-                    <div className="space-y-2.5">
-                      {service.features.map((feature) => (
-                        <div key={feature} className="flex items-center gap-2.5">
-                          <Check size={15} className="text-sage shrink-0" />
-                          <span className="font-sans text-xs font-medium text-white/85 truncate">
+                    {/* Features Grid */}
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                      {activeService.features.map((feature) => (
+                        <div key={feature} className="flex items-center gap-3 rounded-xl bg-white/5 p-3 border border-white/5">
+                          <Check size={16} className="text-sage shrink-0" />
+                          <span className="font-sans text-xs sm:text-sm font-medium text-white/90">
                             {feature}
                           </span>
                         </div>
@@ -116,19 +134,51 @@ export function ServicesPreview() {
                     </div>
                   </div>
 
-                  {/* Explore Link */}
-                  <div className="mt-6 border-t border-white/10 pt-5">
+                  {/* Bottom Navigation & CTA */}
+                  <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-white/10 pt-6">
                     <Link
                       href="/services"
-                      className="inline-flex items-center gap-2 font-sans text-xs sm:text-sm font-semibold text-white transition-colors hover:text-sage-light"
+                      className="inline-flex items-center gap-2.5 rounded-full bg-sage px-6 py-3 font-sans text-sm font-bold text-forest-deep transition-all hover:bg-sage-light hover:shadow-lg hover:scale-105 active:scale-95"
                     >
-                      <span>Explore service</span>
-                      <ArrowRight size={15} className="transition-transform duration-300 group-hover:translate-x-1" />
+                      <span>Explore {activeService.title}</span>
+                      <ArrowRight size={16} />
                     </Link>
+
+                    {/* Prev / Next Arrows & Dots */}
+                    <div className="flex items-center gap-3">
+                      <div className="flex gap-1.5 mr-2">
+                        {services.items.map((_, dotIdx) => (
+                          <button
+                            key={dotIdx}
+                            onClick={() => setActiveServiceIndex(dotIdx)}
+                            aria-label={`Go to service ${dotIdx + 1}`}
+                            className={cn(
+                              "h-2 rounded-full transition-all duration-300",
+                              dotIdx === activeServiceIndex ? "w-6 bg-sage" : "w-2 bg-white/30 hover:bg-white/60"
+                            )}
+                          />
+                        ))}
+                      </div>
+
+                      <button
+                        onClick={handlePrev}
+                        aria-label="Previous service"
+                        className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-md transition-all hover:bg-white/25 active:scale-95 border border-white/15"
+                      >
+                        <ChevronLeft size={18} />
+                      </button>
+                      <button
+                        onClick={handleNext}
+                        aria-label="Next service"
+                        className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-md transition-all hover:bg-white/25 active:scale-95 border border-white/15"
+                      >
+                        <ChevronRight size={18} />
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              </motion.div>
+            </AnimatePresence>
           </div>
         </ScrollReveal>
       </div>
