@@ -16,7 +16,7 @@ export function ServicesPreview() {
 
       <div className="container-wide relative z-10">
         {/* Section Header */}
-        <ScrollReveal className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-end mb-12 md:mb-16">
+        <ScrollReveal className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-end mb-10 md:mb-16">
           <div>
             <p className="font-sans text-xs font-semibold uppercase tracking-[0.28em] text-sage-light">
               {services.label}
@@ -31,9 +31,76 @@ export function ServicesPreview() {
           </p>
         </ScrollReveal>
 
-        {/* 3-Column Service Card Grid */}
-        <ScrollReveal delay={80}>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8 transform-gpu">
+        {/* Mobile Horizontal Side-Scrolling Carousel */}
+        <div className="flex md:hidden gap-4 overflow-x-auto pb-6 pt-1 snap-x snap-mandatory scrollbar-none overscroll-x-contain transform-gpu">
+          {services.items.map((service) => (
+            <div
+              key={service.title}
+              className="w-[85vw] max-w-[320px] shrink-0 snap-center group relative flex flex-col overflow-hidden rounded-3xl bg-white/[0.06] border border-white/10 backdrop-blur-sm transition-all duration-500 hover:border-sage/40 hover:bg-white/[0.09]"
+            >
+              {/* Card Image Area */}
+              <div className="relative aspect-[16/10] w-full overflow-hidden bg-black/40">
+                <Image
+                  src={service.image}
+                  alt={service.title}
+                  fill
+                  quality={85}
+                  sizes="320px"
+                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-forest-deep/80 via-transparent to-transparent opacity-60" />
+
+                {/* Badge Tag */}
+                <div className="absolute left-4 top-4 z-10">
+                  <span className="rounded-full bg-forest-deep/80 border border-white/20 px-3.5 py-1 backdrop-blur-md font-sans text-[10px] font-bold uppercase tracking-widest text-white">
+                    {service.tag}
+                  </span>
+                </div>
+              </div>
+
+              {/* Card Content Area */}
+              <div className="flex flex-1 flex-col justify-between p-6">
+                <div>
+                  <h3 className="font-display text-2xl font-bold text-white">
+                    {service.title}
+                  </h3>
+                  <p className="mt-2.5 font-sans text-xs leading-relaxed text-white/70">
+                    {service.description}
+                  </p>
+
+                  <div className="my-5 h-px w-full bg-white/10" />
+
+                  {/* Feature Checklist */}
+                  <div className="space-y-2.5">
+                    {service.features.map((feature) => (
+                      <div key={feature} className="flex items-center gap-2.5">
+                        <Check size={14} className="text-sage shrink-0" />
+                        <span className="font-sans text-xs font-medium text-white/85">
+                          {feature}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Explore Link */}
+                <div className="mt-6 border-t border-white/10 pt-5">
+                  <Link
+                    href="/services"
+                    className="inline-flex items-center gap-2 font-sans text-xs font-semibold text-white transition-colors hover:text-sage-light"
+                  >
+                    <span>Explore service</span>
+                    <ArrowRight size={14} className="transition-transform duration-300 group-hover:translate-x-1" />
+                  </Link>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop 3-Column Grid */}
+        <ScrollReveal delay={80} className="hidden md:block">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 transform-gpu">
             {services.items.map((service) => (
               <div
                 key={service.title}
@@ -46,7 +113,7 @@ export function ServicesPreview() {
                     alt={service.title}
                     fill
                     quality={85}
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    sizes="(max-width: 1024px) 50vw, 33vw"
                     className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-forest-deep/80 via-transparent to-transparent opacity-60" />
