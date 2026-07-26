@@ -154,7 +154,7 @@ function LightboxModal({
                   }
                   videoRef.current = el;
                 }}
-                src={encodeURI(item.videoSrc)}
+                src={item.videoSrc}
                 poster={item.image}
                 autoPlay
                 loop
@@ -320,7 +320,7 @@ function PortfolioCard({
               }
               videoRef.current = el;
             }}
-            src={encodeURI(item.videoSrc)}
+            src={item.videoSrc}
             poster={item.image}
             autoPlay
             muted

@@ -86,7 +86,7 @@ export function HomeHighlights() {
                           el.setAttribute("webkit-playsinline", "true");
                         }
                       }}
-                      src={encodeURI(item.videoSrc)}
+                      src={item.videoSrc}
                       poster={item.image}
                       autoPlay
                       muted

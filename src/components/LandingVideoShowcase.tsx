@@ -96,7 +96,7 @@ function MobileReelCard({ video, index, isActive, onSelect }: MobileReelCardProp
               }
               videoRef.current = el;
             }}
-            src={encodeURI(video.videoSrc)}
+            src={video.videoSrc}
             poster={video.image}
             muted
             playsInline
@@ -368,7 +368,7 @@ export function LandingVideoShowcase() {
                       }
                       videoRef.current = el;
                     }}
-                    src={encodeURI(currentVideo.videoSrc)}
+                    src={currentVideo.videoSrc}
                     poster={currentVideo.image}
                     autoPlay
                     muted={isMuted}
