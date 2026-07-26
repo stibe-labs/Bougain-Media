@@ -297,7 +297,7 @@ function PortfolioCard({
         <div className="absolute top-3 left-1/2 z-20 h-1 w-12 -translate-x-1/2 rounded-full bg-black/60 backdrop-blur-md border border-white/20" />
       )}
 
-      {/* Image Thumbnail & Desktop Hover Video Preview */}
+      {/* Video Background Thumbnail & Hover Preview */}
       <div className="relative h-full w-full">
         {item.image && (
           <Image
@@ -309,7 +309,7 @@ function PortfolioCard({
             className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
           />
         )}
-        {item.type === "video" && item.videoSrc && isHovered && (
+        {item.type === "video" && item.videoSrc && (
           <video
             ref={(el) => {
               if (el) {
@@ -326,7 +326,7 @@ function PortfolioCard({
             muted
             loop
             playsInline
-            preload="none"
+            preload="metadata"
             className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
           />
         )}
