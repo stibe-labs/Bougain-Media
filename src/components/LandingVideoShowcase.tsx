@@ -86,23 +86,26 @@ function MobileReelCard({ video, index, isActive, onSelect }: MobileReelCardProp
           )}
 
           {/* Hover-only Video Preview inside Smartphone Screen */}
-          <video
-            ref={(el) => {
-              if (el) {
-                el.muted = true;
-                el.defaultMuted = true;
-                el.setAttribute("playsinline", "true");
-                el.setAttribute("webkit-playsinline", "true");
-              }
-              videoRef.current = el;
-            }}
-            src={video.videoSrc}
-            poster={video.image}
-            muted
-            playsInline
-            preload="metadata"
-            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 pointer-events-none"
-          />
+          {isHovered && (
+            <video
+              ref={(el) => {
+                if (el) {
+                  el.muted = true;
+                  el.defaultMuted = true;
+                  el.setAttribute("playsinline", "true");
+                  el.setAttribute("webkit-playsinline", "true");
+                }
+                videoRef.current = el;
+              }}
+              src={video.videoSrc}
+              poster={video.image}
+              autoPlay
+              muted
+              playsInline
+              preload="none"
+              className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 pointer-events-none"
+            />
+          )}
 
           {/* Screen Overlay Gradient */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />

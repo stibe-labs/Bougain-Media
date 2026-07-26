@@ -297,19 +297,19 @@ function PortfolioCard({
         <div className="absolute top-3 left-1/2 z-20 h-1 w-12 -translate-x-1/2 rounded-full bg-black/60 backdrop-blur-md border border-white/20" />
       )}
 
-      {/* Video Background Thumbnail & Hover Preview */}
-      {item.type === "video" && item.videoSrc ? (
-        <div className="relative h-full w-full">
-          {item.image && (
-            <Image
-              src={item.image}
-              alt={`${item.title} — ${item.category} project`}
-              fill
-              quality={75}
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 40vw"
-              className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-            />
-          )}
+      {/* Image Thumbnail & Desktop Hover Video Preview */}
+      <div className="relative h-full w-full">
+        {item.image && (
+          <Image
+            src={item.image}
+            alt={`${item.title} — ${item.category} project`}
+            fill
+            quality={75}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 40vw"
+            className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+          />
+        )}
+        {item.type === "video" && item.videoSrc && isHovered && (
           <video
             ref={(el) => {
               if (el) {
@@ -326,20 +326,11 @@ function PortfolioCard({
             muted
             loop
             playsInline
-            preload="metadata"
+            preload="none"
             className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
           />
-        </div>
-      ) : (
-        <Image
-          src={item.image}
-          alt={`${item.title} — ${item.category} project`}
-          fill
-          quality={75}
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 40vw"
-          className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
-        />
-      )}
+        )}
+      </div>
 
       {/* Media Type Badge */}
       <div className="absolute right-4 top-4 z-10 flex items-center gap-1.5 rounded-full bg-forest-deep/70 px-3 py-1 backdrop-blur-md text-[10px] font-semibold uppercase tracking-wider text-white">
