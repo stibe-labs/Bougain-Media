@@ -67,13 +67,35 @@ export function HomeHighlights() {
                 className="group relative flex h-full min-h-[320px] flex-col justify-end overflow-hidden rounded-3xl shadow-[0_20px_60px_rgba(15,61,46,0.1)] md:min-h-[380px]"
               >
                 {item.videoSrc ? (
-                  <video
-                    src={`${item.videoSrc}#t=0.5`}
-                    muted
-                    playsInline
-                    preload="metadata"
-                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                  />
+                  <div className="relative h-full w-full">
+                    {item.image && (
+                      <Image
+                        src={item.image}
+                        alt={item.title}
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                      />
+                    )}
+                    <video
+                      ref={(el) => {
+                        if (el) {
+                          el.muted = true;
+                          el.defaultMuted = true;
+                          el.setAttribute("playsinline", "true");
+                          el.setAttribute("webkit-playsinline", "true");
+                        }
+                      }}
+                      src={encodeURI(item.videoSrc)}
+                      poster={item.image}
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      preload="metadata"
+                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                    />
+                  </div>
                 ) : (
                   <Image
                     src={item.image!}

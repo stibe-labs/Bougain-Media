@@ -74,7 +74,8 @@ server {
 }
 
 server {
-    listen 127.0.0.1:8443 ssl;
+    listen 443 ssl;
+    listen [::]:443 ssl;
     server_name bougainmedia.com www.bougainmedia.com;
 
     ssl_certificate /etc/letsencrypt/live/bougainmedia.com/fullchain.pem;

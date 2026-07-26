@@ -135,18 +135,34 @@ function LightboxModal({
         <div className="relative flex flex-1 items-center justify-center bg-black/60 min-h-[300px] md:min-h-[420px] lg:min-h-[500px]">
           {item.type === "video" && item.videoSrc ? (
             <div className="relative h-full w-full flex items-center justify-center">
+              {item.image && (
+                <Image
+                  src={item.image}
+                  alt={item.title}
+                  fill
+                  sizes="100vw"
+                  className="object-cover -z-10"
+                />
+              )}
               <video
                 ref={(el) => {
-                  if (el) el.muted = isMuted;
+                  if (el) {
+                    el.muted = isMuted;
+                    el.defaultMuted = isMuted;
+                    el.setAttribute("playsinline", "true");
+                    el.setAttribute("webkit-playsinline", "true");
+                  }
                   videoRef.current = el;
                 }}
                 src={encodeURI(item.videoSrc)}
+                poster={item.image}
                 autoPlay
                 loop
                 muted={isMuted}
                 playsInline
                 preload="auto"
-                className="max-h-[70vh] w-full object-contain"
+                onClick={togglePlay}
+                className="max-h-[70vh] w-full object-contain cursor-pointer"
               />
 
               {/* Controls bar */}
@@ -283,19 +299,37 @@ function PortfolioCard({
 
       {/* Video Background Thumbnail & Hover Preview */}
       {item.type === "video" && item.videoSrc ? (
-        <video
-          ref={(el) => {
-            if (el) el.muted = true;
-            videoRef.current = el;
-          }}
-          src={encodeURI(item.videoSrc)}
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-          className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-        />
+        <div className="relative h-full w-full">
+          {item.image && (
+            <Image
+              src={item.image}
+              alt={`${item.title} — ${item.category} project`}
+              fill
+              quality={75}
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 40vw"
+              className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+            />
+          )}
+          <video
+            ref={(el) => {
+              if (el) {
+                el.muted = true;
+                el.defaultMuted = true;
+                el.setAttribute("playsinline", "true");
+                el.setAttribute("webkit-playsinline", "true");
+              }
+              videoRef.current = el;
+            }}
+            src={encodeURI(item.videoSrc)}
+            poster={item.image}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+          />
+        </div>
       ) : (
         <Image
           src={item.image}

@@ -60,7 +60,7 @@ export function Hero() {
 
       <ParticleField mouseRef={mouseRef} />
 
-      <div className="container-wide relative z-10 grid w-full grid-cols-1 px-4 sm:px-5 md:px-8 md:pt-32 lg:grid-cols-[1fr_auto] lg:items-center lg:gap-8 lg:px-12">
+      <div className="container-wide relative z-10 grid w-full grid-cols-1 px-6 sm:px-8 md:px-12 md:pt-32 lg:grid-cols-[1fr_auto] lg:items-center lg:gap-8 lg:px-16">
         <motion.div
           className="max-w-3xl"
           style={{ x: parallaxX, y: parallaxY }}
@@ -81,7 +81,7 @@ export function Hero() {
             initial="hidden"
             animate="visible"
             variants={fadeUp}
-            className="font-hero mt-5 text-[clamp(2.75rem,9vw,7.5rem)] font-black uppercase leading-[0.92] tracking-[-0.04em] text-white"
+            className="font-hero mt-5 text-[clamp(2.35rem,8.5vw,7.5rem)] font-black uppercase leading-[0.92] tracking-[-0.04em] text-white"
           >
             <span className="block">
               Your <span className="text-emerald-accent">Growth.</span>
@@ -104,11 +104,11 @@ export function Hero() {
             initial="hidden"
             animate="visible"
             variants={fadeUp}
-            className="mt-8 flex flex-row gap-2 sm:mt-9 sm:items-center sm:gap-4"
+            className="mt-8 flex flex-row gap-3 sm:mt-9 sm:items-center sm:gap-4"
           >
             <Link
               href="/contact"
-              className="group/btn inline-flex min-h-14 flex-1 items-center justify-center gap-1.5 rounded-2xl border border-white bg-white px-2 py-4 font-sans text-[13px] font-semibold text-forest-deep transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_20px_48px_rgba(110,235,131,0.25)] sm:flex-none sm:w-auto sm:gap-2.5 sm:px-9 sm:text-base"
+              className="group/btn inline-flex min-h-14 flex-1 items-center justify-center gap-1.5 rounded-2xl border border-white bg-white px-4 py-3.5 font-sans text-[13px] font-semibold text-forest-deep transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_20px_48px_rgba(110,235,131,0.25)] sm:flex-none sm:w-auto sm:gap-2.5 sm:px-9 sm:text-base"
             >
               {hero.primaryCta}
               <ArrowRight
@@ -118,7 +118,7 @@ export function Hero() {
             </Link>
             <Link
               href="/portfolio"
-              className="inline-flex min-h-14 flex-1 items-center justify-center gap-1.5 rounded-2xl border border-white/35 bg-transparent px-2 py-4 font-sans text-[13px] font-semibold text-white transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-white/60 hover:bg-white/8 sm:flex-none sm:w-auto sm:gap-2.5 sm:px-9 sm:text-base"
+              className="inline-flex min-h-14 flex-1 items-center justify-center gap-1.5 rounded-2xl border border-white/35 bg-transparent px-4 py-3.5 font-sans text-[13px] font-semibold text-white transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-white/60 hover:bg-white/8 sm:flex-none sm:w-auto sm:gap-2.5 sm:px-9 sm:text-base"
             >
               {hero.secondaryCta}
             </Link>

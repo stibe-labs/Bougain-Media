@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Play,
@@ -73,17 +74,34 @@ function MobileReelCard({ video, index, isActive, onSelect }: MobileReelCardProp
           {/* Speaker Notch */}
           <div className="absolute top-2 left-1/2 z-20 h-1 w-10 -translate-x-1/2 rounded-full bg-black/60 backdrop-blur-md border border-white/20" />
 
+          {/* Background Image Thumbnail Fallback */}
+          {video.image && (
+            <Image
+              src={video.image}
+              alt={video.title}
+              fill
+              sizes="230px"
+              className="object-cover pointer-events-none"
+            />
+          )}
+
           {/* Hover-only Video Preview inside Smartphone Screen */}
           <video
             ref={(el) => {
-              if (el) el.muted = true;
+              if (el) {
+                el.muted = true;
+                el.defaultMuted = true;
+                el.setAttribute("playsinline", "true");
+                el.setAttribute("webkit-playsinline", "true");
+              }
               videoRef.current = el;
             }}
-            src={`${encodeURI(video.videoSrc)}#t=0.5`}
+            src={encodeURI(video.videoSrc)}
+            poster={video.image}
             muted
             playsInline
             preload="metadata"
-            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 pointer-events-none"
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 pointer-events-none"
           />
 
           {/* Screen Overlay Gradient */}
@@ -293,7 +311,7 @@ export function LandingVideoShowcase() {
       <div className="bg-grid absolute inset-0 opacity-15" aria-hidden />
       <div className="grain-texture absolute inset-0" aria-hidden />
 
-      <div className="container-wide relative z-10">
+      <div className="container-wide relative z-10 px-6 sm:px-8 md:px-12 lg:px-16">
         {/* Section Header */}
         <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
           <ScrollReveal>
@@ -301,7 +319,7 @@ export function LandingVideoShowcase() {
               <Film size={14} />
               <span>Work In Motion</span>
             </div>
-            <h2 className="mt-4 font-display text-4xl font-bold tracking-tight text-white md:text-5xl lg:text-6xl">
+            <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl">
               Campaign Films &<br />
               <span className="text-sage">Mobile Video Reels</span>
             </h2>
@@ -317,7 +335,7 @@ export function LandingVideoShowcase() {
         {/* Featured Main Video Screen */}
         <ScrollReveal delay={120} className="mt-10 md:mt-14">
           <div className="relative overflow-hidden rounded-3xl bg-black border border-white/15 shadow-[0_25px_80px_rgba(0,0,0,0.6)]">
-            <div className="relative aspect-video w-full max-h-[620px] bg-black">
+            <div className="relative aspect-video w-full min-h-[220px] sm:min-h-[320px] max-h-[620px] bg-black">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={currentVideo.id}
@@ -327,6 +345,18 @@ export function LandingVideoShowcase() {
                   transition={{ duration: 0.4 }}
                   className="h-full w-full"
                 >
+                  {/* Poster Image Fallback */}
+                  {currentVideo.image && (
+                    <Image
+                      src={currentVideo.image}
+                      alt={currentVideo.title}
+                      fill
+                      priority
+                      sizes="(max-width: 768px) 100vw, 1200px"
+                      className="object-cover -z-10"
+                    />
+                  )}
+
                   {/* Main Video plays continuously reel after reel */}
                   <video
                     ref={(el) => {
@@ -339,6 +369,7 @@ export function LandingVideoShowcase() {
                       videoRef.current = el;
                     }}
                     src={encodeURI(currentVideo.videoSrc)}
+                    poster={currentVideo.image}
                     autoPlay
                     muted={isMuted}
                     playsInline
@@ -412,24 +443,6 @@ export function LandingVideoShowcase() {
                   </p>
                 </div>
               </div>
-            </div>
-
-            {/* Mobile Video Info (Clean layout below card so main video is 100% unblocked) */}
-            <div className="p-5 md:hidden bg-white/5 border-t border-white/10">
-              <div className="flex items-center justify-between">
-                <p className="font-sans text-[10px] font-semibold uppercase tracking-widest text-sage-light">
-                  Client: {currentVideo.client}
-                </p>
-                <span className="rounded-full bg-sage/20 px-2.5 py-0.5 font-sans text-[10px] font-bold text-sage-light border border-sage/30">
-                  {currentVideo.result}
-                </span>
-              </div>
-              <h3 className="mt-1.5 font-display text-xl font-bold text-white">
-                {currentVideo.title}
-              </h3>
-              <p className="mt-1 font-sans text-xs leading-relaxed text-white/75">
-                {currentVideo.description}
-              </p>
             </div>
           </div>
         </ScrollReveal>
