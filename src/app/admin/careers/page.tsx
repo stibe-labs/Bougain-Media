@@ -127,7 +127,7 @@ export default function AdminCareersPage() {
                 </div>
                 {app.cover_letter && (
                   <p className="rounded-xl border border-white/5 bg-black/20 p-3 font-sans text-xs text-white/80">
-                    "{app.cover_letter}"
+                    &quot;{app.cover_letter}&quot;
                   </p>
                 )}
               </div>
