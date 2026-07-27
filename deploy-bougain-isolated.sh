@@ -61,7 +61,7 @@ pm2 save
 if [ ! -f /etc/letsencrypt/live/bougainmedia.com/fullchain.pem ]; then
   echo "==> Requesting SSL certificate via webroot (DNS must point to this server)"
   certbot certonly --webroot -w /var/www/html \
-    -d bougainmedia.com -d www.bougainmedia.com \
+    -d bougainmedia.com -d www.bougainmedia.com -d admin.bougainmedia.com \
     --non-interactive --agree-tos -m mediaabougain@gmail.com || true
 fi
 
