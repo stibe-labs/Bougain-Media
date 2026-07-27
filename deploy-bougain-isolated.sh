@@ -28,13 +28,31 @@ else
 fi
 rm -f "$BUNDLE"
 
+# Preserve Supabase keys if present in existing env files
+SUPABASE_URL_VAL="${NEXT_PUBLIC_SUPABASE_URL:-}"
+SUPABASE_KEY_VAL="${NEXT_PUBLIC_SUPABASE_ANON_KEY:-}"
+
+if [ -f .env.local ]; then
+  SUPABASE_URL_VAL="${SUPABASE_URL_VAL:-$(grep NEXT_PUBLIC_SUPABASE_URL .env.local | cut -d '=' -f2- || true)}"
+  SUPABASE_KEY_VAL="${SUPABASE_KEY_VAL:-$(grep NEXT_PUBLIC_SUPABASE_ANON_KEY .env.local | cut -d '=' -f2- || true)}"
+fi
+
+if [ -f .env ]; then
+  SUPABASE_URL_VAL="${SUPABASE_URL_VAL:-$(grep NEXT_PUBLIC_SUPABASE_URL .env | cut -d '=' -f2- || true)}"
+  SUPABASE_KEY_VAL="${SUPABASE_KEY_VAL:-$(grep NEXT_PUBLIC_SUPABASE_ANON_KEY .env | cut -d '=' -f2- || true)}"
+fi
+
 cat > .env.production <<EOF
 NEXT_PUBLIC_SITE_URL=https://${DOMAIN}
 PORT=${APP_PORT}
+NEXT_PUBLIC_SUPABASE_URL=${SUPABASE_URL_VAL}
+NEXT_PUBLIC_SUPABASE_ANON_KEY=${SUPABASE_KEY_VAL}
 EOF
 
 export NEXT_PUBLIC_SITE_URL="https://${DOMAIN}"
 export PORT="${APP_PORT}"
+export NEXT_PUBLIC_SUPABASE_URL="${SUPABASE_URL_VAL}"
+export NEXT_PUBLIC_SUPABASE_ANON_KEY="${SUPABASE_KEY_VAL}"
 
 if [ ! -d node_modules ]; then
   echo "==> node_modules missing: running npm ci"
