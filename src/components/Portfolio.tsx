@@ -15,6 +15,7 @@ import {
   type PortfolioItem,
 } from "@/lib/constants";
 import { cn } from "@/lib/utils";
+import { getPortfolioItems } from "@/lib/cms";
 
 const ease = [0.22, 1, 0.36, 1] as [number, number, number, number];
 
@@ -374,7 +375,18 @@ function PortfolioCard({
 }
 
 export function Portfolio({ standalone = false }: { standalone?: boolean }) {
+  const [items, setItems] = useState<PortfolioItem[]>(portfolio.items);
   const [activeModalItem, setActiveModalItem] = useState<PortfolioItem | null>(null);
+
+  useEffect(() => {
+    async function fetchDynamicData() {
+      const data = await getPortfolioItems();
+      if (data && data.length > 0) {
+        setItems(data);
+      }
+    }
+    fetchDynamicData();
+  }, []);
 
   return (
     <>
@@ -428,7 +440,7 @@ export function Portfolio({ standalone = false }: { standalone?: boolean }) {
             )}
           >
             <AnimatePresence mode="popLayout">
-              {portfolio.items.map((item, i) => (
+              {items.map((item, i) => (
                 <PortfolioCard
                   key={item.id}
                   item={item}

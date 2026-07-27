@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
@@ -20,6 +20,7 @@ import { ServiceMatrix } from "@/components/ui/ServiceMatrix";
 import { ServiceEstimator } from "@/components/ui/ServiceEstimator";
 import { services } from "@/lib/constants";
 import { cn } from "@/lib/utils";
+import { getServices, ServiceItem } from "@/lib/cms";
 
 const easeOut: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
@@ -208,19 +209,30 @@ function ServicesApproach() {
 }
 
 export function Services({ standalone = false }: { standalone?: boolean }) {
+  const [itemsList, setItemsList] = useState<ServiceItem[]>(services.items);
   const [activeCategory, setActiveCategory] =
     useState<CategoryFilter>("All Capabilities");
   const [viewMode, setViewMode] = useState<"grid" | "split">("grid");
   const [selectedSpotlightIndex, setSelectedSpotlightIndex] = useState(0);
 
-  const filteredItems = services.items.filter((service) => {
+  useEffect(() => {
+    async function fetchDynamicServices() {
+      const data = await getServices();
+      if (data && data.length > 0) {
+        setItemsList(data);
+      }
+    }
+    fetchDynamicServices();
+  }, []);
+
+  const filteredItems = itemsList.filter((service) => {
     if (activeCategory === "All Capabilities") return true;
     const cat = getCategoryForService(service.tag);
     return cat === activeCategory;
   });
 
   const activeSpotlightService =
-    filteredItems[selectedSpotlightIndex] || filteredItems[0] || services.items[0];
+    filteredItems[selectedSpotlightIndex] || filteredItems[0] || itemsList[0];
 
   return (
     <>

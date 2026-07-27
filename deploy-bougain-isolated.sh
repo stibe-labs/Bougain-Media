@@ -69,14 +69,14 @@ if [ -f /etc/letsencrypt/live/bougainmedia.com/fullchain.pem ]; then
   cat > /etc/nginx/sites-available/bougainmedia.com <<'NGINX'
 server {
     listen 80;
-    server_name bougainmedia.com www.bougainmedia.com;
+    server_name bougainmedia.com www.bougainmedia.com admin.bougainmedia.com;
     return 301 https://$host$request_uri;
 }
 
 server {
     listen 443 ssl;
     listen [::]:443 ssl;
-    server_name bougainmedia.com www.bougainmedia.com;
+    server_name bougainmedia.com www.bougainmedia.com admin.bougainmedia.com;
 
     ssl_certificate /etc/letsencrypt/live/bougainmedia.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/bougainmedia.com/privkey.pem;
@@ -87,7 +87,7 @@ server {
     add_header X-Content-Type-Options "nosniff" always;
     add_header Referrer-Policy "strict-origin-when-cross-origin" always;
     add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload" always;
-    client_max_body_size 20m;
+    client_max_body_size 100m;
 
     location / {
         proxy_pass http://127.0.0.1:3032;
@@ -115,7 +115,7 @@ else
   cat > /etc/nginx/sites-available/bougainmedia.com <<'NGINX_HTTP'
 server {
     listen 80;
-    server_name bougainmedia.com www.bougainmedia.com;
+    server_name bougainmedia.com www.bougainmedia.com admin.bougainmedia.com;
 
     location / {
         proxy_pass http://127.0.0.1:3032;

@@ -29,8 +29,19 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const isAdminRoute = request.nextUrl.pathname.startsWith("/admin");
-  const isLoginPage = request.nextUrl.pathname === "/admin/login";
+  const host = request.headers.get("host") || "";
+  const isAdminSubdomain = host.startsWith("admin.");
+
+  // If accessed via admin.bougainmedia.com, route root or non-admin paths to /admin
+  let pathname = request.nextUrl.pathname;
+  if (isAdminSubdomain && !pathname.startsWith("/admin") && !pathname.startsWith("/api") && !pathname.startsWith("/_next")) {
+    const url = request.nextUrl.clone();
+    url.pathname = pathname === "/" ? "/admin" : `/admin${pathname}`;
+    return NextResponse.rewrite(url);
+  }
+
+  const isAdminRoute = pathname.startsWith("/admin");
+  const isLoginPage = pathname === "/admin/login";
 
   if (isAdminRoute && !isLoginPage && !user) {
     const url = request.nextUrl.clone();
@@ -40,7 +51,7 @@ export async function updateSession(request: NextRequest) {
 
   if (isLoginPage && user) {
     const url = request.nextUrl.clone();
-    url.pathname = "/admin/dashboard";
+    url.pathname = "/admin";
     return NextResponse.redirect(url);
   }
 
