@@ -344,10 +344,153 @@ function SectionHeader({
   );
 }
 
+/* ─── Category Card (Landing View) ─── */
+function CategoryCard({
+  title,
+  label,
+  subtitle,
+  videoSrc,
+  itemCount,
+  icon,
+  index,
+  onClick,
+}: {
+  title: string;
+  label: string;
+  subtitle: string;
+  videoSrc: string;
+  itemCount: number;
+  icon: React.ReactNode;
+  index: number;
+  onClick: () => void;
+}) {
+  const reduceMotion = useReducedMotion();
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+    if (videoRef.current) {
+      videoRef.current.muted = true;
+      const p = videoRef.current.play();
+      if (p !== undefined) p.catch(() => {});
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    if (videoRef.current) {
+      videoRef.current.pause();
+    }
+  };
+
+  return (
+    <motion.div
+      initial={reduceMotion ? false : { opacity: 0, y: 50, scale: 0.96 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.7, delay: index * 0.15, ease }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onClick={onClick}
+      className="group relative cursor-pointer overflow-hidden rounded-[2rem] border border-white/10 shadow-[0_20px_60px_rgba(15,61,46,0.2)] min-h-[340px] sm:min-h-[420px] lg:min-h-[480px]"
+    >
+      {/* Background video */}
+      <video
+        ref={(el) => {
+          if (el) {
+            el.muted = true;
+            el.defaultMuted = true;
+            el.setAttribute("playsinline", "true");
+            el.setAttribute("webkit-playsinline", "true");
+          }
+          videoRef.current = el;
+        }}
+        src={encodeURI(videoSrc) + "#t=0.001"}
+        muted
+        loop
+        playsInline
+        preload="auto"
+        className={cn(
+          "absolute inset-0 h-full w-full object-cover transition-all duration-1000",
+          isHovered ? "scale-110 brightness-75" : "scale-100 brightness-50",
+        )}
+      />
+
+      {/* Gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+      <div className={cn(
+        "absolute inset-0 bg-gradient-to-br transition-opacity duration-700",
+        isHovered ? "opacity-40" : "opacity-60",
+        index === 0
+          ? "from-forest-deep/80 via-transparent to-transparent"
+          : "from-indigo-900/60 via-transparent to-transparent",
+      )} />
+
+      {/* Content */}
+      <div className="relative z-10 flex h-full flex-col justify-between p-8 sm:p-10 md:p-12">
+        {/* Top: icon & count badge */}
+        <div className="flex items-start justify-between">
+          <div className={cn(
+            "flex h-14 w-14 items-center justify-center rounded-2xl border backdrop-blur-xl transition-all duration-500",
+            isHovered
+              ? "bg-sage/30 border-sage/40 scale-110"
+              : "bg-white/10 border-white/20",
+          )}>
+            {icon}
+          </div>
+          <motion.div
+            initial={{ opacity: 0, x: 10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.4 + index * 0.15 }}
+            className="flex items-center gap-2 rounded-full bg-white/10 border border-white/20 backdrop-blur-md px-4 py-1.5"
+          >
+            <span className="text-sm font-semibold text-white">{itemCount}</span>
+            <span className="text-xs text-white/60">videos</span>
+          </motion.div>
+        </div>
+
+        {/* Bottom: text + CTA */}
+        <div>
+          <p className="font-sans text-[11px] font-bold uppercase tracking-[0.3em] text-sage mb-3">
+            {label}
+          </p>
+          <h2 className="font-display text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
+            {title}
+          </h2>
+          <p className="mt-3 max-w-md font-sans text-sm leading-relaxed text-white/60 sm:text-base">
+            {subtitle}
+          </p>
+
+          <div className={cn(
+            "mt-6 flex items-center gap-3 transition-all duration-500",
+            isHovered ? "translate-x-2" : "",
+          )}>
+            <div className={cn(
+              "flex h-11 w-11 items-center justify-center rounded-full transition-all duration-500",
+              isHovered
+                ? "bg-sage text-forest-deep scale-110"
+                : "bg-white/15 text-white border border-white/20",
+            )}>
+              <ArrowUpRight size={18} />
+            </div>
+            <span className={cn(
+              "font-sans text-sm font-semibold uppercase tracking-wider transition-colors duration-300",
+              isHovered ? "text-sage" : "text-white/70",
+            )}>
+              Explore Collection
+            </span>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 /* ─── Main Portfolio Component ─── */
 export function Portfolio({ standalone = false }: { standalone?: boolean }) {
   const [items, setItems] = useState<PortfolioItem[]>(portfolio.items);
   const [activeModalItem, setActiveModalItem] = useState<PortfolioItem | null>(null);
+  const [activeCategory, setActiveCategory] = useState<"content-videos" | "ai-concept-ads" | null>(null);
 
   useEffect(() => {
     async function fetchDynamicData() {
@@ -365,9 +508,33 @@ export function Portfolio({ standalone = false }: { standalone?: boolean }) {
   const aiConceptItems = items.filter(
     (item) => item.section === "ai-concept-ads" || (!item.section && item.videoSrc?.includes("/AI/")),
   );
-  const videoProductionItems = items.filter(
-    (item) => item.section === "video-production" || (!item.section && !item.videoSrc?.includes("/AI/") && item.section !== "content-videos"),
-  );
+
+  const handleBack = () => {
+    setActiveCategory(null);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const activeItems =
+    activeCategory === "content-videos"
+      ? contentVideoItems
+      : activeCategory === "ai-concept-ads"
+        ? aiConceptItems
+        : [];
+
+  const activeSectionTitle =
+    activeCategory === "content-videos"
+      ? "Content Videos"
+      : "AI Concept Ads";
+
+  const activeSectionLabel =
+    activeCategory === "content-videos"
+      ? "Content Studio"
+      : "AI Creative Lab";
+
+  const activeSectionSubtitle =
+    activeCategory === "content-videos"
+      ? "Branded content, commercial reels, and digital marketing films."
+      : "AI-generated concept advertisements and video explorations.";
 
   return (
     <>
@@ -381,129 +548,179 @@ export function Portfolio({ standalone = false }: { standalone?: boolean }) {
         )}
       >
         <div className="container-wide relative">
-          {!standalone && (
-            <ScrollReveal className="mb-12 max-w-2xl">
-              <p className="font-sans text-xs font-semibold uppercase tracking-[0.28em] text-sage">
-                {portfolio.label}
-              </p>
-              <h2 className="mt-4 font-display text-4xl font-bold tracking-tight text-forest-deep md:text-5xl">
-                {portfolio.headline}
-              </h2>
-              <p className="mt-5 max-w-lg font-sans text-base leading-relaxed text-grey-muted md:text-lg">
-                {portfolio.subtitle}
-              </p>
-            </ScrollReveal>
-          )}
-
-          {/* ── Section 1: Content Videos ── */}
-          {contentVideoItems.length > 0 && (
-            <div className="mb-20 md:mb-28">
-              <SectionHeader
-                label="Content Studio"
-                title="Content Videos"
-                subtitle="Branded content, commercial reels, and digital marketing films."
-              />
-
+          <AnimatePresence mode="wait">
+            {/* ═══════════════════════════════════════════ */}
+            {/* CATEGORY LANDING VIEW                       */}
+            {/* ═══════════════════════════════════════════ */}
+            {activeCategory === null && (
               <motion.div
-                layout
-                className="grid auto-rows-fr grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5"
+                key="category-landing"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.45, ease }}
               >
-                <AnimatePresence mode="popLayout">
-                  {contentVideoItems.map((item, i) => (
-                    <PortfolioCard
-                      key={item.id}
-                      item={item}
-                      index={i}
-                      onSelect={(selected) => setActiveModalItem(selected)}
-                    />
-                  ))}
-                </AnimatePresence>
-              </motion.div>
-            </div>
-          )}
+                {!standalone && (
+                  <ScrollReveal className="mb-12 max-w-2xl">
+                    <p className="font-sans text-xs font-semibold uppercase tracking-[0.28em] text-sage">
+                      {portfolio.label}
+                    </p>
+                    <h2 className="mt-4 font-display text-4xl font-bold tracking-tight text-forest-deep md:text-5xl">
+                      {portfolio.headline}
+                    </h2>
+                    <p className="mt-5 max-w-lg font-sans text-base leading-relaxed text-grey-muted md:text-lg">
+                      {portfolio.subtitle}
+                    </p>
+                  </ScrollReveal>
+                )}
 
-          {/* ── Section 2: AI Concept Ads ── */}
-          {aiConceptItems.length > 0 && (
-            <div className="mb-20 md:mb-28">
-              <SectionHeader
-                label="AI Creative Lab"
-                title="AI Concept Ads"
-                subtitle="AI-generated concept advertisements and video explorations."
-              />
+                {standalone && (
+                  <ScrollReveal className="mb-12 text-center max-w-2xl mx-auto">
+                    <p className="font-sans text-xs font-semibold uppercase tracking-[0.28em] text-sage">
+                      Choose a collection
+                    </p>
+                    <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-forest-deep md:text-4xl">
+                      Explore Our Work
+                    </h2>
+                    <p className="mt-4 font-sans text-base leading-relaxed text-grey-muted">
+                      Select a category to dive into our portfolio of creative work.
+                    </p>
+                  </ScrollReveal>
+                )}
 
-              <motion.div
-                layout
-                className="grid auto-rows-fr grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5"
-              >
-                <AnimatePresence mode="popLayout">
-                  {aiConceptItems.map((item, i) => (
-                    <PortfolioCard
-                      key={item.id}
-                      item={item}
-                      index={i}
-                      onSelect={(selected) => setActiveModalItem(selected)}
-                    />
-                  ))}
-                </AnimatePresence>
-              </motion.div>
-            </div>
-          )}
-
-          {/* ── Section 3: Video Production ── */}
-          {videoProductionItems.length > 0 && (
-            <div>
-              <SectionHeader
-                label="Client Work"
-                title="Video Production"
-                subtitle="Campaign films, event coverage & commercial video production."
-              />
-
-              <motion.div
-                layout
-                className="grid auto-rows-fr grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5"
-              >
-                <AnimatePresence mode="popLayout">
-                  {videoProductionItems.map((item, i) => (
-                    <PortfolioCard
-                      key={item.id}
-                      item={item}
-                      index={i}
-                      onSelect={(selected) => setActiveModalItem(selected)}
-                    />
-                  ))}
-                </AnimatePresence>
-              </motion.div>
-            </div>
-          )}
-
-          {!standalone && (
-            <ScrollReveal delay={160} className="mt-14 text-center">
-              <Button href="/portfolio" variant="secondary" size="md">
-                Explore full portfolio
-                <ArrowUpRight size={16} />
-              </Button>
-            </ScrollReveal>
-          )}
-
-          {standalone && (
-            <ScrollReveal delay={100} className="mt-20 text-center md:mt-28">
-              <div className="mx-auto max-w-xl rounded-3xl bg-forest-deep p-8 text-white md:p-12">
-                <Sparkles className="mx-auto text-sage" size={32} />
-                <h3 className="mt-4 font-display text-2xl font-bold md:text-3xl">
-                  Have a campaign or video shoot in mind?
-                </h3>
-                <p className="mt-3 font-sans text-sm leading-relaxed text-white/70">
-                  Let&apos;s build something visually extraordinary together.
-                </p>
-                <div className="mt-8 flex justify-center">
-                  <Button href="/contact" variant="primary" size="lg">
-                    Start a Conversation
-                    <ArrowUpRight size={18} />
-                  </Button>
+                {/* Two Category Cards */}
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8">
+                  <CategoryCard
+                    title="Content Videos"
+                    label="Content Studio"
+                    subtitle="Branded content, commercial reels, and digital marketing films crafted for real brands."
+                    videoSrc={contentVideoItems[0]?.videoSrc || "/videos/Content_video_webm/TURN UP CROWN PLAZA.webm"}
+                    itemCount={contentVideoItems.length}
+                    icon={<Film size={24} className="text-white" />}
+                    index={0}
+                    onClick={() => {
+                      setActiveCategory("content-videos");
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    }}
+                  />
+                  <CategoryCard
+                    title="AI Videos"
+                    label="AI Creative Lab"
+                    subtitle="AI-generated concept advertisements and cinematic video explorations."
+                    videoSrc={aiConceptItems[0]?.videoSrc || "/videos/AI/AMRUTH CONCEPT AD.webm"}
+                    itemCount={aiConceptItems.length}
+                    icon={<Sparkles size={24} className="text-white" />}
+                    index={1}
+                    onClick={() => {
+                      setActiveCategory("ai-concept-ads");
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    }}
+                  />
                 </div>
-              </div>
-            </ScrollReveal>
-          )}
+
+                {standalone && (
+                  <ScrollReveal delay={100} className="mt-20 text-center md:mt-28">
+                    <div className="mx-auto max-w-xl rounded-3xl bg-forest-deep p-8 text-white md:p-12">
+                      <Sparkles className="mx-auto text-sage" size={32} />
+                      <h3 className="mt-4 font-display text-2xl font-bold md:text-3xl">
+                        Have a campaign or video shoot in mind?
+                      </h3>
+                      <p className="mt-3 font-sans text-sm leading-relaxed text-white/70">
+                        Let&apos;s build something visually extraordinary together.
+                      </p>
+                      <div className="mt-8 flex justify-center">
+                        <Button href="/contact" variant="primary" size="lg">
+                          Start a Conversation
+                          <ArrowUpRight size={18} />
+                        </Button>
+                      </div>
+                    </div>
+                  </ScrollReveal>
+                )}
+
+                {!standalone && (
+                  <ScrollReveal delay={160} className="mt-14 text-center">
+                    <Button href="/portfolio" variant="secondary" size="md">
+                      Explore full portfolio
+                      <ArrowUpRight size={16} />
+                    </Button>
+                  </ScrollReveal>
+                )}
+              </motion.div>
+            )}
+
+            {/* ═══════════════════════════════════════════ */}
+            {/* CATEGORY DETAIL VIEW                        */}
+            {/* ═══════════════════════════════════════════ */}
+            {activeCategory !== null && (
+              <motion.div
+                key={`category-${activeCategory}`}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 30 }}
+                transition={{ duration: 0.5, ease }}
+              >
+                {/* Back Button */}
+                <motion.button
+                  initial={{ opacity: 0, x: -15 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.15 }}
+                  onClick={handleBack}
+                  className="mb-8 flex items-center gap-2 font-sans text-sm font-semibold uppercase tracking-wider text-sage hover:text-forest-deep transition-colors group"
+                >
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full border border-sage/30 bg-sage/10 transition-all group-hover:bg-sage group-hover:text-forest-deep">
+                    <ArrowUpRight size={14} className="rotate-[225deg]" />
+                  </div>
+                  Back to Categories
+                </motion.button>
+
+                {/* Section Header */}
+                <SectionHeader
+                  label={activeSectionLabel}
+                  title={activeSectionTitle}
+                  subtitle={activeSectionSubtitle}
+                />
+
+                {/* Video Grid */}
+                <motion.div
+                  layout
+                  className="grid auto-rows-fr grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5"
+                >
+                  <AnimatePresence mode="popLayout">
+                    {activeItems.map((item, i) => (
+                      <PortfolioCard
+                        key={item.id}
+                        item={item}
+                        index={i}
+                        onSelect={(selected) => setActiveModalItem(selected)}
+                      />
+                    ))}
+                  </AnimatePresence>
+                </motion.div>
+
+                {/* CTA at bottom */}
+                {standalone && (
+                  <ScrollReveal delay={100} className="mt-20 text-center md:mt-28">
+                    <div className="mx-auto max-w-xl rounded-3xl bg-forest-deep p-8 text-white md:p-12">
+                      <Sparkles className="mx-auto text-sage" size={32} />
+                      <h3 className="mt-4 font-display text-2xl font-bold md:text-3xl">
+                        Have a campaign or video shoot in mind?
+                      </h3>
+                      <p className="mt-3 font-sans text-sm leading-relaxed text-white/70">
+                        Let&apos;s build something visually extraordinary together.
+                      </p>
+                      <div className="mt-8 flex justify-center">
+                        <Button href="/contact" variant="primary" size="lg">
+                          Start a Conversation
+                          <ArrowUpRight size={18} />
+                        </Button>
+                      </div>
+                    </div>
+                  </ScrollReveal>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </section>
 
