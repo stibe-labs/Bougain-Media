@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatedMesh } from "@/components/AnimatedMesh";
 
 export function HeroVideo({
-  src = "/videos/hero-loop.mp4",
+  src = "/videos/hero-intro.webm",
   meshRgb = "77, 184, 154",
   meshRgb2 = "168, 230, 207",
 }: {
@@ -47,7 +47,7 @@ export function HeroVideo({
         }`}
         aria-hidden
       >
-        <source src={src} type="video/mp4" />
+        <source src={src} type={src.endsWith(".webm") ? "video/webm" : "video/mp4"} />
       </video>
     </>
   );

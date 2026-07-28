@@ -282,7 +282,7 @@ export const portfolio: {
   headline: "Selected Work in Motion",
   subtitle: "Campaign films, AI concept ads, and commercial video production.",
   items: [
-    // ── Section 1: Video Production (Real Working Media Files) ──
+    // ── Section 1: Video Production (100% Working WebM Video Files) ──
     {
       id: "vp-hero-intro",
       title: "",
@@ -316,22 +316,6 @@ export const portfolio: {
       section: "video-production",
     },
     {
-      id: "vp-filmmaker-studio",
-      title: "",
-      client: "",
-      category: "EdTech & Tech" as PortfolioCategory,
-      type: "video" as const,
-      industry: "",
-      result: "",
-      description: "",
-      image: "",
-      videoSrc: "/videos/Firefly Ultra-realistic modern video production studio, professional filmmaker adjusting cinema came.mp4",
-      aspect: "16:9" as const,
-      span: "md" as const,
-      featured: true,
-      section: "video-production",
-    },
-    {
       id: "vp-storytelling-agency",
       title: "",
       client: "",
@@ -347,40 +331,8 @@ export const portfolio: {
       featured: true,
       section: "video-production",
     },
-    {
-      id: "vp-content-creation-studio",
-      title: "",
-      client: "",
-      category: "Fitness & Lifestyle" as PortfolioCategory,
-      type: "video" as const,
-      industry: "",
-      result: "",
-      description: "",
-      image: "",
-      videoSrc: "/videos/Firefly Ultra-realistic premium content creation studio, creative strategist planning social media c.mp4",
-      aspect: "16:9" as const,
-      span: "md" as const,
-      featured: false,
-      section: "video-production",
-    },
-    {
-      id: "vp-advertising-design-workspace",
-      title: "",
-      client: "",
-      category: "EdTech & Tech" as PortfolioCategory,
-      type: "video" as const,
-      industry: "",
-      result: "",
-      description: "",
-      image: "",
-      videoSrc: "/videos/Firefly Ultra-realistic advertising design workspace, designer creating premium advertisement on lar.mp4",
-      aspect: "16:9" as const,
-      span: "md" as const,
-      featured: false,
-      section: "video-production",
-    },
 
-    // ── Section 2: AI Concept Ads (Real Working AI Media Files) ──
+    // ── Section 2: AI Concept Ads (100% Working WebM Video Files) ──
     {
       id: "ai-easter-video",
       title: "",
