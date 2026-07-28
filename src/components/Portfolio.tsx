@@ -248,7 +248,8 @@ function PortfolioCard({
                 el.defaultMuted = true;
                 el.setAttribute("playsinline", "true");
                 el.setAttribute("webkit-playsinline", "true");
-                el.play().catch(() => {});
+                const p = el.play();
+                if (p !== undefined) p.catch(() => {});
               }
               videoRef.current = el;
             }}
@@ -323,18 +324,20 @@ export function Portfolio({ standalone = false }: { standalone?: boolean }) {
     async function fetchDynamicData() {
       const data = await getPortfolioItems();
       if (data && data.length > 0) {
-        // Filter out items without a valid videoSrc
         setItems(data.filter((item) => Boolean(item.videoSrc)));
       }
     }
     fetchDynamicData();
   }, []);
 
-  const videoProductionItems = items.filter(
-    (item) => !item.section || item.section === "video-production",
+  const contentVideoItems = items.filter(
+    (item) => item.section === "content-videos",
   );
   const aiConceptItems = items.filter(
-    (item) => item.section === "ai-concept-ads",
+    (item) => item.section === "ai-concept-ads" || (!item.section && item.videoSrc?.includes("/AI/")),
+  );
+  const videoProductionItems = items.filter(
+    (item) => item.section === "video-production" || (!item.section && !item.videoSrc?.includes("/AI/") && item.section !== "content-videos"),
   );
 
   return (
@@ -363,23 +366,21 @@ export function Portfolio({ standalone = false }: { standalone?: boolean }) {
             </ScrollReveal>
           )}
 
-          {/* ── Section 1: Video Production ── */}
-          {videoProductionItems.length > 0 && (
+          {/* ── Section 1: Content Videos ── */}
+          {contentVideoItems.length > 0 && (
             <div className="mb-20 md:mb-28">
-              {standalone && (
-                <SectionHeader
-                  label="Client Work"
-                  title="Video Production"
-                  subtitle="Campaign films, reels & commercial video production."
-                />
-              )}
+              <SectionHeader
+                label="Content Studio"
+                title="Content Videos"
+                subtitle="Branded content, commercial reels, and digital marketing films."
+              />
 
               <motion.div
                 layout
                 className="grid auto-rows-fr grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5"
               >
                 <AnimatePresence mode="popLayout">
-                  {videoProductionItems.map((item, i) => (
+                  {contentVideoItems.map((item, i) => (
                     <PortfolioCard
                       key={item.id}
                       item={item}
@@ -394,11 +395,11 @@ export function Portfolio({ standalone = false }: { standalone?: boolean }) {
 
           {/* ── Section 2: AI Concept Ads ── */}
           {aiConceptItems.length > 0 && (
-            <div>
+            <div className="mb-20 md:mb-28">
               <SectionHeader
                 label="AI Creative Lab"
                 title="AI Concept Ads"
-                subtitle="AI-generated concept advertisements and creative explorations."
+                subtitle="AI-generated concept advertisements and video explorations."
               />
 
               <motion.div
@@ -407,6 +408,33 @@ export function Portfolio({ standalone = false }: { standalone?: boolean }) {
               >
                 <AnimatePresence mode="popLayout">
                   {aiConceptItems.map((item, i) => (
+                    <PortfolioCard
+                      key={item.id}
+                      item={item}
+                      index={i}
+                      onSelect={(selected) => setActiveModalItem(selected)}
+                    />
+                  ))}
+                </AnimatePresence>
+              </motion.div>
+            </div>
+          )}
+
+          {/* ── Section 3: Video Production ── */}
+          {videoProductionItems.length > 0 && (
+            <div>
+              <SectionHeader
+                label="Client Work"
+                title="Video Production"
+                subtitle="Campaign films, event coverage & commercial video production."
+              />
+
+              <motion.div
+                layout
+                className="grid auto-rows-fr grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5"
+              >
+                <AnimatePresence mode="popLayout">
+                  {videoProductionItems.map((item, i) => (
                     <PortfolioCard
                       key={item.id}
                       item={item}
