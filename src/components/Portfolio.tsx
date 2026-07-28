@@ -1,9 +1,20 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { ArrowUpRight, Play, Volume2, VolumeX, X, Film, Sparkles } from "lucide-react";
+import {
+  ArrowUpRight,
+  Play,
+  Volume2,
+  VolumeX,
+  X,
+  Film,
+  Sparkles,
+  Search,
+  Smartphone,
+  Monitor,
+} from "lucide-react";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { Button } from "@/components/ui/Button";
 import {
@@ -17,12 +28,6 @@ import { getPortfolioItems } from "@/lib/cms";
 import Image from "next/image";
 
 const ease = [0.22, 1, 0.36, 1] as [number, number, number, number];
-
-const spanClasses = {
-  lg: "sm:col-span-2 sm:row-span-2 min-h-[280px] sm:min-h-[420px]",
-  sm: "sm:col-span-1 min-h-[240px] sm:aspect-[4/5]",
-  md: "sm:col-span-1 min-h-[240px] sm:aspect-[4/5] lg:min-h-[300px]",
-};
 
 function PortfolioHero() {
   return (
@@ -202,7 +207,6 @@ function PortfolioCard({
   const [isVisible, setIsVisible] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  // IntersectionObserver for lazy-loading
   useEffect(() => {
     const el = cardRef.current;
     if (!el) return;
@@ -242,23 +246,25 @@ function PortfolioCard({
     onSelect(item);
   };
 
+  const isReel = item.aspect === "9:16";
+
   return (
     <motion.div
       ref={cardRef}
-      initial={reduceMotion ? false : { opacity: 0, y: 36 }}
+      initial={reduceMotion ? false : { opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
-      transition={{ duration: 0.65, delay: Math.min(index * 0.04, 0.3), ease }}
+      transition={{ duration: 0.5, delay: Math.min(index * 0.03, 0.25), ease }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={handleTap}
       className={cn(
-        "group relative cursor-pointer overflow-hidden rounded-[1.5rem]",
-        "shadow-[0_12px_40px_rgba(15,61,46,0.12)] border border-white/10 bg-forest-dark/40",
-        spanClasses[item.span],
+        "group relative cursor-pointer overflow-hidden rounded-[1.5rem] mb-5 break-inside-avoid",
+        "shadow-[0_12px_40px_rgba(15,61,46,0.12)] border border-white/10 bg-black",
+        isReel ? "aspect-[9/16]" : "aspect-[16/9]",
       )}
     >
-      {/* Video — only plays on hover or tap */}
+      {/* Video */}
       <div className="relative h-full w-full">
         {isVisible && item.videoSrc && (
           <video
@@ -280,7 +286,6 @@ function PortfolioCard({
           />
         )}
 
-        {/* Ambient background while video initializes */}
         {!isVisible && (
           <div className="absolute inset-0 flex items-center justify-center bg-black">
             <Film size={28} className="text-sage/30 animate-pulse" />
@@ -288,10 +293,21 @@ function PortfolioCard({
         )}
       </div>
 
-      {/* Subtle overlay gradient */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-85" />
+      {/* Top Badges Overlay */}
+      <div className="absolute top-3 left-3 right-3 z-10 flex items-center justify-between pointer-events-none">
+        <span className="rounded-full bg-black/60 backdrop-blur-md px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-sage border border-white/15 truncate max-w-[70%]">
+          {item.category || item.industry || item.client}
+        </span>
+        <span className="flex items-center gap-1 rounded-full bg-white/15 backdrop-blur-md px-2.5 py-1 text-[10px] font-semibold text-white/90 border border-white/20">
+          {isReel ? <Smartphone size={11} /> : <Monitor size={11} />}
+          {isReel ? "9:16 Reel" : "16:9 Film"}
+        </span>
+      </div>
 
-      {/* Play icon overlay hint on hover (hidden when video is playing) */}
+      {/* Overlay gradient */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent opacity-70 transition-opacity duration-300 group-hover:opacity-90" />
+
+      {/* Play icon hint */}
       <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
         {!isPlaying && (
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-md border border-white/30 shadow-xl transition-transform duration-300 group-hover:scale-110 group-hover:bg-sage group-hover:text-forest-deep">
@@ -302,9 +318,9 @@ function PortfolioCard({
 
       {/* Card Info Overlay */}
       <div className="absolute bottom-4 left-4 right-4 z-10">
-        <span className="font-sans text-[11px] font-bold text-sage uppercase tracking-wider block truncate">
-          {item.client || item.industry || item.category}
-        </span>
+        <p className="font-sans text-[11px] font-bold text-sage uppercase tracking-wider block truncate">
+          {item.client}
+        </p>
         <h3 className="font-display text-base font-bold text-white line-clamp-1 mt-0.5">
           {item.title}
         </h3>
@@ -492,6 +508,11 @@ export function Portfolio({ standalone = false }: { standalone?: boolean }) {
   const [activeModalItem, setActiveModalItem] = useState<PortfolioItem | null>(null);
   const [activeCategory, setActiveCategory] = useState<"content-videos" | "ai-concept-ads" | null>(null);
 
+  // Sub-filters inside category detail view
+  const [selectedIndustry, setSelectedIndustry] = useState<string>("All");
+  const [selectedFormat, setSelectedFormat] = useState<"all" | "9:16" | "16:9">("all");
+  const [searchQuery, setSearchQuery] = useState<string>("");
+
   useEffect(() => {
     async function fetchDynamicData() {
       const data = await getPortfolioItems();
@@ -502,24 +523,67 @@ export function Portfolio({ standalone = false }: { standalone?: boolean }) {
     fetchDynamicData();
   }, []);
 
-  const contentVideoItems = items.filter(
-    (item) => item.section === "content-videos",
+  const contentVideoItems = useMemo(
+    () => items.filter((item) => item.section === "content-videos"),
+    [items],
   );
-  const aiConceptItems = items.filter(
-    (item) => item.section === "ai-concept-ads" || (!item.section && item.videoSrc?.includes("/AI/")),
+  const aiConceptItems = useMemo(
+    () =>
+      items.filter(
+        (item) =>
+          item.section === "ai-concept-ads" ||
+          (!item.section && item.videoSrc?.includes("/AI/")),
+      ),
+    [items],
   );
 
   const handleBack = () => {
     setActiveCategory(null);
+    setSelectedIndustry("All");
+    setSelectedFormat("all");
+    setSearchQuery("");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const activeItems =
+  const currentCategoryRawItems =
     activeCategory === "content-videos"
       ? contentVideoItems
       : activeCategory === "ai-concept-ads"
         ? aiConceptItems
         : [];
+
+  // Derive unique industries for category filter pills
+  const availableIndustries = useMemo(() => {
+    const set = new Set<string>();
+    currentCategoryRawItems.forEach((item) => {
+      const val = item.category || item.industry;
+      if (val) set.add(val);
+    });
+    return ["All", ...Array.from(set)];
+  }, [currentCategoryRawItems]);
+
+  // Filter items by industry, format, and search query
+  const filteredItems = useMemo(() => {
+    return currentCategoryRawItems.filter((item) => {
+      if (selectedIndustry !== "All") {
+        const itemCat = item.category || item.industry;
+        if (itemCat !== selectedIndustry) return false;
+      }
+      if (selectedFormat !== "all") {
+        if (selectedFormat === "9:16" && item.aspect !== "9:16") return false;
+        if (selectedFormat === "16:9" && item.aspect === "9:16") return false;
+      }
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const matchTitle = item.title?.toLowerCase().includes(q);
+        const matchClient = item.client?.toLowerCase().includes(q);
+        const matchCategory = item.category?.toLowerCase().includes(q);
+        const matchIndustry = item.industry?.toLowerCase().includes(q);
+        if (!matchTitle && !matchClient && !matchCategory && !matchIndustry) return false;
+      }
+      return true;
+    });
+  }, [currentCategoryRawItems, selectedIndustry, selectedFormat, searchQuery]);
 
   const activeSectionTitle =
     activeCategory === "content-videos"
@@ -681,22 +745,121 @@ export function Portfolio({ standalone = false }: { standalone?: boolean }) {
                   subtitle={activeSectionSubtitle}
                 />
 
-                {/* Video Grid */}
-                <motion.div
-                  layout
-                  className="grid auto-rows-fr grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5"
-                >
-                  <AnimatePresence mode="popLayout">
-                    {activeItems.map((item, i) => (
-                      <PortfolioCard
-                        key={item.id}
-                        item={item}
-                        index={i}
-                        onSelect={(selected) => setActiveModalItem(selected)}
-                      />
+                {/* Sub-filters & Search Toolbar */}
+                <div className="mb-10 flex flex-col gap-4 rounded-2xl bg-forest-deep/5 border border-forest-deep/10 p-4 md:flex-row md:items-center md:justify-between">
+                  {/* Industry Filter Pills */}
+                  <div className="flex flex-wrap items-center gap-2">
+                    {availableIndustries.map((ind) => (
+                      <button
+                        key={ind}
+                        onClick={() => setSelectedIndustry(ind)}
+                        className={cn(
+                          "rounded-full px-4 py-1.5 text-xs font-semibold transition-all duration-300",
+                          selectedIndustry === ind
+                            ? "bg-forest-deep text-white shadow-md"
+                            : "bg-white text-grey-dark border border-grey-light/60 hover:border-forest-deep/30 hover:bg-forest-deep/5",
+                        )}
+                      >
+                        {ind}
+                      </button>
                     ))}
-                  </AnimatePresence>
-                </motion.div>
+                  </div>
+
+                  {/* Format & Search controls */}
+                  <div className="flex items-center gap-3 self-end md:self-auto">
+                    {/* Format Filter Pills */}
+                    <div className="flex items-center rounded-xl bg-white p-1 border border-grey-light/60">
+                      <button
+                        onClick={() => setSelectedFormat("all")}
+                        className={cn(
+                          "rounded-lg px-3 py-1 text-xs font-semibold transition-colors",
+                          selectedFormat === "all"
+                            ? "bg-forest-deep text-white"
+                            : "text-grey-muted hover:text-forest-deep",
+                        )}
+                      >
+                        All Formats
+                      </button>
+                      <button
+                        onClick={() => setSelectedFormat("9:16")}
+                        className={cn(
+                          "flex items-center gap-1 rounded-lg px-3 py-1 text-xs font-semibold transition-colors",
+                          selectedFormat === "9:16"
+                            ? "bg-forest-deep text-white"
+                            : "text-grey-muted hover:text-forest-deep",
+                        )}
+                      >
+                        <Smartphone size={12} />
+                        Reels
+                      </button>
+                      <button
+                        onClick={() => setSelectedFormat("16:9")}
+                        className={cn(
+                          "flex items-center gap-1 rounded-lg px-3 py-1 text-xs font-semibold transition-colors",
+                          selectedFormat === "16:9"
+                            ? "bg-forest-deep text-white"
+                            : "text-grey-muted hover:text-forest-deep",
+                        )}
+                      >
+                        <Monitor size={12} />
+                        Films
+                      </button>
+                    </div>
+
+                    {/* Search Input */}
+                    <div className="relative">
+                      <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-grey-muted" />
+                      <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Search..."
+                        className="w-36 sm:w-44 rounded-xl bg-white border border-grey-light/60 py-1.5 pl-8 pr-3 text-xs font-medium text-forest-deep placeholder:text-grey-muted focus:border-forest-deep focus:outline-none"
+                      />
+                      {searchQuery && (
+                        <button
+                          onClick={() => setSearchQuery("")}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 text-grey-muted hover:text-forest-deep"
+                        >
+                          <X size={12} />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Video Masonry Grid */}
+                {filteredItems.length > 0 ? (
+                  <motion.div
+                    layout
+                    className="columns-1 sm:columns-2 lg:columns-3 gap-5 space-y-5"
+                  >
+                    <AnimatePresence mode="popLayout">
+                      {filteredItems.map((item, i) => (
+                        <PortfolioCard
+                          key={item.id}
+                          item={item}
+                          index={i}
+                          onSelect={(selected) => setActiveModalItem(selected)}
+                        />
+                      ))}
+                    </AnimatePresence>
+                  </motion.div>
+                ) : (
+                  <div className="my-16 text-center">
+                    <p className="font-sans text-lg text-grey-muted">No videos match your filters.</p>
+                    <button
+                      onClick={() => {
+                        setSelectedIndustry("All");
+                        setSelectedFormat("all");
+                        setSearchQuery("");
+                      }}
+                      className="mt-4 inline-flex items-center gap-2 font-sans text-sm font-semibold text-sage hover:underline"
+                    >
+                      Clear filters
+                    </button>
+                  </div>
+                )}
 
                 {/* CTA at bottom */}
                 {standalone && (
