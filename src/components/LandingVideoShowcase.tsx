@@ -184,13 +184,17 @@ export function LandingVideoShowcase() {
   // Filter 4 Content Videos + 4 AI Videos for Homepage Showcase
   const contentVideos = items
     .filter((item): item is PortfolioItem & { videoSrc: string } =>
-      Boolean(item.videoSrc) && (item.section === "content-videos" || (!item.section && !item.videoSrc.includes("/AI/")))
+      typeof item.videoSrc === "string" &&
+      item.videoSrc.length > 0 &&
+      (item.section === "content-videos" || (!item.section && !item.videoSrc.includes("/AI/")))
     )
     .slice(0, 4);
 
   const aiVideos = items
     .filter((item): item is PortfolioItem & { videoSrc: string } =>
-      Boolean(item.videoSrc) && (item.section === "ai-concept-ads" || item.videoSrc.includes("/AI/"))
+      typeof item.videoSrc === "string" &&
+      item.videoSrc.length > 0 &&
+      (item.section === "ai-concept-ads" || item.videoSrc.includes("/AI/"))
     )
     .slice(0, 4);
 
