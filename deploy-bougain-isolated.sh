@@ -47,12 +47,18 @@ NEXT_PUBLIC_SITE_URL=https://${DOMAIN}
 PORT=${APP_PORT}
 DATABASE_URL=postgresql://postgres:postgrespassword@localhost:5434/bougain_media
 NEXTAUTH_SECRET=supersecretbougainmediakey123!
+NEXTAUTH_URL=https://${DOMAIN}
+ADMIN_EMAIL=admin@bougainmedia.com
+ADMIN_PASSWORD=admin123
 EOF
 
 export NEXT_PUBLIC_SITE_URL="https://${DOMAIN}"
 export PORT="${APP_PORT}"
 export DATABASE_URL="postgresql://postgres:postgrespassword@localhost:5434/bougain_media"
 export NEXTAUTH_SECRET="supersecretbougainmediakey123!"
+export NEXTAUTH_URL="https://${DOMAIN}"
+export ADMIN_EMAIL="admin@bougainmedia.com"
+export ADMIN_PASSWORD="admin123"
 
 if command -v docker >/dev/null 2>&1; then
   echo "==> Ensuring PostgreSQL Docker container is running"
