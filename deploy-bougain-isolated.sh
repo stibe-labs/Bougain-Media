@@ -45,38 +45,28 @@ fi
 cat > .env.production <<EOF
 NEXT_PUBLIC_SITE_URL=https://${DOMAIN}
 PORT=${APP_PORT}
-DATABASE_URL=postgresql://postgres:postgrespassword@localhost:5432/bougain_media
+DATABASE_URL=postgresql://postgres:postgrespassword@localhost:5433/bougain_media
 NEXTAUTH_SECRET=supersecretbougainmediakey123!
 EOF
 
 export NEXT_PUBLIC_SITE_URL="https://${DOMAIN}"
 export PORT="${APP_PORT}"
-export DATABASE_URL="postgresql://postgres:postgrespassword@localhost:5432/bougain_media"
+export DATABASE_URL="postgresql://postgres:postgrespassword@localhost:5433/bougain_media"
 export NEXTAUTH_SECRET="supersecretbougainmediakey123!"
 
 if command -v docker >/dev/null 2>&1; then
   echo "==> Ensuring PostgreSQL Docker container is running"
   docker compose up -d || true
   sleep 3
-  if command -v docker >/dev/null 2>&1 && [ -f supabase/migrations/003_raw_postgres_schema.sql ]; then
+  if [ -f supabase/migrations/003_raw_postgres_schema.sql ]; then
     echo "==> Applying Postgres DB schema and seed data"
-    cat supabase/migrations/003_raw_postgres_schema.sql | docker exec -i $(docker ps -q -f name=db | head -1) psql -U postgres -d bougain_media || true
-    cat supabase/migrations/004_seed_data.sql | docker exec -i $(docker ps -q -f name=db | head -1) psql -U postgres -d bougain_media || true
+    cat supabase/migrations/003_raw_postgres_schema.sql | docker compose exec -T db psql -U postgres -d bougain_media || true
+    cat supabase/migrations/004_seed_data.sql | docker compose exec -T db psql -U postgres -d bougain_media || true
   fi
 fi
 
-if [ ! -d node_modules ]; then
-  echo "==> node_modules missing: running npm ci"
-  npm ci --legacy-peer-deps
-elif [ -z "$PREV_HEAD" ]; then
-  echo "==> Fresh checkout: running npm ci"
-  npm ci --legacy-peer-deps
-elif git diff --quiet "$PREV_HEAD" HEAD -- package-lock.json package.json; then
-  echo "==> package files unchanged: skipping npm ci"
-else
-  echo "==> package files changed: running npm ci"
-  npm ci --legacy-peer-deps
-fi
+echo "==> Running npm ci"
+npm ci --legacy-peer-deps
 
 npm run build
 
