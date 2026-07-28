@@ -186,7 +186,7 @@ function LightboxModal({
   );
 }
 
-/* ─── Lazy Video Card ─── */
+/* ─── Hover-to-Play Portfolio Card ─── */
 function PortfolioCard({
   item,
   index,
@@ -200,6 +200,7 @@ function PortfolioCard({
   const videoRef = useRef<HTMLVideoElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   // IntersectionObserver for lazy-loading
   useEffect(() => {
@@ -220,6 +221,23 @@ function PortfolioCard({
     return () => observer.disconnect();
   }, []);
 
+  const handleMouseEnter = () => {
+    if (videoRef.current) {
+      videoRef.current.muted = true;
+      const p = videoRef.current.play();
+      if (p !== undefined) {
+        p.then(() => setIsPlaying(true)).catch(() => {});
+      }
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (videoRef.current) {
+      videoRef.current.pause();
+      setIsPlaying(false);
+    }
+  };
+
   const handleTap = () => {
     onSelect(item);
   };
@@ -231,6 +249,8 @@ function PortfolioCard({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.65, delay: Math.min(index * 0.04, 0.3), ease }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       onClick={handleTap}
       className={cn(
         "group relative cursor-pointer overflow-hidden rounded-[1.5rem]",
@@ -238,7 +258,7 @@ function PortfolioCard({
         spanClasses[item.span],
       )}
     >
-      {/* Video — only load src when in viewport */}
+      {/* Video — only plays on hover or tap */}
       <div className="relative h-full w-full">
         {isVisible && item.videoSrc && (
           <video
@@ -248,13 +268,10 @@ function PortfolioCard({
                 el.defaultMuted = true;
                 el.setAttribute("playsinline", "true");
                 el.setAttribute("webkit-playsinline", "true");
-                const p = el.play();
-                if (p !== undefined) p.catch(() => {});
               }
               videoRef.current = el;
             }}
             src={encodeURI(item.videoSrc)}
-            autoPlay
             muted
             loop
             playsInline
@@ -271,14 +288,26 @@ function PortfolioCard({
         )}
       </div>
 
-      {/* Subtle hover gradient */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-40 transition-opacity duration-300 group-hover:opacity-75" />
+      {/* Subtle overlay gradient */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-85" />
 
-      {/* Play icon overlay hint on hover */}
-      <div className="absolute inset-0 flex items-center justify-center z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/20 backdrop-blur-md border border-white/30 shadow-xl">
-          <Play size={22} fill="white" className="text-white ml-0.5" />
-        </div>
+      {/* Play icon overlay hint on hover (hidden when video is playing) */}
+      <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+        {!isPlaying && (
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-md border border-white/30 shadow-xl transition-transform duration-300 group-hover:scale-110 group-hover:bg-sage group-hover:text-forest-deep">
+            <Play size={18} fill="currentColor" className="ml-0.5 text-white group-hover:text-forest-deep" />
+          </div>
+        )}
+      </div>
+
+      {/* Card Info Overlay */}
+      <div className="absolute bottom-4 left-4 right-4 z-10">
+        <span className="font-sans text-[11px] font-bold text-sage uppercase tracking-wider block truncate">
+          {item.client || item.industry || item.category}
+        </span>
+        <h3 className="font-display text-base font-bold text-white line-clamp-1 mt-0.5">
+          {item.title}
+        </h3>
       </div>
     </motion.div>
   );

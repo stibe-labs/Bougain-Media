@@ -13,23 +13,25 @@ import {
   ChevronLeft,
   ChevronRight,
   Smartphone,
+  Sparkles,
 } from "lucide-react";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { portfolio, type PortfolioItem } from "@/lib/constants";
 import { getPortfolioItems } from "@/lib/cms";
 import { cn } from "@/lib/utils";
 
-interface MobileReelCardProps {
+interface VideoCardProps {
   video: PortfolioItem & { videoSrc: string };
   index: number;
-  isActive: boolean;
-  onSelect: (index: number, e?: React.MouseEvent<HTMLButtonElement>) => void;
+  onSelect?: (video: PortfolioItem) => void;
 }
 
-function MobileReelCard({ video, index, isActive, onSelect }: MobileReelCardProps) {
+/* ─── Interactive Reel Card (Hover to Play on Desktop, Tap to Play on Mobile) ─── */
+function ReelCard({ video, index, onSelect }: VideoCardProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const cardRef = useRef<HTMLButtonElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
 
   // Lazy-load with IntersectionObserver
@@ -44,39 +46,68 @@ function MobileReelCard({ video, index, isActive, onSelect }: MobileReelCardProp
           observer.disconnect();
         }
       },
-      { rootMargin: "100px" },
+      { rootMargin: "150px" },
     );
 
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
 
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+    if (videoRef.current) {
+      videoRef.current.muted = true;
+      const p = videoRef.current.play();
+      if (p !== undefined) {
+        p.then(() => setIsPlaying(true)).catch(() => {});
+      }
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    if (videoRef.current) {
+      videoRef.current.pause();
+      setIsPlaying(false);
+    }
+  };
+
+  const handleCardClick = () => {
+    if (videoRef.current) {
+      if (isPlaying) {
+        videoRef.current.pause();
+        setIsPlaying(false);
+      } else {
+        videoRef.current.muted = true;
+        videoRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+      }
+    }
+    if (onSelect) onSelect(video);
+  };
+
   return (
-    <button
+    <div
       ref={cardRef}
-      onClick={(e) => onSelect(index, e)}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className={cn(
-        "group relative flex flex-col shrink-0 w-[200px] sm:w-[230px] transition-all duration-500 text-left",
-        isActive ? "scale-105" : "hover:scale-[1.02] opacity-85 hover:opacity-100"
-      )}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onClick={handleCardClick}
+      className="group relative flex flex-col shrink-0 w-[210px] sm:w-[240px] cursor-pointer transition-all duration-500 text-left select-none hover:scale-105"
     >
-      {/* Smartphone Frame Body */}
+      {/* Smartphone Frame Container */}
       <div
         className={cn(
-          "relative aspect-[9/16] w-full overflow-hidden rounded-[2.5rem] p-2 bg-gradient-to-b border-2 transition-all duration-500 shadow-2xl",
-          isActive
+          "relative aspect-[9/16] w-full overflow-hidden rounded-[2.2rem] p-2 bg-gradient-to-b border-2 transition-all duration-500 shadow-2xl",
+          isHovered || isPlaying
             ? "from-white/30 via-sage/40 to-sage/20 border-sage shadow-[0_0_35px_rgba(77,184,154,0.35)]"
             : "from-white/15 via-white/10 to-white/5 border-white/20 hover:border-white/40"
         )}
       >
-        {/* Inner Phone Screen */}
-        <div className="relative h-full w-full overflow-hidden rounded-[2rem] bg-forest-dark/50">
+        {/* Phone Screen */}
+        <div className="relative h-full w-full overflow-hidden rounded-[1.8rem] bg-forest-dark/50">
           {/* Speaker Notch */}
           <div className="absolute top-2 left-1/2 z-20 h-1 w-10 -translate-x-1/2 rounded-full bg-black/60 backdrop-blur-md border border-white/20" />
 
-          {/* Video — load src when visible and loop silently */}
+          {/* Video — only plays on hover or tap */}
           {isVisible && (
             <video
               ref={(el) => {
@@ -85,12 +116,10 @@ function MobileReelCard({ video, index, isActive, onSelect }: MobileReelCardProp
                   el.defaultMuted = true;
                   el.setAttribute("playsinline", "true");
                   el.setAttribute("webkit-playsinline", "true");
-                  el.play().catch(() => {});
                 }
                 videoRef.current = el;
               }}
               src={encodeURI(video.videoSrc)}
-              autoPlay
               muted
               loop
               playsInline
@@ -106,46 +135,41 @@ function MobileReelCard({ video, index, isActive, onSelect }: MobileReelCardProp
             </div>
           )}
 
-          {/* Screen Overlay Gradient */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+          {/* Overlay Gradient */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent pointer-events-none" />
 
-          {/* Status / Play Icon Overlay */}
-          <div className="absolute top-4 right-3 z-10">
-            {isActive ? (
-              <span className="rounded-full bg-sage px-2 py-0.5 font-sans text-[9px] font-extrabold uppercase tracking-wider text-forest-deep">
-                Active
-              </span>
-            ) : (
-              <div
-                className={cn(
-                  "flex h-7 w-7 items-center justify-center rounded-full transition-colors backdrop-blur-md",
-                  isHovered ? "bg-sage text-forest-deep" : "bg-black/50 text-white"
-                )}
-              >
-                <Play size={12} fill="currentColor" />
+          {/* Play Overlay Icon (shows when paused) */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+            {!isPlaying && (
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-md border border-white/25 transition-transform duration-300 group-hover:scale-110 group-hover:bg-sage group-hover:text-forest-deep">
+                <Play size={18} fill="currentColor" className="ml-0.5" />
               </div>
             )}
           </div>
+
+          {/* Card Info Badge */}
+          <div className="absolute bottom-3 left-3 right-3 z-10">
+            <span className="font-sans text-[10px] font-bold text-sage-light uppercase tracking-wider block truncate">
+              {video.client || video.industry || "Brand Reel"}
+            </span>
+            <p className="font-display text-xs font-bold text-white truncate mt-0.5">
+              {video.title}
+            </p>
+          </div>
         </div>
       </div>
-    </button>
+    </div>
   );
 }
 
 export function LandingVideoShowcase() {
   const [items, setItems] = useState<PortfolioItem[]>(portfolio.items);
-  const [activeVideoIndex, setActiveVideoIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const sliderRef = useRef<HTMLDivElement>(null);
-  const animRef = useRef<number | null>(null);
+  const mainVideoRef = useRef<HTMLVideoElement>(null);
 
-  // Drag-to-scroll state for desktop
-  const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollStart, setScrollStart] = useState(0);
-  const [hasMoved, setHasMoved] = useState(false);
+  const contentSliderRef = useRef<HTMLDivElement>(null);
+  const aiSliderRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     async function fetchDynamicData() {
@@ -157,334 +181,225 @@ export function LandingVideoShowcase() {
     fetchDynamicData();
   }, []);
 
-  const featuredVideos = items.filter(
-    (item): item is PortfolioItem & { videoSrc: string } =>
-      item.type === "video" && Boolean(item.videoSrc),
-  );
+  // Filter 4 Content Videos + 4 AI Videos for Homepage Showcase
+  const contentVideos = items
+    .filter((item): item is PortfolioItem & { videoSrc: string } =>
+      Boolean(item.videoSrc) && (item.section === "content-videos" || (!item.section && !item.videoSrc.includes("/AI/")))
+    )
+    .slice(0, 4);
 
-  const safeIndex = Math.min(activeVideoIndex, Math.max(0, featuredVideos.length - 1));
-  const currentVideo = featuredVideos[safeIndex] || featuredVideos[0];
+  const aiVideos = items
+    .filter((item): item is PortfolioItem & { videoSrc: string } =>
+      Boolean(item.videoSrc) && (item.section === "ai-concept-ads" || item.videoSrc.includes("/AI/"))
+    )
+    .slice(0, 4);
 
-  // Guaranteed video playback handling
-  useEffect(() => {
-    if (!currentVideo) return;
-    const video = videoRef.current;
-    if (!video) return;
-    video.muted = isMuted;
-
-    const playVideo = async () => {
-      try {
-        await video.play();
-        setIsPlaying(true);
-      } catch (err) {
-        setIsPlaying(false);
-      }
-    };
-
-    video.load();
-    playVideo();
-  }, [currentVideo?.id, isMuted]);
-
-  // Auto-advance to next video when main video ends
-  const handleMainVideoEnded = () => {
-    setActiveVideoIndex((prevIndex) => {
-      const nextIndex = (prevIndex + 1) % featuredVideos.length;
-
-      if (sliderRef.current) {
-        const container = sliderRef.current;
-        const card = container.children[nextIndex] as HTMLElement;
-        if (card) {
-          const cardOffsetLeft = card.offsetLeft;
-          const cardWidth = card.clientWidth;
-          const containerWidth = container.clientWidth;
-          const targetScroll = cardOffsetLeft - containerWidth / 2 + cardWidth / 2;
-          smoothScrollTo(Math.max(0, targetScroll), 750);
-        }
-      }
-
-      return nextIndex;
-    });
+  // Standalone Main Featured Showcase Video (Independent of cards)
+  const standaloneHeroVideo = contentVideos[0] || aiVideos[0] || {
+    id: "hero-featured",
+    title: "Crown Plaza Turn Up Aftermovie",
+    client: "Crowne Plaza Hotels",
+    videoSrc: "/videos/Content_video_webm/TURN UP CROWN PLAZA.webm",
   };
 
-  const smoothScrollTo = (targetScrollLeft: number, duration = 750) => {
-    if (!sliderRef.current) return;
-    const container = sliderRef.current;
-    const startScrollLeft = container.scrollLeft;
-    const maxScroll = container.scrollWidth - container.clientWidth;
-    const boundedTarget = Math.max(0, Math.min(targetScrollLeft, maxScroll));
-    const distance = boundedTarget - startScrollLeft;
-    const startTime = performance.now();
-
-    if (animRef.current) cancelAnimationFrame(animRef.current);
-
-    const easeOutQuart = (t: number) => 1 - Math.pow(1 - t, 4);
-
-    const step = (currentTime: number) => {
-      const elapsed = currentTime - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const easedProgress = easeOutQuart(progress);
-
-      container.scrollLeft = startScrollLeft + distance * easedProgress;
-
-      if (progress < 1) {
-        animRef.current = requestAnimationFrame(step);
-      }
-    };
-
-    animRef.current = requestAnimationFrame(step);
-  };
-
-  const scrollSlider = (direction: "left" | "right") => {
-    if (!sliderRef.current) return;
-    const scrollAmount = direction === "left" ? -360 : 360;
-    smoothScrollTo(sliderRef.current.scrollLeft + scrollAmount, 750);
-  };
-
-  const handleSelectVideo = (index: number, e?: React.MouseEvent<HTMLButtonElement>) => {
-    if (hasMoved) return;
-    setActiveVideoIndex(index);
-    setIsPlaying(true);
-
-    if (sliderRef.current && e?.currentTarget) {
-      const container = sliderRef.current;
-      const card = e.currentTarget;
-      const cardOffsetLeft = card.offsetLeft;
-      const cardWidth = card.clientWidth;
-      const containerWidth = container.clientWidth;
-      const targetScroll = cardOffsetLeft - containerWidth / 2 + cardWidth / 2;
-
-      smoothScrollTo(Math.max(0, targetScroll), 800);
-    }
-  };
-
-  const togglePlay = () => {
-    if (!videoRef.current) return;
+  const togglePlayMain = () => {
+    if (!mainVideoRef.current) return;
     if (isPlaying) {
-      videoRef.current.pause();
+      mainVideoRef.current.pause();
       setIsPlaying(false);
     } else {
-      videoRef.current.play().catch(() => {});
+      mainVideoRef.current.play().catch(() => {});
       setIsPlaying(true);
     }
   };
 
-  const toggleMute = () => {
-    if (!videoRef.current) return;
-    videoRef.current.muted = !isMuted;
+  const toggleMuteMain = () => {
+    if (!mainVideoRef.current) return;
+    mainVideoRef.current.muted = !isMuted;
     setIsMuted(!isMuted);
   };
 
-  // Mouse Drag Events
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if (!sliderRef.current) return;
-    setIsDragging(true);
-    setHasMoved(false);
-    setStartX(e.pageX - sliderRef.current.offsetLeft);
-    setScrollStart(sliderRef.current.scrollLeft);
+  const scrollContainer = (ref: React.RefObject<HTMLDivElement | null>, direction: "left" | "right") => {
+    if (!ref.current) return;
+    const amount = direction === "left" ? -300 : 300;
+    ref.current.scrollBy({ left: amount, behavior: "smooth" });
   };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging || !sliderRef.current) return;
-    e.preventDefault();
-    const x = e.pageX - sliderRef.current.offsetLeft;
-    const walk = (x - startX) * 1.4;
-    if (Math.abs(walk) > 5) {
-      setHasMoved(true);
-    }
-    sliderRef.current.scrollLeft = scrollStart - walk;
-  };
-
-  const handleMouseUpOrLeave = () => {
-    setIsDragging(false);
-  };
-
-  const handleWheel = (e: React.WheelEvent) => {
-    if (!sliderRef.current) return;
-    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
-    e.preventDefault();
-    const scrollDelta = e.deltaY * 2.2;
-    smoothScrollTo(sliderRef.current.scrollLeft + scrollDelta, 600);
-  };
-
-  if (!featuredVideos.length || !currentVideo) return null;
 
   return (
-    <section className="content-auto relative overflow-hidden bg-forest-deep py-20 text-white md:py-28 lg:py-32">
-      {/* Background ambient accents */}
-      <div className="pointer-events-none absolute -left-20 top-1/3 h-96 w-96 rounded-full bg-sage/10 blur-[140px]" aria-hidden />
-      <div className="pointer-events-none absolute right-0 bottom-10 h-80 w-80 rounded-full bg-sage/15 blur-[120px]" aria-hidden />
-      <div className="bg-grid absolute inset-0 opacity-15" aria-hidden />
-      <div className="grain-texture absolute inset-0" aria-hidden />
+    <section className="relative overflow-hidden bg-forest-deep py-20 md:py-32">
+      {/* Ambient background lighting */}
+      <div
+        className="pointer-events-none absolute left-1/2 top-10 h-[32rem] w-[50rem] -translate-x-1/2 rounded-full bg-sage/10 blur-[130px]"
+        aria-hidden
+      />
+      <div className="bg-grid absolute inset-0 opacity-15" />
+      <div className="grain-texture absolute inset-0" />
 
-      <div className="container-wide relative z-10 px-6 sm:px-8 md:px-12 lg:px-16">
-        {/* Section Header */}
-        <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
-          <ScrollReveal>
-            <div className="inline-flex items-center gap-2 rounded-full bg-sage/20 px-3.5 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-sage-light">
-              <Film size={14} />
-              <span>Work In Motion</span>
-            </div>
-            <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl">
-              Campaign Films &<br />
-              <span className="text-sage">Mobile Video Reels</span>
-            </h2>
-          </ScrollReveal>
+      <div className="container-wide relative z-10">
+        {/* Header */}
+        <ScrollReveal className="text-center max-w-3xl mx-auto mb-14 md:mb-20">
+          <p className="font-sans text-xs font-semibold uppercase tracking-[0.28em] text-sage flex items-center justify-center gap-2">
+            <Film size={14} />
+            Featured Showreels
+          </p>
+          <h2 className="mt-4 font-display text-4xl font-bold tracking-tight text-white md:text-5xl lg:text-6xl">
+            Craft in Motion
+          </h2>
+          <p className="mt-5 font-sans text-base leading-relaxed text-white/65 md:text-lg">
+            Hover or tap to preview featured commercial films and AI concept ads.
+          </p>
+        </ScrollReveal>
 
-          <ScrollReveal delay={80}>
-            <p className="max-w-md font-sans text-base leading-relaxed text-white/65 md:text-lg">
-              High-impact mobile reels and brand films engineered for scroll-stopping social engagement.
-            </p>
-          </ScrollReveal>
-        </div>
+        {/* ── Standalone Main Featured Brand Video ── */}
+        <ScrollReveal className="mb-20">
+          <div className="relative mx-auto max-w-5xl overflow-hidden rounded-3xl border border-white/15 bg-black/60 shadow-[0_25px_60px_rgba(0,0,0,0.5)]">
+            <div className="relative aspect-video w-full">
+              <video
+                ref={(el) => {
+                  if (el) {
+                    el.muted = isMuted;
+                    el.defaultMuted = isMuted;
+                    el.setAttribute("playsinline", "true");
+                    el.setAttribute("webkit-playsinline", "true");
+                    const p = el.play();
+                    if (p !== undefined) p.catch(() => {});
+                  }
+                  mainVideoRef.current = el;
+                }}
+                src={encodeURI(standaloneHeroVideo.videoSrc)}
+                autoPlay
+                loop
+                muted={isMuted}
+                playsInline
+                preload="auto"
+                onClick={togglePlayMain}
+                className="h-full w-full object-cover cursor-pointer"
+              />
 
-        {/* Featured Main Video Screen */}
-        <ScrollReveal delay={120} className="mt-10 md:mt-14">
-          <div className="relative overflow-hidden rounded-3xl bg-black border border-white/15 shadow-[0_25px_80px_rgba(0,0,0,0.6)]">
-            <div className="relative aspect-video w-full min-h-[220px] sm:min-h-[320px] max-h-[620px] bg-black">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={currentVideo.id}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.4 }}
-                  className="h-full w-full"
-                >
-                  {/* Main Video */}
-                  <video
-                    ref={(el) => {
-                      if (el) {
-                        el.setAttribute("playsinline", "true");
-                        el.setAttribute("webkit-playsinline", "true");
-                        el.setAttribute("muted", "true");
-                        el.muted = isMuted;
-                      }
-                      videoRef.current = el;
-                    }}
-                    src={encodeURI(currentVideo.videoSrc)}
-                    autoPlay
-                    muted={isMuted}
-                    playsInline
-                    preload="auto"
-                    onEnded={handleMainVideoEnded}
-                    onClick={togglePlay}
-                    className="h-full w-full object-cover cursor-pointer"
-                  />
-                </motion.div>
-              </AnimatePresence>
-
-              {/* Tap-to-Play Overlay */}
-              {!isPlaying && (
-                <div
-                  onClick={togglePlay}
-                  className="absolute inset-0 z-20 flex items-center justify-center bg-black/40 cursor-pointer backdrop-blur-[2px]"
-                >
-                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-sage text-forest-deep shadow-2xl transition-transform hover:scale-110 active:scale-95">
-                    <Play size={28} fill="currentColor" className="ml-1" />
+              {/* Controls bar */}
+              <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between rounded-2xl bg-forest-deep/80 p-3.5 backdrop-blur-md border border-white/10 z-20">
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={togglePlayMain}
+                    className="flex h-9 w-9 items-center justify-center rounded-xl bg-sage text-forest-deep transition-transform hover:scale-105"
+                  >
+                    {isPlaying ? <Pause size={16} fill="currentColor" /> : <Play size={16} fill="currentColor" className="ml-0.5" />}
+                  </button>
+                  <div>
+                    <span className="font-sans text-[10px] font-bold uppercase tracking-wider text-sage-light block">
+                      Featured Brand Film
+                    </span>
+                    <h3 className="font-display text-sm font-bold text-white line-clamp-1">
+                      {standaloneHeroVideo.title}
+                    </h3>
                   </div>
                 </div>
-              )}
 
-              {/* Status Badge */}
-              <div className="absolute top-3 left-3 sm:top-6 sm:left-6 z-10 flex items-center gap-2 rounded-full bg-black/60 px-3 py-1 sm:px-3.5 sm:py-1.5 backdrop-blur-md border border-white/10 text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-white">
-                <span className="h-2 w-2 rounded-full bg-sage animate-pulse" />
-                <span>Now Playing • {safeIndex + 1} of {featuredVideos.length}</span>
-              </div>
-
-              {/* Controls at Top Right */}
-              <div className="absolute top-3 right-3 sm:top-6 sm:right-6 z-10 flex items-center gap-2 sm:gap-3">
                 <button
-                  onClick={toggleMute}
-                  aria-label={isMuted ? "Unmute video" : "Mute video"}
-                  className="flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-md border border-white/10 transition-all hover:bg-white/20 hover:scale-105"
+                  onClick={toggleMuteMain}
+                  className="flex items-center gap-2 rounded-xl bg-white/10 px-3.5 py-2 font-sans text-xs font-semibold text-white hover:bg-white/20 transition-all border border-white/10"
                 >
-                  {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
-                </button>
-                <button
-                  onClick={togglePlay}
-                  aria-label={isPlaying ? "Pause video" : "Play video"}
-                  className="flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-md border border-white/10 transition-all hover:bg-white/20 hover:scale-105"
-                >
-                  {isPlaying ? <Pause size={16} /> : <Play size={16} />}
+                  {isMuted ? <VolumeX size={15} /> : <Volume2 size={15} />}
+                  <span className="hidden sm:inline">{isMuted ? "Unmute" : "Mute"}</span>
                 </button>
               </div>
             </div>
           </div>
         </ScrollReveal>
 
-        {/* Mobile Phone Screen Reel Slider Header */}
-        <ScrollReveal delay={160} className="mt-14">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Smartphone size={20} className="text-sage" />
-              <div>
-                <p className="font-sans text-xs font-semibold uppercase tracking-[0.25em] text-sage">
-                  Mobile Screen Showcase
-                </p>
-                <h3 className="mt-0.5 font-display text-xl font-bold text-white md:text-2xl">
-                  Hover to Preview Mobile Video Reels
-                </h3>
-              </div>
+        {/* ── Section 1: Content Videos (4 Cards) ── */}
+        <div className="mb-16 md:mb-24">
+          <div className="flex items-center justify-between mb-8 px-2">
+            <div>
+              <p className="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-sage">
+                Content Studio
+              </p>
+              <h3 className="font-display text-2xl font-bold text-white md:text-3xl mt-1">
+                Content Videos
+              </h3>
             </div>
 
-            {/* Nav Arrows */}
             <div className="flex items-center gap-2">
               <button
-                onClick={() => scrollSlider("left")}
-                aria-label="Previous mobile reel"
-                className="flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-md transition-all hover:bg-white/25 active:scale-95"
+                onClick={() => scrollContainer(contentSliderRef, "left")}
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white transition-colors hover:bg-white/15"
+                aria-label="Previous Content Videos"
               >
-                <ChevronLeft size={22} />
+                <ChevronLeft size={18} />
               </button>
               <button
-                onClick={() => scrollSlider("right")}
-                aria-label="Next mobile reel"
-                className="flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-md transition-all hover:bg-white/25 active:scale-95"
+                onClick={() => scrollContainer(contentSliderRef, "right")}
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white transition-colors hover:bg-white/15"
+                aria-label="Next Content Videos"
               >
-                <ChevronRight size={22} />
+                <ChevronRight size={18} />
               </button>
             </div>
           </div>
 
-          {/* Smartphone Frame Cards Carousel */}
           <div
-            ref={sliderRef}
-            onWheel={handleWheel}
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUpOrLeave}
-            onMouseLeave={handleMouseUpOrLeave}
-            className={cn(
-              "-mx-4 px-4 sm:-mx-6 sm:px-6 md:-mx-8 md:px-8 mt-6 flex gap-6 overflow-x-auto py-8 scrollbar-none overscroll-x-contain select-none",
-              isDragging ? "cursor-grabbing" : "cursor-grab"
-            )}
+            ref={contentSliderRef}
+            className="flex gap-5 overflow-x-auto pb-4 scrollbar-none snap-x snap-mandatory"
           >
-            {featuredVideos.map((video, idx) => {
-              const isActive = idx === safeIndex;
-              return (
-                <MobileReelCard
-                  key={video.id}
-                  video={video}
-                  index={idx}
-                  isActive={isActive}
-                  onSelect={handleSelectVideo}
-                />
-              );
-            })}
+            {contentVideos.map((video, idx) => (
+              <div key={video.id} className="snap-start">
+                <ReelCard video={video} index={idx} />
+              </div>
+            ))}
           </div>
-        </ScrollReveal>
+        </div>
 
-        {/* Bottom CTA */}
-        <ScrollReveal delay={200} className="mt-12 flex flex-col justify-between gap-4 border-t border-white/10 pt-8 text-center sm:flex-row sm:items-center sm:text-left">
-          <p className="font-sans text-sm text-white/70">
-            Need custom video production or brand shoots for your business?
-          </p>
+        {/* ── Section 2: AI Concept Ads (4 Cards) ── */}
+        <div className="mb-16 md:mb-20">
+          <div className="flex items-center justify-between mb-8 px-2">
+            <div>
+              <p className="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-sage flex items-center gap-1.5">
+                <Sparkles size={13} />
+                AI Creative Lab
+              </p>
+              <h3 className="font-display text-2xl font-bold text-white md:text-3xl mt-1">
+                AI Concept Ads
+              </h3>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => scrollContainer(aiSliderRef, "left")}
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white transition-colors hover:bg-white/15"
+                aria-label="Previous AI Concept Ads"
+              >
+                <ChevronLeft size={18} />
+              </button>
+              <button
+                onClick={() => scrollContainer(aiSliderRef, "right")}
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white transition-colors hover:bg-white/15"
+                aria-label="Next AI Concept Ads"
+              >
+                <ChevronRight size={18} />
+              </button>
+            </div>
+          </div>
+
+          <div
+            ref={aiSliderRef}
+            className="flex gap-5 overflow-x-auto pb-4 scrollbar-none snap-x snap-mandatory"
+          >
+            {aiVideos.map((video, idx) => (
+              <div key={video.id} className="snap-start">
+                <ReelCard video={video} index={idx} />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Explore Full Portfolio CTA */}
+        <ScrollReveal className="text-center mt-12">
           <Link
             href="/portfolio"
-            className="inline-flex items-center justify-center gap-2 font-sans text-sm font-semibold text-sage link-underline sm:justify-start"
+            className="inline-flex items-center gap-2 rounded-2xl bg-sage px-8 py-4 font-sans text-sm font-bold text-forest-deep hover:bg-sage-light transition-all shadow-xl hover:scale-105"
           >
-            Explore all portfolio videos
-            <ArrowUpRight size={16} />
+            Explore Full Portfolio (39+ Reels)
+            <ArrowUpRight size={18} />
           </Link>
         </ScrollReveal>
       </div>
