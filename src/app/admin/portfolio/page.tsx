@@ -199,11 +199,21 @@ export default function AdminPortfolioPage() {
                 <div className="relative aspect-video w-full overflow-hidden rounded-2xl bg-black/40">
                   {item.videoSrc ? (
                     <video
+                      ref={(el) => {
+                        if (el) {
+                          el.muted = true;
+                          el.defaultMuted = true;
+                          el.setAttribute("playsinline", "true");
+                          el.setAttribute("webkit-playsinline", "true");
+                          el.play().catch(() => {});
+                        }
+                      }}
                       src={item.videoSrc}
                       autoPlay
                       muted
                       loop
                       playsInline
+                      preload="auto"
                       className="h-full w-full object-cover"
                     />
                   ) : item.image ? (
