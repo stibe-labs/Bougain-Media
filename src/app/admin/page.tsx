@@ -82,7 +82,7 @@ export default function AdminDashboardPage() {
           ) : (
             <Database size={16} />
           )}
-          Seed Supabase Database
+          Seed PostgreSQL Database
         </button>
       </div>
 

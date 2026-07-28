@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { getSiteSettings, uploadMediaAsset } from "@/lib/cms";
 import { Loader2, Check, Upload, Settings, Sparkles, Mail, Phone, MapPin } from "lucide-react";
 
@@ -61,17 +60,17 @@ export default function AdminSiteSettingsPage() {
     setMessage(null);
 
     try {
-      const supabase = createClient();
+      await fetch("/api/site-settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ key: "hero", value: heroData }),
+      });
 
-      const { error: heroErr } = await supabase
-        .from("site_settings")
-        .upsert({ key: "hero", value: heroData, updated_at: new Date().toISOString() });
-
-      const { error: contactErr } = await supabase
-        .from("site_settings")
-        .upsert({ key: "contact", value: contactData, updated_at: new Date().toISOString() });
-
-      if (heroErr || contactErr) throw heroErr || contactErr;
+      await fetch("/api/site-settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ key: "contact", value: contactData }),
+      });
 
       setMessage({ type: "success", text: "Site customization settings saved!" });
     } catch (err: any) {

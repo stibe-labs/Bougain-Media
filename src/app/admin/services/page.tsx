@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
-import { getServices, uploadMediaAsset, ServiceItem } from "@/lib/cms";
+import { getServices, saveServiceItem, uploadMediaAsset, ServiceItem } from "@/lib/cms";
 import { Loader2, Plus, Edit2, Trash2, Check, X, Upload, Layers } from "lucide-react";
 
 export default function AdminServicesPage() {
@@ -59,23 +58,7 @@ export default function AdminServicesPage() {
     setMessage(null);
 
     try {
-      const supabase = createClient();
-      const id = editingService.id || editingService.title.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-
-      const payload = {
-        id,
-        title: editingService.title,
-        description: editingService.description || "",
-        tag: editingService.tag || "Creative",
-        image: editingService.image || "/images/sevices/content creation.png",
-        video: editingService.video || null,
-        features: editingService.features || [],
-        stats: editingService.stats || [],
-        updated_at: new Date().toISOString(),
-      };
-
-      const { error } = await supabase.from("services").upsert(payload, { onConflict: "id" });
-      if (error) throw error;
+      await saveServiceItem(editingService);
 
       setMessage({ type: "success", text: "Service updated successfully!" });
       setEditingService(null);

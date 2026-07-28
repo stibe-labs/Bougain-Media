@@ -45,14 +45,14 @@ fi
 cat > .env.production <<EOF
 NEXT_PUBLIC_SITE_URL=https://${DOMAIN}
 PORT=${APP_PORT}
-NEXT_PUBLIC_SUPABASE_URL=${SUPABASE_URL_VAL}
-NEXT_PUBLIC_SUPABASE_ANON_KEY=${SUPABASE_KEY_VAL}
+DATABASE_URL=postgresql://postgres:postgrespassword@localhost:5432/bougain_media
+NEXTAUTH_SECRET=supersecretbougainmediakey123!
 EOF
 
 export NEXT_PUBLIC_SITE_URL="https://${DOMAIN}"
 export PORT="${APP_PORT}"
-export NEXT_PUBLIC_SUPABASE_URL="${SUPABASE_URL_VAL}"
-export NEXT_PUBLIC_SUPABASE_ANON_KEY="${SUPABASE_KEY_VAL}"
+export DATABASE_URL="postgresql://postgres:postgrespassword@localhost:5432/bougain_media"
+export NEXTAUTH_SECRET="supersecretbougainmediakey123!"
 
 if [ ! -d node_modules ]; then
   echo "==> node_modules missing: running npm ci"

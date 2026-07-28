@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { signIn } from "next-auth/react";
 import { Lock, Mail, Loader2, ArrowRight } from "lucide-react";
 
 export default function AdminLoginPage() {
@@ -18,14 +18,14 @@ export default function AdminLoginPage() {
     setError(null);
 
     try {
-      const supabase = createClient();
-      const { error: authError } = await supabase.auth.signInWithPassword({
+      const res = await signIn("credentials", {
+        redirect: false,
         email,
         password,
       });
 
-      if (authError) {
-        setError(authError.message);
+      if (res?.error) {
+        setError("Invalid email or password");
       } else {
         router.push("/admin");
         router.refresh();

@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
-import { getPortfolioItems, uploadMediaAsset } from "@/lib/cms";
+import { getPortfolioItems, savePortfolioItem, deletePortfolioItem, uploadMediaAsset } from "@/lib/cms";
 import { PortfolioItem, portfolioCategories } from "@/lib/constants";
 import {
   Plus,
@@ -98,27 +97,7 @@ export default function AdminPortfolioPage() {
     setMessage(null);
 
     try {
-      const supabase = createClient();
-      const payload = {
-        id: editingItem.id,
-        title: editingItem.title,
-        client: editingItem.client,
-        category: editingItem.category,
-        type: editingItem.type || "video",
-        industry: editingItem.industry || "Marketing",
-        result: editingItem.result || "",
-        description: editingItem.description || "",
-        image: editingItem.image || "/images/portfolio-social.png",
-        video_src: editingItem.videoSrc || null,
-        aspect: editingItem.aspect || "16:9",
-        span: editingItem.span || "md",
-        featured: editingItem.featured || false,
-        updated_at: new Date().toISOString(),
-      };
-
-      const { error } = await supabase.from("portfolio_items").upsert(payload, { onConflict: "id" });
-
-      if (error) throw error;
+      await savePortfolioItem(editingItem);
 
       setMessage({ type: "success", text: "Portfolio item saved successfully!" });
       setEditingItem(null);
@@ -134,9 +113,7 @@ export default function AdminPortfolioPage() {
     if (!confirm("Are you sure you want to delete this portfolio project?")) return;
 
     try {
-      const supabase = createClient();
-      const { error } = await supabase.from("portfolio_items").delete().eq("id", id);
-      if (error) throw error;
+      await deletePortfolioItem(id);
       setMessage({ type: "success", text: "Project deleted." });
       await loadData();
     } catch (err: any) {

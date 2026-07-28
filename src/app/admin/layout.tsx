@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { signOut } from "next-auth/react";
 import {
   LayoutDashboard,
   Film,
@@ -33,10 +33,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   const handleSignOut = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    router.push("/admin/login");
-    router.refresh();
+    await signOut({ callbackUrl: "/admin/login" });
   };
 
   return (

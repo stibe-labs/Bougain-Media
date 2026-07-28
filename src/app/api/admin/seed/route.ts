@@ -1,71 +1,89 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { query } from "@/lib/db";
 import { portfolio, services, hero, contact } from "@/lib/constants";
 
 export async function POST() {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
   try {
     // 1. Seed Portfolio Items
-    const portfolioPayload = portfolio.items.map((item, index) => ({
-      id: item.id,
-      title: item.title,
-      client: item.client,
-      category: item.category,
-      type: item.type,
-      industry: item.industry,
-      result: item.result,
-      description: item.description,
-      image: item.image,
-      video_src: item.videoSrc || null,
-      aspect: item.aspect || "16:9",
-      span: item.span || "md",
-      featured: item.featured || false,
-      order_index: index,
-    }));
-
-    const { error: portfolioError } = await supabase
-      .from("portfolio_items")
-      .upsert(portfolioPayload, { onConflict: "id" });
-
-    if (portfolioError) throw portfolioError;
+    for (let index = 0; index < portfolio.items.length; index++) {
+      const item = portfolio.items[index];
+      const sql = `
+        INSERT INTO portfolio_items (id, title, client, category, type, industry, result, description, image, video_src, aspect, span, featured, order_index, updated_at)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, now())
+        ON CONFLICT (id) DO UPDATE SET
+          title = EXCLUDED.title,
+          client = EXCLUDED.client,
+          category = EXCLUDED.category,
+          type = EXCLUDED.type,
+          industry = EXCLUDED.industry,
+          result = EXCLUDED.result,
+          description = EXCLUDED.description,
+          image = EXCLUDED.image,
+          video_src = EXCLUDED.video_src,
+          aspect = EXCLUDED.aspect,
+          span = EXCLUDED.span,
+          featured = EXCLUDED.featured,
+          order_index = EXCLUDED.order_index,
+          updated_at = now();
+      `;
+      await query(sql, [
+        item.id,
+        item.title,
+        item.client,
+        item.category,
+        item.type,
+        item.industry,
+        item.result,
+        item.description,
+        item.image,
+        item.videoSrc || null,
+        item.aspect || "16:9",
+        item.span || "md",
+        item.featured || false,
+        index,
+      ]);
+    }
 
     // 2. Seed Services
-    const servicesPayload = services.items.map((item, index) => ({
-      id: item.title.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-      title: item.title,
-      description: item.description,
-      tag: item.tag,
-      image: item.image,
-      features: item.features,
-      stats: item.stats,
-      order_index: index,
-    }));
-
-    const { error: servicesError } = await supabase
-      .from("services")
-      .upsert(servicesPayload, { onConflict: "id" });
-
-    if (servicesError) throw servicesError;
+    for (let index = 0; index < services.items.length; index++) {
+      const item = services.items[index];
+      const id = item.title.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+      const sql = `
+        INSERT INTO services (id, title, description, tag, image, features, stats, order_index, updated_at)
+        VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7::jsonb, $8, now())
+        ON CONFLICT (id) DO UPDATE SET
+          title = EXCLUDED.title,
+          description = EXCLUDED.description,
+          tag = EXCLUDED.tag,
+          image = EXCLUDED.image,
+          features = EXCLUDED.features,
+          stats = EXCLUDED.stats,
+          order_index = EXCLUDED.order_index,
+          updated_at = now();
+      `;
+      await query(sql, [
+        id,
+        item.title,
+        item.description,
+        item.tag,
+        item.image,
+        JSON.stringify(item.features || []),
+        JSON.stringify(item.stats || []),
+        index,
+      ]);
+    }
 
     // 3. Seed Site Settings
-    await supabase.from("site_settings").upsert(
-      [
-        { key: "hero", value: hero },
-        { key: "contact", value: contact },
-      ],
-      { onConflict: "key" }
+    await query(
+      "INSERT INTO site_settings (key, value, updated_at) VALUES ('hero', $1::jsonb, now()) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value",
+      [JSON.stringify(hero)]
+    );
+    await query(
+      "INSERT INTO site_settings (key, value, updated_at) VALUES ('contact', $1::jsonb, now()) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value",
+      [JSON.stringify(contact)]
     );
 
-    return NextResponse.json({ success: true, message: "Database seeded successfully!" });
+    return NextResponse.json({ success: true, message: "PostgreSQL database seeded successfully!" });
   } catch (err: any) {
     return NextResponse.json({ error: err.message || "Failed to seed database" }, { status: 500 });
   }

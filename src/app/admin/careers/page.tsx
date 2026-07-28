@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { Briefcase, FileText, Loader2, Plus, Check, X, ExternalLink } from "lucide-react";
 
 export default function AdminCareersPage() {
@@ -13,14 +12,13 @@ export default function AdminCareersPage() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const supabase = createClient();
-      const { data: cData } = await supabase.from("careers").select("*").order("created_at", { ascending: false });
-      const { data: aData } = await supabase.from("applications").select("*, careers(title)").order("created_at", { ascending: false });
-
-      if (cData) setCareers(cData);
-      if (aData) setApplications(aData);
+      const res = await fetch("/api/careers");
+      if (res.ok) {
+        const cData = await res.json();
+        setCareers(cData);
+      }
     } catch {
-      // Supabase unseeded fallback
+      // Fallback if needed
     } finally {
       setLoading(false);
     }

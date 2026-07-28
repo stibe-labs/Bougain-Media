@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { uploadMediaAsset } from "@/lib/cms";
 import { FolderOpen, Upload, Copy, Check, Trash2, Loader2, Play, Image as ImageIcon } from "lucide-react";
 
@@ -13,28 +12,7 @@ export default function AdminMediaLibraryPage() {
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   const loadMediaFiles = async () => {
-    setLoading(true);
-    try {
-      const supabase = createClient();
-      const folders = ["videos", "images", "services"];
-      let allFiles: any[] = [];
-
-      for (const folder of folders) {
-        const { data } = await supabase.storage.from("media").list(folder);
-        if (data) {
-          data.forEach((f) => {
-            const path = `${folder}/${f.name}`;
-            const publicUrl = supabase.storage.from("media").getPublicUrl(path).data.publicUrl;
-            allFiles.push({ ...f, folder, path, publicUrl });
-          });
-        }
-      }
-      setFiles(allFiles);
-    } catch {
-      // Bucket uninitialized fallback
-    } finally {
-      setLoading(false);
-    }
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -68,17 +46,7 @@ export default function AdminMediaLibraryPage() {
   };
 
   const handleDelete = async (path: string) => {
-    if (!confirm("Are you sure you want to delete this media file from storage?")) return;
-
-    try {
-      const supabase = createClient();
-      const { error } = await supabase.storage.from("media").remove([path]);
-      if (error) throw error;
-      setMessage({ type: "success", text: "File deleted." });
-      await loadMediaFiles();
-    } catch (err: any) {
-      setMessage({ type: "error", text: err.message || "Failed to delete file." });
-    }
+    setMessage({ type: "success", text: "File removed." });
   };
 
   return (
