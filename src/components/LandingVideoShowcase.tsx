@@ -16,14 +16,8 @@ import {
 } from "lucide-react";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { portfolio, type PortfolioItem } from "@/lib/constants";
+import { getPortfolioItems } from "@/lib/cms";
 import { cn } from "@/lib/utils";
-
-// Filter video items that have a valid videoSrc
-const featuredVideos = portfolio.items.filter(
-  (item): item is PortfolioItem & { videoSrc: string } =>
-    item.type === "video" &&
-    Boolean(item.videoSrc),
-);
 
 interface MobileReelCardProps {
   video: PortfolioItem & { videoSrc: string };
@@ -139,6 +133,7 @@ function MobileReelCard({ video, index, isActive, onSelect }: MobileReelCardProp
 }
 
 export function LandingVideoShowcase() {
+  const [items, setItems] = useState<PortfolioItem[]>(portfolio.items);
   const [activeVideoIndex, setActiveVideoIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
@@ -152,10 +147,27 @@ export function LandingVideoShowcase() {
   const [scrollStart, setScrollStart] = useState(0);
   const [hasMoved, setHasMoved] = useState(false);
 
-  const currentVideo = featuredVideos[activeVideoIndex] || featuredVideos[0];
+  useEffect(() => {
+    async function fetchDynamicData() {
+      const data = await getPortfolioItems();
+      if (data && data.length > 0) {
+        setItems(data.filter((item) => Boolean(item.videoSrc)));
+      }
+    }
+    fetchDynamicData();
+  }, []);
+
+  const featuredVideos = items.filter(
+    (item): item is PortfolioItem & { videoSrc: string } =>
+      item.type === "video" && Boolean(item.videoSrc),
+  );
+
+  const safeIndex = Math.min(activeVideoIndex, Math.max(0, featuredVideos.length - 1));
+  const currentVideo = featuredVideos[safeIndex] || featuredVideos[0];
 
   // Guaranteed video playback handling
   useEffect(() => {
+    if (!currentVideo) return;
     const video = videoRef.current;
     if (!video) return;
     video.muted = isMuted;
@@ -171,7 +183,7 @@ export function LandingVideoShowcase() {
 
     video.load();
     playVideo();
-  }, [currentVideo.id, isMuted]);
+  }, [currentVideo?.id, isMuted]);
 
   // Auto-advance to next video when main video ends
   const handleMainVideoEnded = () => {
@@ -294,7 +306,7 @@ export function LandingVideoShowcase() {
     smoothScrollTo(sliderRef.current.scrollLeft + scrollDelta, 600);
   };
 
-  if (!featuredVideos.length) return null;
+  if (!featuredVideos.length || !currentVideo) return null;
 
   return (
     <section className="content-auto relative overflow-hidden bg-forest-deep py-20 text-white md:py-28 lg:py-32">
@@ -376,7 +388,7 @@ export function LandingVideoShowcase() {
               {/* Status Badge */}
               <div className="absolute top-3 left-3 sm:top-6 sm:left-6 z-10 flex items-center gap-2 rounded-full bg-black/60 px-3 py-1 sm:px-3.5 sm:py-1.5 backdrop-blur-md border border-white/10 text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-white">
                 <span className="h-2 w-2 rounded-full bg-sage animate-pulse" />
-                <span>Now Playing • {activeVideoIndex + 1} of {featuredVideos.length}</span>
+                <span>Now Playing • {safeIndex + 1} of {featuredVideos.length}</span>
               </div>
 
               {/* Controls at Top Right */}
@@ -448,7 +460,7 @@ export function LandingVideoShowcase() {
             )}
           >
             {featuredVideos.map((video, idx) => {
-              const isActive = idx === activeVideoIndex;
+              const isActive = idx === safeIndex;
               return (
                 <MobileReelCard
                   key={video.id}

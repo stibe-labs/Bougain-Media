@@ -11,22 +11,22 @@ ON CONFLICT (id) DO NOTHING;
 
 DELETE FROM portfolio_items;
 
-INSERT INTO portfolio_items (id, title, client, category, type, industry, result, description, image, video_src, aspect, span, featured, order_index) VALUES
-('vp-hero-intro', 'Brand Identity Hero Intro', 'Bougain Mediaa', 'Hospitality & Events', 'video', 'Brand Film', '', '', '', '/videos/hero-intro.webm', '16:9', 'lg', true, 1),
-('vp-studio-cinematic', 'Scandinavian Architecture Walkthrough', 'Emarath Interiors', 'Real Estate & Interiors', 'video', 'Architecture', '', '', '', '/videos/Firefly Ultra-realistic cinematic luxury digital marketing agency office, modern Scandinavian creati.webm', '16:9', 'md', true, 2),
-('vp-storytelling-agency', 'Creative Studio Storytelling', 'Bougain Mediaa', 'Food & Brand Shoots', 'video', 'Creative Agency', '', '', '', '/videos/Firefly Ultra-realistic premium storytelling and digital marketing agency, creative professionals ca.webm', '16:9', 'lg', true, 3),
-('ai-easter-video', 'Easter Festival Campaign', 'Brand Client', 'Food & Brand Shoots', 'video', 'AI Concept', '', '', '', '/videos/AI/EASTER VIDEO.webm', '16:9', 'lg', true, 4),
-('ai-toms-pipes-concept', 'Toms Pipes Concept Ad', 'Toms Pipes', 'EdTech & Tech', 'video', 'AI Concept', '', '', '', '/videos/AI/TOMS PIPES CONCEPT AD.webm', '16:9', 'md', true, 5),
-('ai-hayyak-ad', 'Hayyak Brand Commercial', 'Hayyak', 'Hospitality & Events', 'video', 'AI Concept', '', '', '', '/videos/AI/HAYYAK AD VIDEO.webm', '16:9', 'md', true, 6),
-('ai-kitkat-ad', 'KitKat Chocolate Reel', 'KitKat', 'Food & Brand Shoots', 'video', 'AI Concept', '', '', '', '/videos/AI/kitkat ad stibe final.webm', '16:9', 'lg', true, 7),
-('ai-toms-pipes', 'Toms Pipes Industrial Ad', 'Toms Pipes', 'EdTech & Tech', 'video', 'AI Concept', '', '', '', '/videos/AI/toms pipes.webm', '16:9', 'md', false, 8),
-('ai-mango-bite', 'Mango Bite Confectionery', 'Mango Bite', 'Food & Brand Shoots', 'video', 'AI Concept', '', '', '', '/videos/AI/mango bite ad.webm', '16:9', 'md', false, 9),
-('ai-solar-extrawatt', 'Extrawatt Solar Energy', 'Extrawatt', 'EdTech & Tech', 'video', 'AI Concept', '', '', '', '/videos/AI/solar ad extrawatt.webm', '16:9', 'sm', false, 10),
-('ai-toms-meteor', 'Toms Pipes Meteor Creative', 'Toms Pipes', 'EdTech & Tech', 'video', 'AI Concept', '', '', '', '/videos/AI/TOMS PIPES METEOR AD.webm', '16:9', 'sm', false, 11),
-('ai-amruth-concept', 'Amruth Brand Shoot', 'Amruth', 'Food & Brand Shoots', 'video', 'AI Concept', '', '', '', '/videos/AI/AMRUTH CONCEPT AD.webm', '16:9', 'lg', true, 12),
-('ai-hna-gst', 'HNA GST Advisory', 'HNA', 'EdTech & Tech', 'video', 'AI Concept', '', '', '', '/videos/AI/HNA AD GST.webm', '16:9', 'sm', false, 13),
-('ai-uddiya-raihat-zuhar', 'Uddiya Raihat Al Zuhar Perfume', 'Raihat', 'Food & Brand Shoots', 'video', 'AI Concept', '', '', '', '/videos/AI/UDDIYA RAIHAT AL ZUHAR.webm', '16:9', 'md', false, 14),
-('ai-raihat-al-zuhar', 'Raihat Al Zuhar Luxury Fragrance', 'Raihat', 'Food & Brand Shoots', 'video', 'AI Concept', '', '', '', '/videos/AI/RAIHAT AL ZUHAR.webm', '16:9', 'sm', false, 15),
-('ai-raihat-udiyya', 'Raihat Udiyya Essence', 'Raihat', 'Food & Brand Shoots', 'video', 'AI Concept', '', '', '', '/videos/AI/RAIHAT UDIYYA.webm', '16:9', 'sm', false, 16),
-('ai-udiyya-ad-raihat', 'Udiyya Raihat Commercial', 'Raihat', 'Food & Brand Shoots', 'video', 'AI Concept', '', '', '', '/videos/AI/UDIYYA ad raihat.webm', '16:9', 'sm', false, 17),
-('ai-milma-ad', 'Milma Dairy Story', 'Milma', 'Food & Brand Shoots', 'video', 'AI Concept', '', '', '', '/videos/AI/milma ad.webm', '16:9', 'sm', false, 18);
+INSERT INTO portfolio_items (id, title, client, category, type, industry, result, description, image, video_src, aspect, span, featured, section, order_index) VALUES
+('vp-hero-intro', 'Brand Identity Hero Intro', 'Bougain Mediaa', 'Hospitality & Events', 'video', 'Brand Film', '', '', '', '/videos/hero-intro.webm', '16:9', 'lg', true, 'video-production', 1),
+('vp-studio-cinematic', 'Scandinavian Architecture Walkthrough', 'Emarath Interiors', 'Real Estate & Interiors', 'video', 'Architecture', '', '', '', '/videos/Firefly Ultra-realistic cinematic luxury digital marketing agency office, modern Scandinavian creati.webm', '16:9', 'md', true, 'video-production', 2),
+('vp-storytelling-agency', 'Creative Studio Storytelling', 'Bougain Mediaa', 'Food & Brand Shoots', 'video', 'Creative Agency', '', '', '', '/videos/Firefly Ultra-realistic premium storytelling and digital marketing agency, creative professionals ca.webm', '16:9', 'lg', true, 'video-production', 3),
+('ai-easter-video', 'Easter Festival Campaign', 'Brand Client', 'Food & Brand Shoots', 'video', 'AI Concept', '', '', '', '/videos/AI/EASTER VIDEO.webm', '16:9', 'lg', true, 'ai-concept-ads', 4),
+('ai-toms-pipes-concept', 'Toms Pipes Concept Ad', 'Toms Pipes', 'EdTech & Tech', 'video', 'AI Concept', '', '', '', '/videos/AI/TOMS PIPES CONCEPT AD.webm', '16:9', 'md', true, 'ai-concept-ads', 5),
+('ai-hayyak-ad', 'Hayyak Brand Commercial', 'Hayyak', 'Hospitality & Events', 'video', 'AI Concept', '', '', '', '/videos/AI/HAYYAK AD VIDEO.webm', '16:9', 'md', true, 'ai-concept-ads', 6),
+('ai-kitkat-ad', 'KitKat Chocolate Reel', 'KitKat', 'Food & Brand Shoots', 'video', 'AI Concept', '', '', '', '/videos/AI/kitkat ad stibe final.webm', '16:9', 'lg', true, 'ai-concept-ads', 7),
+('ai-toms-pipes', 'Toms Pipes Industrial Ad', 'Toms Pipes', 'EdTech & Tech', 'video', 'AI Concept', '', '', '', '/videos/AI/toms pipes.webm', '16:9', 'md', false, 'ai-concept-ads', 8),
+('ai-mango-bite', 'Mango Bite Confectionery', 'Mango Bite', 'Food & Brand Shoots', 'video', 'AI Concept', '', '', '', '/videos/AI/mango bite ad.webm', '16:9', 'md', false, 'ai-concept-ads', 9),
+('ai-solar-extrawatt', 'Extrawatt Solar Energy', 'Extrawatt', 'EdTech & Tech', 'video', 'AI Concept', '', '', '', '/videos/AI/solar ad extrawatt.webm', '16:9', 'sm', false, 'ai-concept-ads', 10),
+('ai-toms-meteor', 'Toms Pipes Meteor Creative', 'Toms Pipes', 'EdTech & Tech', 'video', 'AI Concept', '', '', '', '/videos/AI/TOMS PIPES METEOR AD.webm', '16:9', 'sm', false, 'ai-concept-ads', 11),
+('ai-amruth-concept', 'Amruth Brand Shoot', 'Amruth', 'Food & Brand Shoots', 'video', 'AI Concept', '', '', '', '/videos/AI/AMRUTH CONCEPT AD.webm', '16:9', 'lg', true, 'ai-concept-ads', 12),
+('ai-hna-gst', 'HNA GST Advisory', 'HNA', 'EdTech & Tech', 'video', 'AI Concept', '', '', '', '/videos/AI/HNA AD GST.webm', '16:9', 'sm', false, 'ai-concept-ads', 13),
+('ai-uddiya-raihat-zuhar', 'Uddiya Raihat Al Zuhar Perfume', 'Raihat', 'Food & Brand Shoots', 'video', 'AI Concept', '', '', '', '/videos/AI/UDDIYA RAIHAT AL ZUHAR.webm', '16:9', 'md', false, 'ai-concept-ads', 14),
+('ai-raihat-al-zuhar', 'Raihat Al Zuhar Luxury Fragrance', 'Raihat', 'Food & Brand Shoots', 'video', 'AI Concept', '', '', '', '/videos/AI/RAIHAT AL ZUHAR.webm', '16:9', 'sm', false, 'ai-concept-ads', 15),
+('ai-raihat-udiyya', 'Raihat Udiyya Essence', 'Raihat', 'Food & Brand Shoots', 'video', 'AI Concept', '', '', '', '/videos/AI/RAIHAT UDIYYA.webm', '16:9', 'sm', false, 'ai-concept-ads', 16),
+('ai-udiyya-ad-raihat', 'Udiyya Raihat Commercial', 'Raihat', 'Food & Brand Shoots', 'video', 'AI Concept', '', '', '', '/videos/AI/UDIYYA ad raihat.webm', '16:9', 'sm', false, 'ai-concept-ads', 17),
+('ai-milma-ad', 'Milma Dairy Story', 'Milma', 'Food & Brand Shoots', 'video', 'AI Concept', '', '', '', '/videos/AI/milma ad.webm', '16:9', 'sm', false, 'ai-concept-ads', 18);

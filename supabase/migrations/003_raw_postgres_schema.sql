@@ -44,10 +44,13 @@ CREATE TABLE IF NOT EXISTS portfolio_items (
   aspect TEXT DEFAULT '16:9' CHECK (aspect IN ('16:9', '9:16', '4:3')),
   span TEXT DEFAULT 'md' CHECK (span IN ('lg', 'sm', 'md')),
   featured BOOLEAN DEFAULT false,
+  section TEXT DEFAULT 'ai-concept-ads',
   order_index INT DEFAULT 0,
   created_at TIMESTAMPTZ DEFAULT now(),
   updated_at TIMESTAMPTZ DEFAULT now()
 );
+
+ALTER TABLE portfolio_items ADD COLUMN IF NOT EXISTS section TEXT DEFAULT 'ai-concept-ads';
 
 CREATE TABLE IF NOT EXISTS services (
   id TEXT PRIMARY KEY,

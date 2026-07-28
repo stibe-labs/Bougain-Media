@@ -16,8 +16,8 @@ export async function POST() {
     for (let index = 0; index < portfolio.items.length; index++) {
       const item = portfolio.items[index];
       const sql = `
-        INSERT INTO portfolio_items (id, title, client, category, type, industry, result, description, image, video_src, aspect, span, featured, order_index, updated_at)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, now())
+        INSERT INTO portfolio_items (id, title, client, category, type, industry, result, description, image, video_src, aspect, span, featured, section, order_index, updated_at)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, now())
         ON CONFLICT (id) DO UPDATE SET
           title = EXCLUDED.title,
           client = EXCLUDED.client,
@@ -31,6 +31,7 @@ export async function POST() {
           aspect = EXCLUDED.aspect,
           span = EXCLUDED.span,
           featured = EXCLUDED.featured,
+          section = EXCLUDED.section,
           order_index = EXCLUDED.order_index,
           updated_at = now();
       `;
@@ -48,6 +49,7 @@ export async function POST() {
         item.aspect || "16:9",
         item.span || "md",
         item.featured || false,
+        item.section || (item.videoSrc?.includes("/AI/") ? "ai-concept-ads" : "video-production"),
         index,
       ]);
     }

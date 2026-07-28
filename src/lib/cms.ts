@@ -37,22 +37,23 @@ export async function getPortfolioItems(): Promise<PortfolioItem[]> {
     const res = await fetch("/api/portfolio", { cache: "no-store" });
     if (!res.ok) return portfolio.items;
     const data = await res.json();
-    if (!data || data.length === 0) return portfolio.items;
+    if (!Array.isArray(data) || data.length === 0) return portfolio.items;
 
     return data.map((item: any) => ({
       id: item.id,
-      title: item.title,
-      client: item.client,
-      category: item.category,
-      type: item.type,
-      industry: item.industry,
-      result: item.result,
-      description: item.description,
-      image: item.image,
+      title: item.title || "",
+      client: item.client || "",
+      category: item.category || "All",
+      type: item.type || "video",
+      industry: item.industry || "",
+      result: item.result || "",
+      description: item.description || "",
+      image: item.image || "",
       videoSrc: item.videoSrc || item.video_src || undefined,
       aspect: item.aspect || "16:9",
       span: item.span || "md",
       featured: Boolean(item.featured),
+      section: item.section || ((item.videoSrc || item.video_src || "").includes("/AI/") ? "ai-concept-ads" : "video-production"),
     }));
   } catch {
     return portfolio.items;

@@ -4,7 +4,7 @@ import { query } from "@/lib/db";
 export async function GET() {
   try {
     const res = await query(
-      "SELECT id, title, client, category, type, industry, result, description, image, video_src AS \"videoSrc\", aspect, span, featured, order_index FROM portfolio_items ORDER BY order_index ASC"
+      "SELECT id, title, client, category, type, industry, result, description, image, video_src AS \"videoSrc\", aspect, span, featured, section, order_index FROM portfolio_items ORDER BY order_index ASC"
     );
     return NextResponse.json(res.rows);
   } catch (error: any) {
@@ -29,14 +29,15 @@ export async function POST(req: Request) {
       aspect,
       span,
       featured,
+      section,
       order_index,
     } = body;
 
-    const itemId = id || title.toLowerCase().replace(/[^a-z0-9]/g, "-");
+    const itemId = id || (title ? title.toLowerCase().replace(/[^a-z0-9]/g, "-") : `reel-${Date.now()}`);
 
     const sql = `
-      INSERT INTO portfolio_items (id, title, client, category, type, industry, result, description, image, video_src, aspect, span, featured, order_index, updated_at)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, now())
+      INSERT INTO portfolio_items (id, title, client, category, type, industry, result, description, image, video_src, aspect, span, featured, section, order_index, updated_at)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, now())
       ON CONFLICT (id) DO UPDATE SET
         title = EXCLUDED.title,
         client = EXCLUDED.client,
@@ -50,25 +51,27 @@ export async function POST(req: Request) {
         aspect = EXCLUDED.aspect,
         span = EXCLUDED.span,
         featured = EXCLUDED.featured,
+        section = EXCLUDED.section,
         order_index = EXCLUDED.order_index,
         updated_at = now()
-      RETURNING id, title, client, category, type, industry, result, description, image, video_src AS "videoSrc", aspect, span, featured, order_index;
+      RETURNING id, title, client, category, type, industry, result, description, image, video_src AS "videoSrc", aspect, span, featured, section, order_index;
     `;
 
     const res = await query(sql, [
       itemId,
-      title,
-      client,
-      category,
-      type,
-      industry,
-      result,
-      description,
-      image,
+      title || "",
+      client || "",
+      category || "All",
+      type || "video",
+      industry || "",
+      result || "",
+      description || "",
+      image || "",
       videoSrc || null,
       aspect || "16:9",
       span || "md",
       featured || false,
+      section || (videoSrc?.includes("/AI/") ? "ai-concept-ads" : "video-production"),
       order_index || 0,
     ]);
 
