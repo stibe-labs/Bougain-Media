@@ -770,11 +770,7 @@ export function Portfolio({ standalone = false }: { standalone?: boolean }) {
                   <div className="my-16 text-center">
                     <p className="font-sans text-lg text-grey-muted">No videos match your filters.</p>
                     <button
-                      onClick={() => {
-                        setSelectedIndustry("All");
-                        setSelectedFormat("all");
-                        setSearchQuery("");
-                      }}
+                      onClick={() => setSelectedIndustry("All")}
                       className="mt-4 inline-flex items-center gap-2 font-sans text-sm font-semibold text-sage hover:underline"
                     >
                       Clear filters
