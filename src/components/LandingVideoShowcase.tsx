@@ -103,11 +103,11 @@ function ReelCard({ video, index, onSelect }: VideoCardProps) {
         )}
       >
         {/* Phone Screen */}
-        <div className="relative h-full w-full overflow-hidden rounded-[1.8rem] bg-forest-dark/50">
+        <div className="relative h-full w-full overflow-hidden rounded-[1.8rem] bg-black">
           {/* Speaker Notch */}
           <div className="absolute top-2 left-1/2 z-20 h-1 w-10 -translate-x-1/2 rounded-full bg-black/60 backdrop-blur-md border border-white/20" />
 
-          {/* Video — only plays on hover or tap */}
+          {/* Video — shows 1st frame thumbnail via #t=0.001 */}
           {isVisible && (
             <video
               ref={(el) => {
@@ -119,18 +119,18 @@ function ReelCard({ video, index, onSelect }: VideoCardProps) {
                 }
                 videoRef.current = el;
               }}
-              src={encodeURI(video.videoSrc)}
+              src={encodeURI(video.videoSrc) + "#t=0.001"}
               muted
               loop
               playsInline
-              preload="metadata"
+              preload="auto"
               className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 pointer-events-none"
             />
           )}
 
           {/* Fallback ambient glow before load */}
           {!isVisible && (
-            <div className="absolute inset-0 flex items-center justify-center bg-forest-deep">
+            <div className="absolute inset-0 flex items-center justify-center bg-black">
               <Film size={20} className="text-sage/30 animate-pulse" />
             </div>
           )}

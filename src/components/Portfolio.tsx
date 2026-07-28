@@ -271,18 +271,18 @@ function PortfolioCard({
               }
               videoRef.current = el;
             }}
-            src={encodeURI(item.videoSrc)}
+            src={encodeURI(item.videoSrc) + "#t=0.001"}
             muted
             loop
             playsInline
-            preload="metadata"
+            preload="auto"
             className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
           />
         )}
 
         {/* Ambient background while video initializes */}
         {!isVisible && (
-          <div className="absolute inset-0 flex items-center justify-center bg-forest-deep/60">
+          <div className="absolute inset-0 flex items-center justify-center bg-black">
             <Film size={28} className="text-sage/30 animate-pulse" />
           </div>
         )}
