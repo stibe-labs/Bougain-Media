@@ -10,9 +10,6 @@ import {
   VolumeX,
   ArrowUpRight,
   Film,
-  ChevronLeft,
-  ChevronRight,
-  Smartphone,
   Sparkles,
 } from "lucide-react";
 import { ScrollReveal } from "@/components/ScrollReveal";
@@ -91,21 +88,21 @@ function ReelCard({ video, index, onSelect }: VideoCardProps) {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={handleCardClick}
-      className="group relative flex flex-col shrink-0 w-[210px] sm:w-[240px] cursor-pointer transition-all duration-500 text-left select-none hover:scale-105"
+      className="group relative flex flex-col w-full cursor-pointer transition-all duration-500 text-left select-none hover:scale-[1.03]"
     >
       {/* Smartphone Frame Container */}
       <div
         className={cn(
-          "relative aspect-[9/16] w-full overflow-hidden rounded-[2.2rem] p-2 bg-gradient-to-b border-2 transition-all duration-500 shadow-2xl",
+          "relative aspect-[9/16] w-full overflow-hidden rounded-[2rem] p-1.5 sm:p-2 bg-gradient-to-b border-2 transition-all duration-500 shadow-2xl",
           isHovered || isPlaying
             ? "from-white/30 via-sage/40 to-sage/20 border-sage shadow-[0_0_35px_rgba(77,184,154,0.35)]"
             : "from-white/15 via-white/10 to-white/5 border-white/20 hover:border-white/40"
         )}
       >
         {/* Phone Screen */}
-        <div className="relative h-full w-full overflow-hidden rounded-[1.8rem] bg-forest-dark/50">
+        <div className="relative h-full w-full overflow-hidden rounded-[1.6rem] bg-forest-dark/50">
           {/* Speaker Notch */}
-          <div className="absolute top-2 left-1/2 z-20 h-1 w-10 -translate-x-1/2 rounded-full bg-black/60 backdrop-blur-md border border-white/20" />
+          <div className="absolute top-2 left-1/2 z-20 h-1 w-8 sm:w-10 -translate-x-1/2 rounded-full bg-black/60 backdrop-blur-md border border-white/20" />
 
           {/* Video — only plays on hover or tap */}
           {isVisible && (
@@ -136,20 +133,20 @@ function ReelCard({ video, index, onSelect }: VideoCardProps) {
           )}
 
           {/* Overlay Gradient */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent pointer-events-none" />
 
           {/* Play Overlay Icon (shows when paused) */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
             {!isPlaying && (
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-md border border-white/25 transition-transform duration-300 group-hover:scale-110 group-hover:bg-sage group-hover:text-forest-deep">
-                <Play size={18} fill="currentColor" className="ml-0.5" />
+              <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-md border border-white/25 transition-transform duration-300 group-hover:scale-110 group-hover:bg-sage group-hover:text-forest-deep">
+                <Play size={16} fill="currentColor" className="ml-0.5" />
               </div>
             )}
           </div>
 
           {/* Card Info Badge */}
-          <div className="absolute bottom-3 left-3 right-3 z-10">
-            <span className="font-sans text-[10px] font-bold text-sage-light uppercase tracking-wider block truncate">
+          <div className="absolute bottom-3 left-2.5 right-2.5 z-10">
+            <span className="font-sans text-[9px] sm:text-[10px] font-bold text-sage-light uppercase tracking-wider block truncate">
               {video.client || video.industry || "Brand Reel"}
             </span>
             <p className="font-display text-xs font-bold text-white truncate mt-0.5">
@@ -168,9 +165,6 @@ export function LandingVideoShowcase() {
   const [isMuted, setIsMuted] = useState(true);
   const mainVideoRef = useRef<HTMLVideoElement>(null);
 
-  const contentSliderRef = useRef<HTMLDivElement>(null);
-  const aiSliderRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     async function fetchDynamicData() {
       const data = await getPortfolioItems();
@@ -181,14 +175,14 @@ export function LandingVideoShowcase() {
     fetchDynamicData();
   }, []);
 
-  // Filter 4 Content Videos + 4 AI Videos for Homepage Showcase
+  // Filter 5 Content Videos + 5 AI Videos for Full Width Desktop Grid (no empty right green space)
   const contentVideos = items
     .filter((item): item is PortfolioItem & { videoSrc: string } =>
       typeof item.videoSrc === "string" &&
       item.videoSrc.length > 0 &&
       (item.section === "content-videos" || (!item.section && !item.videoSrc.includes("/AI/")))
     )
-    .slice(0, 4);
+    .slice(0, 5);
 
   const aiVideos = items
     .filter((item): item is PortfolioItem & { videoSrc: string } =>
@@ -196,7 +190,7 @@ export function LandingVideoShowcase() {
       item.videoSrc.length > 0 &&
       (item.section === "ai-concept-ads" || item.videoSrc.includes("/AI/"))
     )
-    .slice(0, 4);
+    .slice(0, 5);
 
   // Standalone Main Featured Showcase Video (Independent of cards)
   const standaloneHeroVideo = contentVideos[0] || aiVideos[0] || {
@@ -221,12 +215,6 @@ export function LandingVideoShowcase() {
     if (!mainVideoRef.current) return;
     mainVideoRef.current.muted = !isMuted;
     setIsMuted(!isMuted);
-  };
-
-  const scrollContainer = (ref: React.RefObject<HTMLDivElement | null>, direction: "left" | "right") => {
-    if (!ref.current) return;
-    const amount = direction === "left" ? -300 : 300;
-    ref.current.scrollBy({ left: amount, behavior: "smooth" });
   };
 
   return (
@@ -311,87 +299,39 @@ export function LandingVideoShowcase() {
           </div>
         </ScrollReveal>
 
-        {/* ── Section 1: Content Videos (4 Cards) ── */}
+        {/* ── Section 1: Content Videos (5 Cards Grid - Full Width) ── */}
         <div className="mb-16 md:mb-24">
-          <div className="flex items-center justify-between mb-8 px-2">
-            <div>
-              <p className="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-sage">
-                Content Studio
-              </p>
-              <h3 className="font-display text-2xl font-bold text-white md:text-3xl mt-1">
-                Content Videos
-              </h3>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => scrollContainer(contentSliderRef, "left")}
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white transition-colors hover:bg-white/15"
-                aria-label="Previous Content Videos"
-              >
-                <ChevronLeft size={18} />
-              </button>
-              <button
-                onClick={() => scrollContainer(contentSliderRef, "right")}
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white transition-colors hover:bg-white/15"
-                aria-label="Next Content Videos"
-              >
-                <ChevronRight size={18} />
-              </button>
-            </div>
+          <div className="mb-8 px-2">
+            <p className="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-sage">
+              Content Studio
+            </p>
+            <h3 className="font-display text-2xl font-bold text-white md:text-3xl mt-1">
+              Content Videos
+            </h3>
           </div>
 
-          <div
-            ref={contentSliderRef}
-            className="flex gap-5 overflow-x-auto pb-4 scrollbar-none snap-x snap-mandatory"
-          >
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5 sm:gap-4 lg:gap-5 w-full">
             {contentVideos.map((video, idx) => (
-              <div key={video.id} className="snap-start">
-                <ReelCard video={video} index={idx} />
-              </div>
+              <ReelCard key={video.id} video={video} index={idx} />
             ))}
           </div>
         </div>
 
-        {/* ── Section 2: AI Concept Ads (4 Cards) ── */}
+        {/* ── Section 2: AI Concept Ads (5 Cards Grid - Full Width) ── */}
         <div className="mb-16 md:mb-20">
-          <div className="flex items-center justify-between mb-8 px-2">
-            <div>
-              <p className="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-sage flex items-center gap-1.5">
-                <Sparkles size={13} />
-                AI Creative Lab
-              </p>
-              <h3 className="font-display text-2xl font-bold text-white md:text-3xl mt-1">
-                AI Concept Ads
-              </h3>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => scrollContainer(aiSliderRef, "left")}
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white transition-colors hover:bg-white/15"
-                aria-label="Previous AI Concept Ads"
-              >
-                <ChevronLeft size={18} />
-              </button>
-              <button
-                onClick={() => scrollContainer(aiSliderRef, "right")}
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white transition-colors hover:bg-white/15"
-                aria-label="Next AI Concept Ads"
-              >
-                <ChevronRight size={18} />
-              </button>
-            </div>
+          <div className="mb-8 px-2">
+            <p className="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-sage flex items-center gap-1.5">
+              <Sparkles size={13} />
+              AI Creative Lab
+            </p>
+            <h3 className="font-display text-2xl font-bold text-white md:text-3xl mt-1">
+              AI Concept Ads
+            </h3>
           </div>
 
-          <div
-            ref={aiSliderRef}
-            className="flex gap-5 overflow-x-auto pb-4 scrollbar-none snap-x snap-mandatory"
-          >
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5 sm:gap-4 lg:gap-5 w-full">
             {aiVideos.map((video, idx) => (
-              <div key={video.id} className="snap-start">
-                <ReelCard video={video} index={idx} />
-              </div>
+              <ReelCard key={video.id} video={video} index={idx} />
             ))}
           </div>
         </div>
