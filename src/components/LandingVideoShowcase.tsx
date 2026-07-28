@@ -18,12 +18,11 @@ import { ScrollReveal } from "@/components/ScrollReveal";
 import { portfolio, type PortfolioItem } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
-// Filter video items that have a videoSrc — only from video-production section
+// Filter video items that have a valid videoSrc
 const featuredVideos = portfolio.items.filter(
   (item): item is PortfolioItem & { videoSrc: string } =>
     item.type === "video" &&
-    Boolean(item.videoSrc) &&
-    (!item.section || item.section === "video-production"),
+    Boolean(item.videoSrc),
 );
 
 interface MobileReelCardProps {
@@ -58,18 +57,6 @@ function MobileReelCard({ video, index, isActive, onSelect }: MobileReelCardProp
     return () => observer.disconnect();
   }, []);
 
-  // Only play for active card or hovered card
-  useEffect(() => {
-    const el = videoRef.current;
-    if (!el) return;
-    if (isHovered || isActive) {
-      el.muted = true;
-      el.play().catch(() => {});
-    } else {
-      el.pause();
-    }
-  }, [isHovered, isActive]);
-
   return (
     <button
       ref={cardRef}
@@ -91,11 +78,11 @@ function MobileReelCard({ video, index, isActive, onSelect }: MobileReelCardProp
         )}
       >
         {/* Inner Phone Screen */}
-        <div className="relative h-full w-full overflow-hidden rounded-[2rem] bg-black">
+        <div className="relative h-full w-full overflow-hidden rounded-[2rem] bg-forest-dark/50">
           {/* Speaker Notch */}
           <div className="absolute top-2 left-1/2 z-20 h-1 w-10 -translate-x-1/2 rounded-full bg-black/60 backdrop-blur-md border border-white/20" />
 
-          {/* Video — only load when visible */}
+          {/* Video — load src when visible and loop silently */}
           {isVisible && (
             <video
               ref={(el) => {
@@ -104,27 +91,29 @@ function MobileReelCard({ video, index, isActive, onSelect }: MobileReelCardProp
                   el.defaultMuted = true;
                   el.setAttribute("playsinline", "true");
                   el.setAttribute("webkit-playsinline", "true");
+                  el.play().catch(() => {});
                 }
                 videoRef.current = el;
               }}
               src={video.videoSrc}
+              autoPlay
               muted
               loop
               playsInline
-              preload="none"
+              preload="metadata"
               className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 pointer-events-none"
             />
           )}
 
-          {/* Dark fallback before load */}
+          {/* Fallback ambient glow before load */}
           {!isVisible && (
             <div className="absolute inset-0 flex items-center justify-center bg-forest-deep">
-              <Film size={20} className="text-white/15" />
+              <Film size={20} className="text-sage/30 animate-pulse" />
             </div>
           )}
 
           {/* Screen Overlay Gradient */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
 
           {/* Status / Play Icon Overlay */}
           <div className="absolute top-4 right-3 z-10">

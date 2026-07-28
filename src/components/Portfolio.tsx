@@ -200,7 +200,6 @@ function PortfolioCard({
   const videoRef = useRef<HTMLVideoElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
 
   // IntersectionObserver for lazy-loading
   useEffect(() => {
@@ -221,31 +220,7 @@ function PortfolioCard({
     return () => observer.disconnect();
   }, []);
 
-  // Play on hover (desktop) — on mobile, don't autoplay
-  const handleMouseEnter = () => {
-    setIsHovered(true);
-    if (videoRef.current) {
-      videoRef.current.muted = true;
-      const playPromise = videoRef.current.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(() => {});
-      }
-    }
-  };
-
-  const handleMouseLeave = () => {
-    setIsHovered(false);
-    if (videoRef.current) {
-      videoRef.current.pause();
-    }
-  };
-
-  // On mobile, tap to play inline before opening lightbox
   const handleTap = () => {
-    if (window.innerWidth < 768 && videoRef.current) {
-      videoRef.current.muted = true;
-      videoRef.current.play().catch(() => {});
-    }
     onSelect(item);
   };
 
@@ -256,12 +231,10 @@ function PortfolioCard({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.65, delay: Math.min(index * 0.04, 0.3), ease }}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
       onClick={handleTap}
       className={cn(
         "group relative cursor-pointer overflow-hidden rounded-[1.5rem]",
-        "shadow-[0_12px_40px_rgba(15,61,46,0.12)] border border-white/10 bg-black/80",
+        "shadow-[0_12px_40px_rgba(15,61,46,0.12)] border border-white/10 bg-forest-dark/40",
         spanClasses[item.span],
       )}
     >
@@ -275,10 +248,12 @@ function PortfolioCard({
                 el.defaultMuted = true;
                 el.setAttribute("playsinline", "true");
                 el.setAttribute("webkit-playsinline", "true");
+                el.play().catch(() => {});
               }
               videoRef.current = el;
             }}
             src={item.videoSrc}
+            autoPlay
             muted
             loop
             playsInline
@@ -287,20 +262,20 @@ function PortfolioCard({
           />
         )}
 
-        {/* Dark fallback when video hasn't loaded */}
+        {/* Ambient background while video initializes */}
         {!isVisible && (
-          <div className="absolute inset-0 flex items-center justify-center bg-forest-deep">
-            <Film size={32} className="text-white/15" />
+          <div className="absolute inset-0 flex items-center justify-center bg-forest-deep/60">
+            <Film size={28} className="text-sage/30 animate-pulse" />
           </div>
         )}
       </div>
 
-      {/* Subtle gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-80" />
+      {/* Subtle hover gradient */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-40 transition-opacity duration-300 group-hover:opacity-75" />
 
-      {/* Play icon on hover */}
+      {/* Play icon overlay hint on hover */}
       <div className="absolute inset-0 flex items-center justify-center z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/20 backdrop-blur-md border border-white/20">
+        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/20 backdrop-blur-md border border-white/30 shadow-xl">
           <Play size={22} fill="white" className="text-white ml-0.5" />
         </div>
       </div>
@@ -348,7 +323,8 @@ export function Portfolio({ standalone = false }: { standalone?: boolean }) {
     async function fetchDynamicData() {
       const data = await getPortfolioItems();
       if (data && data.length > 0) {
-        setItems(data);
+        // Filter out items without a valid videoSrc
+        setItems(data.filter((item) => Boolean(item.videoSrc)));
       }
     }
     fetchDynamicData();
