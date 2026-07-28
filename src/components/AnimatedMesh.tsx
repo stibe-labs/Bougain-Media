@@ -36,7 +36,7 @@ export function AnimatedMesh({
 
   return (
     <div
-      className="pointer-events-none absolute inset-0 overflow-hidden max-md:opacity-60"
+      className="pointer-events-none absolute inset-0 overflow-hidden max-md:hidden"
       style={
         {
           "--mesh-rgb": rgb,

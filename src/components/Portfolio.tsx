@@ -1,28 +1,27 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { ArrowUpRight, Play, Volume2, VolumeX, X, Film, Image as ImageIcon, Sparkles } from "lucide-react";
+import { ArrowUpRight, Play, Volume2, VolumeX, X, Film, Sparkles } from "lucide-react";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { Button } from "@/components/ui/Button";
 import {
   images,
   portfolio,
-  portfolioCategories,
-  type PortfolioCategory,
   type PortfolioItem,
+  type PortfolioSection,
 } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { getPortfolioItems } from "@/lib/cms";
+import Image from "next/image";
 
 const ease = [0.22, 1, 0.36, 1] as [number, number, number, number];
 
 const spanClasses = {
-  lg: "sm:col-span-2 sm:row-span-2 min-h-[340px] sm:min-h-[520px]",
-  sm: "sm:col-span-1 min-h-[300px] sm:aspect-[4/5]",
-  md: "sm:col-span-1 min-h-[300px] sm:aspect-[4/5] lg:min-h-[360px]",
+  lg: "sm:col-span-2 sm:row-span-2 min-h-[280px] sm:min-h-[420px]",
+  sm: "sm:col-span-1 min-h-[240px] sm:aspect-[4/5]",
+  md: "sm:col-span-1 min-h-[240px] sm:aspect-[4/5] lg:min-h-[300px]",
 };
 
 function PortfolioHero() {
@@ -63,6 +62,7 @@ function PortfolioHero() {
   );
 }
 
+/* ─── Lightbox Modal ─── */
 function LightboxModal({
   item,
   onClose,
@@ -120,7 +120,7 @@ function LightboxModal({
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
         transition={{ duration: 0.35, ease }}
-        className="relative flex max-h-[90vh] w-full max-w-5xl flex-col overflow-hidden rounded-3xl bg-forest-deep text-white shadow-2xl lg:flex-row"
+        className="relative flex max-h-[90vh] w-full max-w-5xl flex-col overflow-hidden rounded-3xl bg-forest-deep text-white shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button */}
@@ -132,19 +132,10 @@ function LightboxModal({
           <X size={20} />
         </button>
 
-        {/* Media Side */}
+        {/* Video Area */}
         <div className="relative flex flex-1 items-center justify-center bg-black/60 min-h-[300px] md:min-h-[420px] lg:min-h-[500px]">
-          {item.type === "video" && item.videoSrc ? (
+          {item.videoSrc ? (
             <div className="relative h-full w-full flex items-center justify-center">
-              {item.image && (
-                <Image
-                  src={item.image}
-                  alt={item.title}
-                  fill
-                  sizes="100vw"
-                  className="object-cover -z-10"
-                />
-              )}
               <video
                 ref={(el) => {
                   if (el) {
@@ -156,14 +147,13 @@ function LightboxModal({
                   videoRef.current = el;
                 }}
                 src={item.videoSrc}
-                poster={item.image}
                 autoPlay
                 loop
                 muted={isMuted}
                 playsInline
                 preload="auto"
                 onClick={togglePlay}
-                className="max-h-[70vh] w-full object-contain cursor-pointer"
+                className="max-h-[80vh] w-full object-contain cursor-pointer"
               />
 
               {/* Controls bar */}
@@ -186,65 +176,17 @@ function LightboxModal({
               </div>
             </div>
           ) : (
-            <div className="relative h-full w-full min-h-[350px]">
-              <Image
-                src={item.image}
-                alt={item.title}
-                fill
-                className="object-contain"
-                sizes="(max-width: 1024px) 100vw, 60vw"
-              />
+            <div className="flex h-full w-full items-center justify-center min-h-[350px] bg-forest-deep/40">
+              <Film size={48} className="text-white/20" />
             </div>
           )}
-        </div>
-
-        {/* Details Side */}
-        <div className="flex w-full flex-col justify-between p-6 sm:p-8 lg:w-[380px] lg:shrink-0 lg:border-l lg:border-white/10">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="rounded-full bg-sage/20 px-3 py-1 font-sans text-[10px] font-semibold uppercase tracking-wider text-sage-light">
-                {item.category}
-              </span>
-              <span className="flex items-center gap-1 font-sans text-[10px] uppercase tracking-wider text-white/50">
-                {item.type === "video" ? <Film size={12} /> : <ImageIcon size={12} />}
-                {item.type}
-              </span>
-            </div>
-
-            <h3 className="mt-4 font-display text-2xl font-bold text-white md:text-3xl">
-              {item.title}
-            </h3>
-
-            <p className="mt-1 font-sans text-sm font-medium text-sage-light">
-              Client: {item.client}
-            </p>
-
-            <p className="mt-4 font-sans text-sm leading-relaxed text-white/70">
-              {item.description}
-            </p>
-
-            <div className="mt-6 rounded-2xl bg-white/5 p-4 border border-white/10">
-              <p className="font-sans text-xs font-semibold uppercase tracking-wider text-sage">
-                Key Performance Outcome
-              </p>
-              <p className="mt-1 font-display text-xl font-bold text-white">
-                {item.result}
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-8 pt-4 border-t border-white/10">
-            <Button href="/contact" variant="primary" size="md" className="w-full justify-center">
-              Request Similar Project
-              <ArrowUpRight size={16} />
-            </Button>
-          </div>
         </div>
       </motion.div>
     </motion.div>
   );
 }
 
+/* ─── Lazy Video Card ─── */
 function PortfolioCard({
   item,
   index,
@@ -256,8 +198,30 @@ function PortfolioCard({
 }) {
   const reduceMotion = useReducedMotion();
   const videoRef = useRef<HTMLVideoElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
+  // IntersectionObserver for lazy-loading
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "200px" },
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  // Play on hover (desktop) — on mobile, don't autoplay
   const handleMouseEnter = () => {
     setIsHovered(true);
     if (videoRef.current) {
@@ -276,41 +240,34 @@ function PortfolioCard({
     }
   };
 
-  const isVertical = item.aspect === "9:16";
+  // On mobile, tap to play inline before opening lightbox
+  const handleTap = () => {
+    if (window.innerWidth < 768 && videoRef.current) {
+      videoRef.current.muted = true;
+      videoRef.current.play().catch(() => {});
+    }
+    onSelect(item);
+  };
 
   return (
     <motion.div
+      ref={cardRef}
       initial={reduceMotion ? false : { opacity: 0, y: 36 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
-      transition={{ duration: 0.65, delay: index * 0.06, ease }}
+      transition={{ duration: 0.65, delay: Math.min(index * 0.04, 0.3), ease }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      onClick={() => onSelect(item)}
+      onClick={handleTap}
       className={cn(
-        "group relative cursor-pointer overflow-hidden rounded-[2rem]",
-        "shadow-[0_20px_60px_rgba(15,61,46,0.15)] border border-white/10",
+        "group relative cursor-pointer overflow-hidden rounded-[1.5rem]",
+        "shadow-[0_12px_40px_rgba(15,61,46,0.12)] border border-white/10 bg-black/80",
         spanClasses[item.span],
       )}
     >
-      {/* Top Phone Speaker Notch for Vertical Reels */}
-      {isVertical && (
-        <div className="absolute top-3 left-1/2 z-20 h-1 w-12 -translate-x-1/2 rounded-full bg-black/60 backdrop-blur-md border border-white/20" />
-      )}
-
-      {/* Video Background Thumbnail & Hover Preview */}
+      {/* Video — only load src when in viewport */}
       <div className="relative h-full w-full">
-        {item.image && (
-          <Image
-            src={item.image}
-            alt={`${item.title} — ${item.category} project`}
-            fill
-            quality={75}
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 40vw"
-            className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-          />
-        )}
-        {item.type === "video" && item.videoSrc && (
+        {isVisible && item.videoSrc && (
           <video
             ref={(el) => {
               if (el) {
@@ -322,8 +279,6 @@ function PortfolioCard({
               videoRef.current = el;
             }}
             src={item.videoSrc}
-            poster={item.image}
-            autoPlay
             muted
             loop
             playsInline
@@ -331,49 +286,60 @@ function PortfolioCard({
             className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
           />
         )}
-      </div>
 
-      {/* Media Type Badge */}
-      <div className="absolute right-4 top-4 z-10 flex items-center gap-1.5 rounded-full bg-forest-deep/70 px-3 py-1 backdrop-blur-md text-[10px] font-semibold uppercase tracking-wider text-white">
-        {item.type === "video" ? (
-          <>
-            <Film size={12} className="text-sage-light" />
-            <span>Video</span>
-          </>
-        ) : (
-          <>
-            <ImageIcon size={12} className="text-sage-light" />
-            <span>Photo</span>
-          </>
+        {/* Dark fallback when video hasn't loaded */}
+        {!isVisible && (
+          <div className="absolute inset-0 flex items-center justify-center bg-forest-deep">
+            <Film size={32} className="text-white/15" />
+          </div>
         )}
       </div>
 
-      {/* Gradient overlay for text legibility without blocking video clarity */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent transition-opacity duration-300" />
+      {/* Subtle gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-80" />
 
-      {/* Content */}
-      <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-8 z-10">
-        <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-sage-light">
-          {item.client}
-        </p>
-        <h3 className="mt-1 font-display text-2xl font-bold text-white md:text-3xl">
-          {item.title}
-        </h3>
-        <p className="mt-2 max-w-xs font-sans text-xs leading-relaxed text-white/80 transition-all duration-300">
-          {item.result}
-        </p>
-        <span className="mt-4 inline-flex items-center gap-2 font-sans text-xs font-semibold text-sage-light group-hover:text-white transition-colors duration-300">
-          Watch Video & Details
-          <ArrowUpRight
-            size={14}
-            className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-          />
-        </span>
+      {/* Play icon on hover */}
+      <div className="absolute inset-0 flex items-center justify-center z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/20 backdrop-blur-md border border-white/20">
+          <Play size={22} fill="white" className="text-white ml-0.5" />
+        </div>
       </div>
     </motion.div>
   );
 }
 
+/* ─── Section Header ─── */
+function SectionHeader({
+  label,
+  title,
+  subtitle,
+}: {
+  label: string;
+  title: string;
+  subtitle?: string;
+}) {
+  return (
+    <ScrollReveal className="mb-10 md:mb-14">
+      <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
+        <div>
+          <p className="font-sans text-xs font-semibold uppercase tracking-[0.28em] text-sage">
+            {label}
+          </p>
+          <h2 className="mt-3 font-display text-3xl font-bold text-forest-deep md:text-4xl lg:text-5xl">
+            {title}
+          </h2>
+        </div>
+        {subtitle && (
+          <p className="max-w-sm font-sans text-sm leading-relaxed text-grey-muted md:text-right">
+            {subtitle}
+          </p>
+        )}
+      </div>
+    </ScrollReveal>
+  );
+}
+
+/* ─── Main Portfolio Component ─── */
 export function Portfolio({ standalone = false }: { standalone?: boolean }) {
   const [items, setItems] = useState<PortfolioItem[]>(portfolio.items);
   const [activeModalItem, setActiveModalItem] = useState<PortfolioItem | null>(null);
@@ -387,6 +353,13 @@ export function Portfolio({ standalone = false }: { standalone?: boolean }) {
     }
     fetchDynamicData();
   }, []);
+
+  const videoProductionItems = items.filter(
+    (item) => !item.section || item.section === "video-production",
+  );
+  const aiConceptItems = items.filter(
+    (item) => item.section === "ai-concept-ads",
+  );
 
   return (
     <>
@@ -414,42 +387,61 @@ export function Portfolio({ standalone = false }: { standalone?: boolean }) {
             </ScrollReveal>
           )}
 
-          {standalone && (
-            <ScrollReveal className="mb-10 md:mb-12">
-              <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
-                <div>
-                  <p className="font-sans text-xs font-semibold uppercase tracking-[0.28em] text-sage">
-                    Featured Gallery & Reels
-                  </p>
-                  <h2 className="mt-3 font-display text-3xl font-bold text-forest-deep md:text-4xl">
-                    Campaign films, reels & commercial video production
-                  </h2>
-                </div>
-                <p className="max-w-sm font-sans text-sm leading-relaxed text-grey-muted md:text-right">
-                  Hover to preview videos. Click any item to watch full-screen and see project metrics.
-                </p>
-              </div>
-            </ScrollReveal>
+          {/* ── Section 1: Video Production ── */}
+          {videoProductionItems.length > 0 && (
+            <div className="mb-20 md:mb-28">
+              {standalone && (
+                <SectionHeader
+                  label="Client Work"
+                  title="Video Production"
+                  subtitle="Campaign films, reels & commercial video production."
+                />
+              )}
+
+              <motion.div
+                layout
+                className="grid auto-rows-fr grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5"
+              >
+                <AnimatePresence mode="popLayout">
+                  {videoProductionItems.map((item, i) => (
+                    <PortfolioCard
+                      key={item.id}
+                      item={item}
+                      index={i}
+                      onSelect={(selected) => setActiveModalItem(selected)}
+                    />
+                  ))}
+                </AnimatePresence>
+              </motion.div>
+            </div>
           )}
 
-          {/* Portfolio Grid */}
-          <motion.div
-            layout
-            className={cn(
-              "grid auto-rows-fr grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6",
-            )}
-          >
-            <AnimatePresence mode="popLayout">
-              {items.map((item, i) => (
-                <PortfolioCard
-                  key={item.id}
-                  item={item}
-                  index={i}
-                  onSelect={(selected) => setActiveModalItem(selected)}
-                />
-              ))}
-            </AnimatePresence>
-          </motion.div>
+          {/* ── Section 2: AI Concept Ads ── */}
+          {aiConceptItems.length > 0 && (
+            <div>
+              <SectionHeader
+                label="AI Creative Lab"
+                title="AI Concept Ads"
+                subtitle="AI-generated concept advertisements and creative explorations."
+              />
+
+              <motion.div
+                layout
+                className="grid auto-rows-fr grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5"
+              >
+                <AnimatePresence mode="popLayout">
+                  {aiConceptItems.map((item, i) => (
+                    <PortfolioCard
+                      key={item.id}
+                      item={item}
+                      index={i}
+                      onSelect={(selected) => setActiveModalItem(selected)}
+                    />
+                  ))}
+                </AnimatePresence>
+              </motion.div>
+            </div>
+          )}
 
           {!standalone && (
             <ScrollReveal delay={160} className="mt-14 text-center">

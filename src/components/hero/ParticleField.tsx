@@ -18,8 +18,7 @@ type ParticleFieldProps = {
 
 const MOUSE_RADIUS = 120;
 const MOUSE_STRENGTH = 0.35;
-const DESKTOP_COUNT = 580;
-const MOBILE_COUNT = 280;
+const DESKTOP_COUNT = 120;
 
 function createParticles(count: number, width: number, height: number): Particle[] {
   return Array.from({ length: count }, () => ({
@@ -27,7 +26,7 @@ function createParticles(count: number, width: number, height: number): Particle
     y: Math.random() * height,
     vx: (Math.random() - 0.3) * 0.25,
     vy: (Math.random() - 0.5) * 0.12,
-    size: Math.random() * 3 + 1,
+    size: Math.random() * 2.5 + 0.8,
     opacity: Math.random() * 0.35 + 0.12,
     phase: Math.random() * Math.PI * 2,
   }));
@@ -41,6 +40,9 @@ export function ParticleField({ mouseRef }: ParticleFieldProps) {
   const reduceMotionRef = useRef(false);
 
   useEffect(() => {
+    // Skip entirely on mobile — saves significant resources
+    if (window.innerWidth < 768) return;
+
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -64,8 +66,7 @@ export function ParticleField({ mouseRef }: ParticleFieldProps) {
       canvas.height = Math.floor(height * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-      const count = width < 768 ? MOBILE_COUNT : DESKTOP_COUNT;
-      particlesRef.current = createParticles(count, width, height);
+      particlesRef.current = createParticles(DESKTOP_COUNT, width, height);
     };
 
     const simulate = (time: number) => {
@@ -106,24 +107,15 @@ export function ParticleField({ mouseRef }: ParticleFieldProps) {
 
       ctx.clearRect(0, 0, width, height);
 
+      // Use simple filled circles instead of expensive per-particle radial gradients
       for (const particle of particlesRef.current) {
-        const glow = ctx.createRadialGradient(
-          particle.x,
-          particle.y,
-          0,
-          particle.x,
-          particle.y,
-          particle.size * 2.5,
-        );
-        glow.addColorStop(0, `rgba(110, 235, 131, ${particle.opacity})`);
-        glow.addColorStop(0.5, `rgba(110, 235, 131, ${particle.opacity * 0.35})`);
-        glow.addColorStop(1, "rgba(110, 235, 131, 0)");
-
-        ctx.fillStyle = glow;
+        ctx.globalAlpha = particle.opacity;
+        ctx.fillStyle = "rgba(110, 235, 131, 0.8)";
         ctx.beginPath();
-        ctx.arc(particle.x, particle.y, particle.size * 2.5, 0, Math.PI * 2);
+        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
         ctx.fill();
       }
+      ctx.globalAlpha = 1;
 
       frameRef.current = requestAnimationFrame(draw);
     };
@@ -141,7 +133,7 @@ export function ParticleField({ mouseRef }: ParticleFieldProps) {
   return (
     <canvas
       ref={canvasRef}
-      className="pointer-events-none absolute inset-0 z-[2] h-full w-full"
+      className="pointer-events-none absolute inset-0 z-[2] h-full w-full hidden md:block"
       aria-hidden
     />
   );

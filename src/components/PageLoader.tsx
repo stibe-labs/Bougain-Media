@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 const COUNTDOWN_START = 10;
 const TICK_MS = 1000;
 const HOLD_AT_ZERO_MS = 500;
-const LOADING_MS = 3000;
+const LOADING_MS = 1200;
 const FADE_MS = 600;
 
 type Step = "intro" | "countdown" | "loading" | "exit" | "done";

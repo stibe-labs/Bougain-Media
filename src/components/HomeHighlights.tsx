@@ -1,8 +1,13 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Film } from "lucide-react";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { images, portfolio } from "@/lib/constants";
+
+// Find first video-production item with a videoSrc
+const firstVideo = portfolio.items.find(
+  (item) => item.videoSrc && (!item.section || item.section === "video-production"),
+);
 
 const highlights = [
   {
@@ -16,8 +21,7 @@ const highlights = [
     title: "Selected Work",
     description: portfolio.subtitle,
     href: "/portfolio",
-    videoSrc: portfolio.items[0]?.videoSrc,
-    image: portfolio.items[0]?.image,
+    videoSrc: firstVideo?.videoSrc,
     span: "sm" as const,
   },
   {
@@ -67,16 +71,8 @@ export function HomeHighlights() {
                 className="group relative flex h-full min-h-[320px] flex-col justify-end overflow-hidden rounded-3xl shadow-[0_20px_60px_rgba(15,61,46,0.1)] md:min-h-[380px]"
               >
                 {item.videoSrc ? (
-                  <div className="relative h-full w-full">
-                    {item.image && (
-                      <Image
-                        src={item.image}
-                        alt={item.title}
-                        fill
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                        className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                      />
-                    )}
+                  <div className="relative h-full w-full bg-forest-deep">
+                    {/* Video — no autoPlay, lazy preload */}
                     <video
                       ref={(el) => {
                         if (el) {
@@ -87,23 +83,29 @@ export function HomeHighlights() {
                         }
                       }}
                       src={item.videoSrc}
-                      poster={item.image}
-                      autoPlay
                       muted
                       loop
                       playsInline
                       preload="metadata"
                       className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                     />
+                    {/* Play icon hint */}
+                    <div className="absolute inset-0 flex items-center justify-center z-10">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/15 backdrop-blur-md opacity-60 group-hover:opacity-100 transition-opacity duration-300">
+                        <Film size={20} className="text-white" />
+                      </div>
+                    </div>
                   </div>
-                ) : (
+                ) : item.image ? (
                   <Image
-                    src={item.image!}
+                    src={item.image}
                     alt=""
                     fill
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                   />
+                ) : (
+                  <div className="relative h-full w-full bg-forest-deep" />
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-forest-deep via-forest-deep/40 to-transparent opacity-90 transition-opacity duration-500 group-hover:opacity-95" />
 

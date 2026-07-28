@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Play,
@@ -19,10 +18,12 @@ import { ScrollReveal } from "@/components/ScrollReveal";
 import { portfolio, type PortfolioItem } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
-// Filter video items from constants
+// Filter video items that have a videoSrc — only from video-production section
 const featuredVideos = portfolio.items.filter(
   (item): item is PortfolioItem & { videoSrc: string } =>
-    item.type === "video" && Boolean(item.videoSrc),
+    item.type === "video" &&
+    Boolean(item.videoSrc) &&
+    (!item.section || item.section === "video-production"),
 );
 
 interface MobileReelCardProps {
@@ -35,14 +36,33 @@ interface MobileReelCardProps {
 function MobileReelCard({ video, index, isActive, onSelect }: MobileReelCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const cardRef = useRef<HTMLButtonElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
 
+  // Lazy-load with IntersectionObserver
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "100px" },
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  // Only play for active card or hovered card
   useEffect(() => {
     const el = videoRef.current;
     if (!el) return;
     if (isHovered || isActive) {
-      el.setAttribute("playsinline", "true");
-      el.setAttribute("webkit-playsinline", "true");
-      el.setAttribute("muted", "true");
       el.muted = true;
       el.play().catch(() => {});
     } else {
@@ -52,6 +72,7 @@ function MobileReelCard({ video, index, isActive, onSelect }: MobileReelCardProp
 
   return (
     <button
+      ref={cardRef}
       onClick={(e) => onSelect(index, e)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -74,40 +95,36 @@ function MobileReelCard({ video, index, isActive, onSelect }: MobileReelCardProp
           {/* Speaker Notch */}
           <div className="absolute top-2 left-1/2 z-20 h-1 w-10 -translate-x-1/2 rounded-full bg-black/60 backdrop-blur-md border border-white/20" />
 
-          {/* Background Image Thumbnail Fallback */}
-          {video.image && (
-            <Image
-              src={video.image}
-              alt={video.title}
-              fill
-              sizes="230px"
-              className="object-cover pointer-events-none"
+          {/* Video — only load when visible */}
+          {isVisible && (
+            <video
+              ref={(el) => {
+                if (el) {
+                  el.muted = true;
+                  el.defaultMuted = true;
+                  el.setAttribute("playsinline", "true");
+                  el.setAttribute("webkit-playsinline", "true");
+                }
+                videoRef.current = el;
+              }}
+              src={video.videoSrc}
+              muted
+              loop
+              playsInline
+              preload="none"
+              className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 pointer-events-none"
             />
           )}
 
-          {/* Video Preview inside Smartphone Screen */}
-          <video
-            ref={(el) => {
-              if (el) {
-                el.muted = true;
-                el.defaultMuted = true;
-                el.setAttribute("playsinline", "true");
-                el.setAttribute("webkit-playsinline", "true");
-              }
-              videoRef.current = el;
-            }}
-            src={video.videoSrc}
-            poster={video.image}
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="metadata"
-            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 pointer-events-none"
-          />
+          {/* Dark fallback before load */}
+          {!isVisible && (
+            <div className="absolute inset-0 flex items-center justify-center bg-forest-deep">
+              <Film size={20} className="text-white/15" />
+            </div>
+          )}
 
           {/* Screen Overlay Gradient */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
 
           {/* Status / Play Icon Overlay */}
           <div className="absolute top-4 right-3 z-10">
@@ -125,16 +142,6 @@ function MobileReelCard({ video, index, isActive, onSelect }: MobileReelCardProp
                 <Play size={12} fill="currentColor" />
               </div>
             )}
-          </div>
-
-          {/* Phone Screen Bottom Info */}
-          <div className="absolute bottom-4 left-3 right-3 z-10">
-            <p className="font-sans text-[9px] font-bold uppercase tracking-wider text-sage-light">
-              {video.client}
-            </p>
-            <p className="mt-0.5 truncate font-display text-xs font-bold text-white">
-              {video.title}
-            </p>
           </div>
         </div>
       </div>
@@ -177,12 +184,11 @@ export function LandingVideoShowcase() {
     playVideo();
   }, [currentVideo.id, isMuted]);
 
-  // Continuous Playback: Auto-advance to next video when main video ends
+  // Auto-advance to next video when main video ends
   const handleMainVideoEnded = () => {
     setActiveVideoIndex((prevIndex) => {
       const nextIndex = (prevIndex + 1) % featuredVideos.length;
 
-      // Feather-glide new active card into center view
       if (sliderRef.current) {
         const container = sliderRef.current;
         const card = container.children[nextIndex] as HTMLElement;
@@ -199,7 +205,6 @@ export function LandingVideoShowcase() {
     });
   };
 
-  // Feather-light smooth scroll animation
   const smoothScrollTo = (targetScrollLeft: number, duration = 750) => {
     if (!sliderRef.current) return;
     const container = sliderRef.current;
@@ -211,7 +216,6 @@ export function LandingVideoShowcase() {
 
     if (animRef.current) cancelAnimationFrame(animRef.current);
 
-    // Quintic ease-out for ultra feather-soft deceleration
     const easeOutQuart = (t: number) => 1 - Math.pow(1 - t, 4);
 
     const step = (currentTime: number) => {
@@ -236,11 +240,10 @@ export function LandingVideoShowcase() {
   };
 
   const handleSelectVideo = (index: number, e?: React.MouseEvent<HTMLButtonElement>) => {
-    if (hasMoved) return; // Prevent selection if user was dragging
+    if (hasMoved) return;
     setActiveVideoIndex(index);
     setIsPlaying(true);
 
-    // Feather glide selected card to center of slider
     if (sliderRef.current && e?.currentTarget) {
       const container = sliderRef.current;
       const card = e.currentTarget;
@@ -270,7 +273,7 @@ export function LandingVideoShowcase() {
     setIsMuted(!isMuted);
   };
 
-  // Mouse Drag Events for Feather Desktop Dragging
+  // Mouse Drag Events
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!sliderRef.current) return;
     setIsDragging(true);
@@ -283,7 +286,7 @@ export function LandingVideoShowcase() {
     if (!isDragging || !sliderRef.current) return;
     e.preventDefault();
     const x = e.pageX - sliderRef.current.offsetLeft;
-    const walk = (x - startX) * 1.4; // Feather drag speed ratio
+    const walk = (x - startX) * 1.4;
     if (Math.abs(walk) > 5) {
       setHasMoved(true);
     }
@@ -294,10 +297,9 @@ export function LandingVideoShowcase() {
     setIsDragging(false);
   };
 
-  // Feather-soft mouse wheel scroll handler
   const handleWheel = (e: React.WheelEvent) => {
     if (!sliderRef.current) return;
-    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return; // Allow trackpad horizontal gesture
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
     e.preventDefault();
     const scrollDelta = e.deltaY * 2.2;
     smoothScrollTo(sliderRef.current.scrollLeft + scrollDelta, 600);
@@ -347,19 +349,7 @@ export function LandingVideoShowcase() {
                   transition={{ duration: 0.4 }}
                   className="h-full w-full"
                 >
-                  {/* Poster Image Fallback */}
-                  {currentVideo.image && (
-                    <Image
-                      src={currentVideo.image}
-                      alt={currentVideo.title}
-                      fill
-                      priority
-                      sizes="(max-width: 768px) 100vw, 1200px"
-                      className="object-cover -z-10"
-                    />
-                  )}
-
-                  {/* Main Video plays continuously reel after reel */}
+                  {/* Main Video */}
                   <video
                     ref={(el) => {
                       if (el) {
@@ -371,7 +361,6 @@ export function LandingVideoShowcase() {
                       videoRef.current = el;
                     }}
                     src={currentVideo.videoSrc}
-                    poster={currentVideo.image}
                     autoPlay
                     muted={isMuted}
                     playsInline
@@ -383,7 +372,7 @@ export function LandingVideoShowcase() {
                 </motion.div>
               </AnimatePresence>
 
-              {/* Big Centered Tap-to-Play Overlay Button (Visible when paused or blocked by mobile low-power mode) */}
+              {/* Tap-to-Play Overlay */}
               {!isPlaying && (
                 <div
                   onClick={togglePlay}
@@ -394,9 +383,6 @@ export function LandingVideoShowcase() {
                   </div>
                 </div>
               )}
-
-              {/* Gradient Overlay (Desktop only to prevent video blockage on mobile) */}
-              <div className="absolute inset-0 bg-gradient-to-t from-forest-deep via-forest-deep/20 to-transparent opacity-95 hidden md:block pointer-events-none" />
 
               {/* Status Badge */}
               <div className="absolute top-3 left-3 sm:top-6 sm:left-6 z-10 flex items-center gap-2 rounded-full bg-black/60 px-3 py-1 sm:px-3.5 sm:py-1.5 backdrop-blur-md border border-white/10 text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-white">
@@ -420,30 +406,6 @@ export function LandingVideoShowcase() {
                 >
                   {isPlaying ? <Pause size={16} /> : <Play size={16} />}
                 </button>
-              </div>
-
-              {/* Desktop Video Info Overlay (Hidden on Mobile for 100% Clear Video Playback) */}
-              <div className="hidden md:flex absolute bottom-6 left-6 right-6 md:bottom-10 md:left-10 md:right-10 z-10 flex-col justify-between gap-6 md:flex-row md:items-end">
-                <div className="max-w-2xl">
-                  <p className="font-sans text-xs font-semibold uppercase tracking-widest text-sage-light">
-                    Client: {currentVideo.client}
-                  </p>
-                  <h3 className="mt-2 font-display text-2xl font-bold text-white md:text-3xl lg:text-4xl">
-                    {currentVideo.title}
-                  </h3>
-                  <p className="mt-2 font-sans text-sm leading-relaxed text-white/80 md:text-base">
-                    {currentVideo.description}
-                  </p>
-                </div>
-
-                <div className="shrink-0 rounded-2xl bg-white/10 p-5 backdrop-blur-md border border-white/15 min-w-[220px]">
-                  <p className="font-sans text-[10px] font-semibold uppercase tracking-wider text-sage">
-                    Campaign Impact
-                  </p>
-                  <p className="mt-1 font-display text-xl font-bold text-white">
-                    {currentVideo.result}
-                  </p>
-                </div>
               </div>
             </div>
           </div>
@@ -483,7 +445,7 @@ export function LandingVideoShowcase() {
             </div>
           </div>
 
-          {/* Smartphone Frame Cards Feather-Glide Carousel */}
+          {/* Smartphone Frame Cards Carousel */}
           <div
             ref={sliderRef}
             onWheel={handleWheel}
