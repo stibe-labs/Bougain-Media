@@ -4,7 +4,15 @@ import { portfolio, services, hero, contact } from "@/lib/constants";
 
 export async function POST() {
   try {
-    // 1. Seed Portfolio Items
+    const validIds = portfolio.items.map((i) => i.id);
+
+    // 1. Remove stale portfolio items not present in current constants
+    if (validIds.length > 0) {
+      const placeholders = validIds.map((_, i) => `$${i + 1}`).join(",");
+      await query(`DELETE FROM portfolio_items WHERE id NOT IN (${placeholders})`, validIds);
+    }
+
+    // 2. Seed / Upsert Portfolio Items
     for (let index = 0; index < portfolio.items.length; index++) {
       const item = portfolio.items[index];
       const sql = `
@@ -44,7 +52,7 @@ export async function POST() {
       ]);
     }
 
-    // 2. Seed Services
+    // 3. Seed Services
     for (let index = 0; index < services.items.length; index++) {
       const item = services.items[index];
       const id = item.title.toLowerCase().replace(/[^a-z0-9]+/g, "-");
@@ -73,7 +81,7 @@ export async function POST() {
       ]);
     }
 
-    // 3. Seed Site Settings
+    // 4. Seed Site Settings
     await query(
       "INSERT INTO site_settings (key, value, updated_at) VALUES ('hero', $1::jsonb, now()) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value",
       [JSON.stringify(hero)]
@@ -83,8 +91,8 @@ export async function POST() {
       [JSON.stringify(contact)]
     );
 
-    return NextResponse.json({ success: true, message: "PostgreSQL database seeded successfully!" });
+    return NextResponse.json({ success: true, message: "PostgreSQL database synced successfully with WebM videos!" });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message || "Failed to seed database" }, { status: 500 });
+    return NextResponse.json({ error: err.message || "Failed to sync database" }, { status: 500 });
   }
 }
