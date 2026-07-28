@@ -37,14 +37,14 @@ export default function AdminPortfolioPage() {
   }, []);
 
   const handleSyncDatabase = async () => {
-    if (!confirm("This will clean out stale video stubs and sync database with current WebM video collection. Proceed?")) return;
+    if (!confirm("This will sync the database with current WebM video collection. Proceed?")) return;
     setSyncing(true);
     setMessage(null);
     try {
       const res = await fetch("/api/admin/seed", { method: "POST" });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to sync");
-      setMessage({ type: "success", text: "Database synced successfully! Stale items removed." });
+      setMessage({ type: "success", text: "Database synced successfully! All 15 AI videos loaded." });
       await loadData();
     } catch (err: any) {
       setMessage({ type: "error", text: err.message || "Sync failed" });
@@ -60,7 +60,7 @@ export default function AdminPortfolioPage() {
       client: "",
       category: portfolioCategories[0],
       type: "video",
-      industry: "",
+      industry: "AI Concept",
       result: "",
       description: "",
       image: "",
@@ -153,7 +153,7 @@ export default function AdminPortfolioPage() {
             onClick={handleSyncDatabase}
             disabled={syncing}
             className="flex items-center gap-2 rounded-xl bg-white/10 px-4 py-3 font-sans text-xs font-bold text-white hover:bg-white/20 transition-all border border-white/15 disabled:opacity-50"
-            title="Sync Database to remove stale .mp4 stubs"
+            title="Sync Database to load 15 AI videos"
           >
             <RefreshCw size={15} className={syncing ? "animate-spin" : ""} />
             Sync Database
@@ -190,6 +190,7 @@ export default function AdminPortfolioPage() {
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((item) => {
             const displayTitle = item.title || item.videoSrc?.split("/").pop()?.replace(/\.(webm|mp4)$/i, "") || "Untitled Reel";
+            const encodedSrc = item.videoSrc ? encodeURI(item.videoSrc) : "";
             return (
               <div
                 key={item.id}
@@ -197,7 +198,7 @@ export default function AdminPortfolioPage() {
               >
                 {/* Media Preview Box */}
                 <div className="relative aspect-video w-full overflow-hidden rounded-2xl bg-black/40">
-                  {item.videoSrc ? (
+                  {encodedSrc ? (
                     <video
                       ref={(el) => {
                         if (el) {
@@ -205,33 +206,31 @@ export default function AdminPortfolioPage() {
                           el.defaultMuted = true;
                           el.setAttribute("playsinline", "true");
                           el.setAttribute("webkit-playsinline", "true");
-                          el.play().catch(() => {});
+                          const p = el.play();
+                          if (p !== undefined) p.catch(() => {});
                         }
                       }}
-                      src={item.videoSrc}
+                      controls
                       autoPlay
                       muted
                       loop
                       playsInline
                       preload="auto"
                       className="h-full w-full object-cover"
-                    />
+                    >
+                      <source src={encodedSrc} type="video/webm" />
+                      <source src={encodedSrc} type="video/mp4" />
+                    </video>
                   ) : item.image ? (
-                    <img src={item.image} alt={displayTitle} className="h-full w-full object-cover" />
+                    <img src={encodeURI(item.image)} alt={displayTitle} className="h-full w-full object-cover" />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center bg-forest-deep">
                       <Film size={24} className="text-white/20" />
                     </div>
                   )}
 
-                  {item.videoSrc && (
-                    <span className="absolute left-3 top-3 flex items-center gap-1 rounded-full bg-black/70 px-2.5 py-1 text-[10px] font-bold text-white backdrop-blur-md">
-                      <Play size={10} className="fill-current text-[#9BB09E]" />
-                      Video Reel
-                    </span>
-                  )}
                   {item.featured && (
-                    <span className="absolute right-3 top-3 rounded-full bg-[#9BB09E] px-2.5 py-1 text-[10px] font-bold text-[#091E16]">
+                    <span className="absolute right-3 top-3 rounded-full bg-[#9BB09E] px-2.5 py-1 text-[10px] font-bold text-[#091E16] z-10 pointer-events-none">
                       Featured
                     </span>
                   )}

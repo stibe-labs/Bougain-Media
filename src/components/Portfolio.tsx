@@ -146,7 +146,7 @@ function LightboxModal({
                   }
                   videoRef.current = el;
                 }}
-                src={item.videoSrc}
+                src={encodeURI(item.videoSrc)}
                 autoPlay
                 loop
                 muted={isMuted}
@@ -252,7 +252,7 @@ function PortfolioCard({
               }
               videoRef.current = el;
             }}
-            src={item.videoSrc}
+            src={encodeURI(item.videoSrc)}
             autoPlay
             muted
             loop
