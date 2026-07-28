@@ -11,7 +11,6 @@ import {
   X,
   Film,
   Sparkles,
-  Search,
   Smartphone,
   Monitor,
 } from "lucide-react";
@@ -510,8 +509,6 @@ export function Portfolio({ standalone = false }: { standalone?: boolean }) {
 
   // Sub-filters inside category detail view
   const [selectedIndustry, setSelectedIndustry] = useState<string>("All");
-  const [selectedFormat, setSelectedFormat] = useState<"all" | "9:16" | "16:9">("all");
-  const [searchQuery, setSearchQuery] = useState<string>("");
 
   useEffect(() => {
     async function fetchDynamicData() {
@@ -540,17 +537,18 @@ export function Portfolio({ standalone = false }: { standalone?: boolean }) {
   const handleBack = () => {
     setActiveCategory(null);
     setSelectedIndustry("All");
-    setSelectedFormat("all");
-    setSearchQuery("");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const currentCategoryRawItems =
-    activeCategory === "content-videos"
-      ? contentVideoItems
-      : activeCategory === "ai-concept-ads"
-        ? aiConceptItems
-        : [];
+  const currentCategoryRawItems = useMemo(
+    () =>
+      activeCategory === "content-videos"
+        ? contentVideoItems
+        : activeCategory === "ai-concept-ads"
+          ? aiConceptItems
+          : [],
+    [activeCategory, contentVideoItems, aiConceptItems],
+  );
 
   // Derive unique industries for category filter pills
   const availableIndustries = useMemo(() => {
@@ -562,28 +560,16 @@ export function Portfolio({ standalone = false }: { standalone?: boolean }) {
     return ["All", ...Array.from(set)];
   }, [currentCategoryRawItems]);
 
-  // Filter items by industry, format, and search query
+  // Filter items by industry
   const filteredItems = useMemo(() => {
     return currentCategoryRawItems.filter((item) => {
       if (selectedIndustry !== "All") {
         const itemCat = item.category || item.industry;
         if (itemCat !== selectedIndustry) return false;
       }
-      if (selectedFormat !== "all") {
-        if (selectedFormat === "9:16" && item.aspect !== "9:16") return false;
-        if (selectedFormat === "16:9" && item.aspect === "9:16") return false;
-      }
-      if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase();
-        const matchTitle = item.title?.toLowerCase().includes(q);
-        const matchClient = item.client?.toLowerCase().includes(q);
-        const matchCategory = item.category?.toLowerCase().includes(q);
-        const matchIndustry = item.industry?.toLowerCase().includes(q);
-        if (!matchTitle && !matchClient && !matchCategory && !matchIndustry) return false;
-      }
       return true;
     });
-  }, [currentCategoryRawItems, selectedIndustry, selectedFormat, searchQuery]);
+  }, [currentCategoryRawItems, selectedIndustry]);
 
   const activeSectionTitle =
     activeCategory === "content-videos"
@@ -745,87 +731,22 @@ export function Portfolio({ standalone = false }: { standalone?: boolean }) {
                   subtitle={activeSectionSubtitle}
                 />
 
-                {/* Sub-filters & Search Toolbar */}
-                <div className="mb-10 flex flex-col gap-4 rounded-2xl bg-forest-deep/5 border border-forest-deep/10 p-4 md:flex-row md:items-center md:justify-between">
-                  {/* Industry Filter Pills */}
-                  <div className="flex flex-wrap items-center gap-2">
-                    {availableIndustries.map((ind) => (
-                      <button
-                        key={ind}
-                        onClick={() => setSelectedIndustry(ind)}
-                        className={cn(
-                          "rounded-full px-4 py-1.5 text-xs font-semibold transition-all duration-300",
-                          selectedIndustry === ind
-                            ? "bg-forest-deep text-white shadow-md"
-                            : "bg-white text-grey-dark border border-grey-light/60 hover:border-forest-deep/30 hover:bg-forest-deep/5",
-                        )}
-                      >
-                        {ind}
-                      </button>
-                    ))}
-                  </div>
-
-                  {/* Format & Search controls */}
-                  <div className="flex items-center gap-3 self-end md:self-auto">
-                    {/* Format Filter Pills */}
-                    <div className="flex items-center rounded-xl bg-white p-1 border border-grey-light/60">
-                      <button
-                        onClick={() => setSelectedFormat("all")}
-                        className={cn(
-                          "rounded-lg px-3 py-1 text-xs font-semibold transition-colors",
-                          selectedFormat === "all"
-                            ? "bg-forest-deep text-white"
-                            : "text-grey-muted hover:text-forest-deep",
-                        )}
-                      >
-                        All Formats
-                      </button>
-                      <button
-                        onClick={() => setSelectedFormat("9:16")}
-                        className={cn(
-                          "flex items-center gap-1 rounded-lg px-3 py-1 text-xs font-semibold transition-colors",
-                          selectedFormat === "9:16"
-                            ? "bg-forest-deep text-white"
-                            : "text-grey-muted hover:text-forest-deep",
-                        )}
-                      >
-                        <Smartphone size={12} />
-                        Reels
-                      </button>
-                      <button
-                        onClick={() => setSelectedFormat("16:9")}
-                        className={cn(
-                          "flex items-center gap-1 rounded-lg px-3 py-1 text-xs font-semibold transition-colors",
-                          selectedFormat === "16:9"
-                            ? "bg-forest-deep text-white"
-                            : "text-grey-muted hover:text-forest-deep",
-                        )}
-                      >
-                        <Monitor size={12} />
-                        Films
-                      </button>
-                    </div>
-
-                    {/* Search Input */}
-                    <div className="relative">
-                      <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-grey-muted" />
-                      <input
-                        type="text"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder="Search..."
-                        className="w-36 sm:w-44 rounded-xl bg-white border border-grey-light/60 py-1.5 pl-8 pr-3 text-xs font-medium text-forest-deep placeholder:text-grey-muted focus:border-forest-deep focus:outline-none"
-                      />
-                      {searchQuery && (
-                        <button
-                          onClick={() => setSearchQuery("")}
-                          className="absolute right-2 top-1/2 -translate-y-1/2 text-grey-muted hover:text-forest-deep"
-                        >
-                          <X size={12} />
-                        </button>
+                {/* Industry Sub-filters Toolbar */}
+                <div className="mb-10 flex flex-wrap items-center gap-2 rounded-2xl bg-forest-deep/5 border border-forest-deep/10 p-4">
+                  {availableIndustries.map((ind) => (
+                    <button
+                      key={ind}
+                      onClick={() => setSelectedIndustry(ind)}
+                      className={cn(
+                        "rounded-full px-4 py-1.5 text-xs font-semibold transition-all duration-300",
+                        selectedIndustry === ind
+                          ? "bg-forest-deep text-white shadow-md"
+                          : "bg-white text-grey-dark border border-grey-light/60 hover:border-forest-deep/30 hover:bg-forest-deep/5",
                       )}
-                    </div>
-                  </div>
+                    >
+                      {ind}
+                    </button>
+                  ))}
                 </div>
 
                 {/* Video Masonry Grid */}
