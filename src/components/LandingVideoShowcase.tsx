@@ -259,54 +259,18 @@ export function LandingVideoShowcase() {
           <div className="relative mx-auto max-w-5xl overflow-hidden rounded-3xl border border-white/15 bg-black/60 shadow-[0_25px_60px_rgba(0,0,0,0.5)]">
             <div className="relative aspect-video w-full">
               <video
-                ref={(el) => {
-                  if (el) {
-                    el.muted = isMuted;
-                    el.defaultMuted = isMuted;
-                    el.setAttribute("playsinline", "true");
-                    el.setAttribute("webkit-playsinline", "true");
-                    const p = el.play();
-                    if (p !== undefined) p.catch(() => {});
-                  }
-                  mainVideoRef.current = el;
-                }}
-                src={encodeURI(standaloneHeroVideo.videoSrc)}
+                ref={mainVideoRef}
                 autoPlay
                 loop
-                muted={isMuted}
+                muted
                 playsInline
-                preload="auto"
+                preload="metadata"
                 onClick={togglePlayMain}
                 className="h-full w-full object-cover cursor-pointer"
-              />
-
-              {/* Controls bar */}
-              <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between rounded-2xl bg-forest-deep/80 p-3.5 backdrop-blur-md border border-white/10 z-20">
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={togglePlayMain}
-                    className="flex h-9 w-9 items-center justify-center rounded-xl bg-sage text-forest-deep transition-transform hover:scale-105"
-                  >
-                    {isPlaying ? <Pause size={16} fill="currentColor" /> : <Play size={16} fill="currentColor" className="ml-0.5" />}
-                  </button>
-                  <div>
-                    <span className="font-sans text-[10px] font-bold uppercase tracking-wider text-sage-light block">
-                      Featured Brand Film
-                    </span>
-                    <h3 className="font-display text-sm font-bold text-white line-clamp-1">
-                      {standaloneHeroVideo.title}
-                    </h3>
-                  </div>
-                </div>
-
-                <button
-                  onClick={toggleMuteMain}
-                  className="flex items-center gap-2 rounded-xl bg-white/10 px-3.5 py-2 font-sans text-xs font-semibold text-white hover:bg-white/20 transition-all border border-white/10"
-                >
-                  {isMuted ? <VolumeX size={15} /> : <Volume2 size={15} />}
-                  <span className="hidden sm:inline">{isMuted ? "Unmute" : "Mute"}</span>
-                </button>
-              </div>
+              >
+                <source src="/videos/Content_video_webm/HAPPY_2.webm" type="video/webm" />
+                <source src="/videos/Content video/HAPPY_2.mp4" type="video/mp4" />
+              </video>
             </div>
           </div>
         </ScrollReveal>

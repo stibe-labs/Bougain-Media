@@ -315,22 +315,26 @@
     animation: loader-pulse 2.2s ease-in-out infinite;
   }
 
-  /* Site shell — hidden behind loader, instantly shown when exit begins.
-     The split-curtain handles the visual reveal, so no opacity/scale transition needed. */
+  /* Site shell — smooth reveal synced with stage shutter curtain lift */
   .site-shell {
     min-height: 100vh;
     background-color: var(--color-cream);
     opacity: 0;
-    transition: opacity 0.01s;
+    transform: translate3d(0, 24px, 0) scale(0.985);
+    transition:
+      opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   html[data-loader-phase="done"] .site-shell {
     opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
   }
 
   @media (prefers-reduced-motion: reduce) {
     .site-shell {
       opacity: 1;
+      transform: none;
       transition: none;
     }
   }
