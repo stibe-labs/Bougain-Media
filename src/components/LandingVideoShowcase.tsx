@@ -268,10 +268,7 @@ export function LandingVideoShowcase() {
                 preload="auto"
                 onClick={togglePlayMain}
                 className="h-full w-full object-cover cursor-pointer"
-              >
-                <source src="/videos/Content_video_webm/HAPPY_2.webm" type="video/webm" />
-                <source src="/videos/Content%20video/HAPPY_2.mp4" type="video/mp4" />
-              </video>
+              />
             </div>
           </div>
         </ScrollReveal>

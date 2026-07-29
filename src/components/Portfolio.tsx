@@ -66,40 +66,6 @@ function PortfolioHero() {
   );
 }
 
-/* ─── Video URL Encoding Helper ─── */
-function getEncodedVideoSources(videoSrc: string) {
-  if (!videoSrc) return { webm: "", mp4: "" };
-  const clean = videoSrc.trim();
-
-  let webmPath = clean;
-  let mp4Path = clean;
-
-  if (clean.includes("/Content_video_webm/")) {
-    webmPath = clean;
-    mp4Path = clean
-      .replace("/Content_video_webm/", "/Content video/")
-      .replace(/\.webm$/i, ".mp4");
-  } else if (clean.includes("/Content video/")) {
-    mp4Path = clean;
-    webmPath = clean
-      .replace("/Content video/", "/Content_video_webm/")
-      .replace(/\.mp4$/i, ".webm");
-  }
-
-  const encodePath = (path: string) => {
-    try {
-      return encodeURI(path).replace(/&/g, "%26").replace(/#/g, "%23");
-    } catch {
-      return path;
-    }
-  };
-
-  return {
-    webm: encodePath(webmPath),
-    mp4: encodePath(mp4Path),
-  };
-}
-
 /* ─── Lightbox Modal ─── */
 function LightboxModal({
   item,
@@ -112,7 +78,6 @@ function LightboxModal({
   const [isMuted, setIsMuted] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const sources = getEncodedVideoSources(item.videoSrc || "");
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -195,7 +160,7 @@ function LightboxModal({
                   }
                   videoRef.current = el;
                 }}
-                src={sources.webm || sources.mp4}
+                src={encodeURI(item.videoSrc)}
                 autoPlay
                 loop
                 muted={isMuted}
@@ -205,10 +170,7 @@ function LightboxModal({
                 onLoadedData={() => setIsLoading(false)}
                 onClick={togglePlay}
                 className="max-h-[80vh] w-full object-contain cursor-pointer relative z-10"
-              >
-                <source src={sources.webm} type="video/webm" />
-                <source src={sources.mp4} type="video/mp4" />
-              </video>
+              />
 
               {/* Controls bar */}
               <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between rounded-2xl bg-black/80 p-3.5 backdrop-blur-md border border-white/15 z-20">
@@ -315,31 +277,28 @@ function PortfolioCard({
     >
       {/* Video */}
       <div className="relative h-full w-full">
-        {isVisible && item.videoSrc && (() => {
-          const cardSources = getEncodedVideoSources(item.videoSrc);
-          return (
-            <video
-              ref={(el) => {
-                if (el) {
-                  el.muted = true;
-                  el.defaultMuted = true;
-                  el.setAttribute("playsinline", "true");
-                  el.setAttribute("webkit-playsinline", "true");
-                }
-                videoRef.current = el;
-              }}
-              src={cardSources.webm || cardSources.mp4}
-              muted
-              loop
-              playsInline
-              preload="metadata"
-              className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-            >
-              <source src={cardSources.webm} type="video/webm" />
-              <source src={cardSources.mp4} type="video/mp4" />
-            </video>
-          );
-        })()}
+        {isVisible && item.videoSrc && (
+          <video
+            ref={(el) => {
+              if (el) {
+                el.muted = true;
+                el.defaultMuted = true;
+                el.setAttribute("playsinline", "true");
+                el.setAttribute("webkit-playsinline", "true");
+                const p = el.play();
+                if (p !== undefined) p.catch(() => {});
+              }
+              videoRef.current = el;
+            }}
+            src={encodeURI(item.videoSrc) + "#t=0.001"}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+          />
+        )}
 
         {!isVisible && (
           <div className="absolute inset-0 flex items-center justify-center bg-black">
