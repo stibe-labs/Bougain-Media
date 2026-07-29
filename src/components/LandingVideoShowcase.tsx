@@ -199,11 +199,11 @@ export function LandingVideoShowcase() {
   const allReelCards = [...contentVideos, ...aiVideos];
 
   // Standalone Main Featured Showcase Video (Independent of cards)
-  const standaloneHeroVideo = contentVideos[0] || aiVideos[0] || {
+  const standaloneHeroVideo = {
     id: "hero-featured",
-    title: "Crown Plaza Turn Up Aftermovie",
-    client: "Crowne Plaza Hotels",
-    videoSrc: "/videos/Content_video_webm/TURN UP CROWN PLAZA.webm",
+    title: "HAPPY 2",
+    client: "Bougain Media",
+    videoSrc: "/videos/Content video/HAPPY_2.mp4",
   };
 
   const togglePlayMain = () => {
