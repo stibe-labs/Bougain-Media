@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatedMesh } from "@/components/AnimatedMesh";
 
 export function HeroVideo({
-  src = "/videos/hero-intro.webm",
+  src = "/videos/Content_video_webm/HAPPY_2.webm",
   meshRgb = "77, 184, 154",
   meshRgb2 = "168, 230, 207",
 }: {

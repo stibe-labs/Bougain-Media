@@ -307,85 +307,28 @@
     }
     50% {
       transform: scale3d(1.04, 1, 1);
-      opacity: 0.95;
-    }
-  }
-
-  @keyframes loader-progress {
-    0% {
-      width: 0%;
-    }
-    100% {
-      width: 100%;
-    }
-  }
-
-  @keyframes loader-logo-out {
-    to {
-      opacity: 0;
-      transform: translate3d(0, -8px, 0) scale3d(0.97, 0.97, 1);
-    }
-  }
-
-  @keyframes loader-track-out {
-    to {
-      opacity: 0;
-      transform: translate3d(-50%, 10px, 0);
+      opacity: 0.92;
     }
   }
 
   .loader-logo-pulse {
-    animation: loader-pulse 2s ease-in-out infinite;
+    animation: loader-pulse 2.2s ease-in-out infinite;
   }
 
-  .loader-progress-bar {
-    animation: loader-progress 3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-  }
-
-  @keyframes loader-splash-fade {
-    to {
-      opacity: 0;
-      visibility: hidden;
-    }
-  }
-
-  .loader-splash-exit {
-    pointer-events: none;
-    animation: loader-splash-fade 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  }
-
-  .loader-splash-exit .loader-logo-pulse {
-    animation: loader-logo-out 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  }
-
-  .loader-splash-exit .loader-countdown {
-    animation: loader-count-out 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  }
-
-  .loader-splash-exit .loader-progress-track {
-    animation: loader-track-out 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  }
-
-  @keyframes loader-count-out {
-    to {
-      opacity: 0;
-      transform: scale3d(1.08, 1.08, 1);
-    }
-  }
-
+  /* Site shell — hidden behind loader, revealed when done */
   .site-shell {
     min-height: 100vh;
     background-color: var(--color-cream);
     opacity: 0;
-    transform: translate3d(0, 12px, 0);
+    transform: translate3d(0, 0, 0) scale(0.98);
     transition:
-      opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
-      transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+      opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   html[data-loader-phase="done"] .site-shell {
     opacity: 1;
-    transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0) scale(1);
   }
 
   @media (prefers-reduced-motion: reduce) {

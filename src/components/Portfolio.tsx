@@ -507,9 +507,6 @@ export function Portfolio({ standalone = false }: { standalone?: boolean }) {
   const [activeModalItem, setActiveModalItem] = useState<PortfolioItem | null>(null);
   const [activeCategory, setActiveCategory] = useState<"content-videos" | "ai-concept-ads" | null>(null);
 
-  // Sub-filters inside category detail view
-  const [selectedIndustry, setSelectedIndustry] = useState<string>("All");
-
   useEffect(() => {
     async function fetchDynamicData() {
       const data = await getPortfolioItems();
@@ -536,11 +533,10 @@ export function Portfolio({ standalone = false }: { standalone?: boolean }) {
 
   const handleBack = () => {
     setActiveCategory(null);
-    setSelectedIndustry("All");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const currentCategoryRawItems = useMemo(
+  const currentCategoryItems = useMemo(
     () =>
       activeCategory === "content-videos"
         ? contentVideoItems
@@ -549,27 +545,6 @@ export function Portfolio({ standalone = false }: { standalone?: boolean }) {
           : [],
     [activeCategory, contentVideoItems, aiConceptItems],
   );
-
-  // Derive unique industries for category filter pills
-  const availableIndustries = useMemo(() => {
-    const set = new Set<string>();
-    currentCategoryRawItems.forEach((item) => {
-      const val = item.category || item.industry;
-      if (val) set.add(val);
-    });
-    return ["All", ...Array.from(set)];
-  }, [currentCategoryRawItems]);
-
-  // Filter items by industry
-  const filteredItems = useMemo(() => {
-    return currentCategoryRawItems.filter((item) => {
-      if (selectedIndustry !== "All") {
-        const itemCat = item.category || item.industry;
-        if (itemCat !== selectedIndustry) return false;
-      }
-      return true;
-    });
-  }, [currentCategoryRawItems, selectedIndustry]);
 
   const activeSectionTitle =
     activeCategory === "content-videos"
@@ -731,52 +706,22 @@ export function Portfolio({ standalone = false }: { standalone?: boolean }) {
                   subtitle={activeSectionSubtitle}
                 />
 
-                {/* Industry Sub-filters Toolbar */}
-                <div className="mb-10 flex flex-wrap items-center gap-2 rounded-2xl bg-forest-deep/5 border border-forest-deep/10 p-4">
-                  {availableIndustries.map((ind) => (
-                    <button
-                      key={ind}
-                      onClick={() => setSelectedIndustry(ind)}
-                      className={cn(
-                        "rounded-full px-4 py-1.5 text-xs font-semibold transition-all duration-300",
-                        selectedIndustry === ind
-                          ? "bg-forest-deep text-white shadow-md"
-                          : "bg-white text-grey-dark border border-grey-light/60 hover:border-forest-deep/30 hover:bg-forest-deep/5",
-                      )}
-                    >
-                      {ind}
-                    </button>
-                  ))}
-                </div>
-
                 {/* Video Masonry Grid */}
-                {filteredItems.length > 0 ? (
-                  <motion.div
-                    layout
-                    className="columns-1 sm:columns-2 lg:columns-3 gap-5 space-y-5"
-                  >
-                    <AnimatePresence mode="popLayout">
-                      {filteredItems.map((item, i) => (
-                        <PortfolioCard
-                          key={item.id}
-                          item={item}
-                          index={i}
-                          onSelect={(selected) => setActiveModalItem(selected)}
-                        />
-                      ))}
-                    </AnimatePresence>
-                  </motion.div>
-                ) : (
-                  <div className="my-16 text-center">
-                    <p className="font-sans text-lg text-grey-muted">No videos match your filters.</p>
-                    <button
-                      onClick={() => setSelectedIndustry("All")}
-                      className="mt-4 inline-flex items-center gap-2 font-sans text-sm font-semibold text-sage hover:underline"
-                    >
-                      Clear filters
-                    </button>
-                  </div>
-                )}
+                <motion.div
+                  layout
+                  className="columns-1 sm:columns-2 lg:columns-3 gap-5 space-y-5"
+                >
+                  <AnimatePresence mode="popLayout">
+                    {currentCategoryItems.map((item, i) => (
+                      <PortfolioCard
+                        key={item.id}
+                        item={item}
+                        index={i}
+                        onSelect={(selected) => setActiveModalItem(selected)}
+                      />
+                    ))}
+                  </AnimatePresence>
+                </motion.div>
 
                 {/* CTA at bottom */}
                 {standalone && (

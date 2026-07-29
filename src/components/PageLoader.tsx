@@ -1,28 +1,30 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { logos } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
-const COUNTDOWN_START = 10;
-const TICK_MS = 1000;
-const HOLD_AT_ZERO_MS = 500;
-const LOADING_MS = 1200;
-const FADE_MS = 600;
+/* ─── Timing ─── */
+const LOADING_DURATION_MS = 3400; // 3.4s total loader visible time
+const EXIT_DURATION_MS = 900;      // curtain reveal animation
 
-type Step = "intro" | "countdown" | "loading" | "exit" | "done";
+type Step = "loading" | "exit" | "done";
 
 export function PageLoader() {
   const reduceMotion = useReducedMotion();
   const [step, setStep] = useState<Step>("loading");
-  const [count, setCount] = useState(COUNTDOWN_START);
+  const [progress, setProgress] = useState(0);
+  const startTimeRef = useRef(Date.now());
 
+  /* Set data attribute for site-shell CSS reveal */
   useEffect(() => {
-    document.documentElement.dataset.loaderPhase = step === "done" ? "done" : "loading";
+    document.documentElement.dataset.loaderPhase =
+      step === "done" ? "done" : "loading";
   }, [step]);
 
+  /* Lock scroll during loading */
   useEffect(() => {
     if (step !== "done") {
       document.body.style.overflow = "hidden";
@@ -34,144 +36,142 @@ export function PageLoader() {
     };
   }, [step]);
 
+  /* Animate progress 0→100 over LOADING_DURATION_MS, then trigger exit */
   useEffect(() => {
     if (reduceMotion) {
       setStep("done");
       return;
     }
 
-    if (step !== "countdown") return;
+    if (step !== "loading") return;
 
-    if (count > 0) {
-      const tickTimer = setTimeout(() => setCount((value) => value - 1), TICK_MS);
-      return () => clearTimeout(tickTimer);
-    }
+    startTimeRef.current = Date.now();
 
-    const loadingTimer = setTimeout(() => setStep("loading"), HOLD_AT_ZERO_MS);
-    return () => clearTimeout(loadingTimer);
-  }, [count, reduceMotion, step]);
+    const frame = () => {
+      const elapsed = Date.now() - startTimeRef.current;
+      const p = Math.min(elapsed / LOADING_DURATION_MS, 1);
+      // Ease-out cubic for smooth deceleration near 100%
+      const eased = 1 - Math.pow(1 - p, 3);
+      setProgress(Math.round(eased * 100));
 
+      if (p < 1) {
+        rafId = requestAnimationFrame(frame);
+      } else {
+        // Loading complete → begin exit
+        setTimeout(() => setStep("exit"), 200);
+      }
+    };
+
+    let rafId = requestAnimationFrame(frame);
+    return () => cancelAnimationFrame(rafId);
+  }, [step, reduceMotion]);
+
+  /* Exit phase → done */
   useEffect(() => {
-    if (step === "loading") {
-      const exitTimer = setTimeout(() => setStep("exit"), LOADING_MS);
-      return () => clearTimeout(exitTimer);
-    }
-
     if (step === "exit") {
-      const doneTimer = setTimeout(() => setStep("done"), FADE_MS);
+      const doneTimer = setTimeout(() => setStep("done"), EXIT_DURATION_MS);
       return () => clearTimeout(doneTimer);
     }
   }, [step]);
 
   if (step === "done") return null;
 
+  const ease = [0.22, 1, 0.36, 1] as [number, number, number, number];
+
   return (
-    <div
-      className={cn(
-        "loader-splash fixed inset-0 z-[200] flex overflow-hidden bg-forest-deep",
-        step === "exit" && "loader-splash-exit",
-      )}
-      aria-hidden={step === "exit"}
-      aria-label="Launch gateway"
-    >
-      <div className="bg-hero-grid pointer-events-none absolute inset-0 opacity-40" aria-hidden />
-      <div
-        className="pointer-events-none absolute left-1/2 top-1/2 h-[28rem] w-[28rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-emerald-accent/10 blur-[100px]"
-        aria-hidden
-      />
+    <AnimatePresence>
+      <motion.div
+        key="loader"
+        className="fixed inset-0 z-[200] flex overflow-hidden"
+        aria-hidden={step === "exit"}
+        aria-label="Loading"
+      >
+          {/* ─── Split curtain panels (for reveal exit) ─── */}
+          <motion.div
+            className="absolute inset-y-0 left-0 w-1/2 bg-forest-deep z-[3]"
+            initial={{ x: 0 }}
+            animate={step === "exit" ? { x: "-100%" } : { x: 0 }}
+            transition={{
+              duration: 0.85,
+              ease,
+            }}
+          />
+          <motion.div
+            className="absolute inset-y-0 right-0 w-1/2 bg-forest-deep z-[3]"
+            initial={{ x: 0 }}
+            animate={step === "exit" ? { x: "100%" } : { x: 0 }}
+            transition={{
+              duration: 0.85,
+              ease,
+            }}
+          />
 
-      <div className="relative z-10 flex w-full flex-1 flex-col items-center px-6">
-        <AnimatePresence mode="wait">
-          {step === "intro" && (
+          {/* ─── Decorative background (behind curtains) ─── */}
+          <div className="absolute inset-0 z-[1] bg-forest-deep">
+            <div
+              className="bg-hero-grid pointer-events-none absolute inset-0 opacity-30"
+              aria-hidden
+            />
+            <div
+              className="pointer-events-none absolute left-1/2 top-1/2 h-[28rem] w-[28rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-emerald-accent/10 blur-[100px]"
+              aria-hidden
+            />
+          </div>
+
+          {/* ─── Loader content (logo + progress) ─── */}
+          <motion.div
+            className="relative z-[5] flex w-full flex-1 flex-col items-center justify-center px-6"
+            animate={
+              step === "exit"
+                ? { opacity: 0, scale: 0.9 }
+                : { opacity: 1, scale: 1 }
+            }
+            transition={{ duration: 0.4, ease }}
+          >
+            {/* Logo */}
             <motion.div
-              key="intro"
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12, scale: 0.98 }}
-              transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-              className="flex flex-1 flex-col items-center justify-center"
-            >
-              <h1 className="font-hero text-[clamp(2rem,6vw,3.25rem)] font-bold leading-tight tracking-tight text-white">
-                Website Launch
-              </h1>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setCount(COUNTDOWN_START);
-                  setStep("countdown");
-                }}
-                className="group/btn mt-10 inline-flex min-h-14 items-center justify-center gap-2.5 rounded-2xl border border-white bg-white px-12 py-4 font-sans text-base font-semibold uppercase tracking-[0.2em] text-forest-deep transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_20px_48px_rgba(110,235,131,0.25)]"
-              >
-                Start
-              </button>
-            </motion.div>
-          )}
-
-          {step === "countdown" && (
-            <motion.div
-              key="countdown"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-              className="flex flex-1 flex-col items-center justify-center"
+              transition={{ duration: 0.6, delay: 0.15, ease }}
+              className="loader-logo-pulse relative h-20 w-[17.5rem] sm:h-24 sm:w-[21rem]"
             >
-              <p className="mb-6 font-sans text-[11px] font-semibold uppercase tracking-[0.38em] text-white/40">
-                Launching Website
-              </p>
-
-              <div
-                className="loader-countdown relative flex min-h-[7rem] items-center justify-center sm:min-h-[8rem]"
-                aria-live="polite"
-                aria-atomic="true"
-              >
-                <AnimatePresence mode="popLayout">
-                  <motion.span
-                    key={count}
-                    initial={{ opacity: 0, scale: 0.8, y: 12 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 1.08, y: -14 }}
-                    transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                    className="font-hero text-[clamp(5.5rem,18vw,9rem)] font-black leading-none tabular-nums text-white"
-                  >
-                    {count}
-                  </motion.span>
-                </AnimatePresence>
-              </div>
-
-              <p className="mt-4 font-sans text-xs text-white/35">
-                {count > 0 ? "Get ready" : "Welcome"}
-              </p>
+              <Image
+                src={logos.fullWhite}
+                alt="Bougain Media"
+                fill
+                sizes="(max-width: 640px) 280px, 336px"
+                className="object-contain"
+                priority
+              />
             </motion.div>
-          )}
 
-          {(step === "loading" || step === "exit") && (
+            {/* Progress bar */}
             <motion.div
-              key="loading"
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="flex flex-1 flex-col items-center justify-center"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.35, ease }}
+              className="mt-10 flex flex-col items-center"
             >
-              <div className="loader-logo-pulse relative h-20 w-[17.5rem] sm:h-24 sm:w-[21rem]">
-                <Image
-                  src={logos.fullWhite}
-                  alt="Bougain Media"
-                  fill
-                  sizes="(max-width: 640px) 280px, 336px"
-                  className="object-contain"
-                  priority
+              <div className="h-[3px] w-48 overflow-hidden rounded-full bg-white/10 sm:w-56 md:w-64">
+                <motion.div
+                  className="h-full rounded-full bg-gradient-to-r from-sage to-emerald-accent"
+                  style={{ width: `${progress}%` }}
+                  transition={{ duration: 0.08 }}
                 />
               </div>
 
-              <div className="loader-progress-track mt-10 h-0.5 w-40 overflow-hidden rounded-full bg-white/10 sm:w-48 md:w-56">
-                <div className="loader-progress-bar h-full rounded-full bg-sage-light" />
-              </div>
+              {/* Percentage counter */}
+              <motion.span
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+                className="mt-4 font-sans text-xs font-semibold tabular-nums tracking-[0.3em] text-white/40"
+              >
+                {progress}%
+              </motion.span>
             </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </div>
+          </motion.div>
+      </motion.div>
+    </AnimatePresence>
   );
 }
