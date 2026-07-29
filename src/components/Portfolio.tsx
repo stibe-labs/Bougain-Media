@@ -66,6 +66,40 @@ function PortfolioHero() {
   );
 }
 
+/* ─── Video URL Encoding Helper ─── */
+function getEncodedVideoSources(videoSrc: string) {
+  if (!videoSrc) return { webm: "", mp4: "" };
+  const clean = videoSrc.trim();
+
+  let webmPath = clean;
+  let mp4Path = clean;
+
+  if (clean.includes("/Content_video_webm/")) {
+    webmPath = clean;
+    mp4Path = clean
+      .replace("/Content_video_webm/", "/Content video/")
+      .replace(/\.webm$/i, ".mp4");
+  } else if (clean.includes("/Content video/")) {
+    mp4Path = clean;
+    webmPath = clean
+      .replace("/Content video/", "/Content_video_webm/")
+      .replace(/\.mp4$/i, ".webm");
+  }
+
+  const encodePath = (path: string) => {
+    try {
+      return encodeURI(path).replace(/&/g, "%26").replace(/#/g, "%23");
+    } catch {
+      return path;
+    }
+  };
+
+  return {
+    webm: encodePath(webmPath),
+    mp4: encodePath(mp4Path),
+  };
+}
+
 /* ─── Lightbox Modal ─── */
 function LightboxModal({
   item,
@@ -76,7 +110,9 @@ function LightboxModal({
 }) {
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const sources = getEncodedVideoSources(item.videoSrc || "");
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -100,7 +136,7 @@ function LightboxModal({
       videoRef.current.pause();
       setIsPlaying(false);
     } else {
-      videoRef.current.play();
+      videoRef.current.play().catch(() => {});
       setIsPlaying(true);
     }
   };
@@ -116,7 +152,7 @@ function LightboxModal({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-forest-deep/95 p-4 backdrop-blur-md md:p-8"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-xl md:p-8"
       onClick={onClose}
     >
       <motion.div
@@ -124,22 +160,29 @@ function LightboxModal({
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
         transition={{ duration: 0.35, ease }}
-        className="relative flex max-h-[90vh] w-full max-w-5xl flex-col overflow-hidden rounded-3xl bg-forest-deep text-white shadow-2xl"
+        className="relative flex max-h-[90vh] w-full max-w-5xl flex-col overflow-hidden rounded-3xl bg-black border border-white/15 text-white shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button */}
         <button
           onClick={onClose}
           aria-label="Close modal"
-          className="absolute right-4 top-4 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-black/40 text-white transition-colors hover:bg-white/20"
+          className="absolute right-4 top-4 z-30 flex h-10 w-10 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-md transition-all hover:bg-white/30 border border-white/20"
         >
           <X size={20} />
         </button>
 
         {/* Video Area */}
-        <div className="relative flex flex-1 items-center justify-center bg-black/60 min-h-[300px] md:min-h-[420px] lg:min-h-[500px]">
+        <div className="relative flex flex-1 items-center justify-center bg-black min-h-[300px] md:min-h-[420px] lg:min-h-[500px]">
           {item.videoSrc ? (
-            <div className="relative h-full w-full flex items-center justify-center">
+            <div className="relative h-full w-full flex items-center justify-center bg-black">
+              {/* Spinner while loading */}
+              {isLoading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black z-0">
+                  <div className="h-8 w-8 animate-spin rounded-full border-2 border-sage border-t-transparent" />
+                </div>
+              )}
+
               <video
                 ref={(el) => {
                   if (el) {
@@ -147,24 +190,31 @@ function LightboxModal({
                     el.defaultMuted = isMuted;
                     el.setAttribute("playsinline", "true");
                     el.setAttribute("webkit-playsinline", "true");
+                    const p = el.play();
+                    if (p !== undefined) p.catch(() => {});
                   }
                   videoRef.current = el;
                 }}
-                src={encodeURI(item.videoSrc)}
+                src={sources.webm || sources.mp4}
                 autoPlay
                 loop
                 muted={isMuted}
                 playsInline
                 preload="auto"
+                onCanPlay={() => setIsLoading(false)}
+                onLoadedData={() => setIsLoading(false)}
                 onClick={togglePlay}
-                className="max-h-[80vh] w-full object-contain cursor-pointer"
-              />
+                className="max-h-[80vh] w-full object-contain cursor-pointer relative z-10"
+              >
+                <source src={sources.webm} type="video/webm" />
+                <source src={sources.mp4} type="video/mp4" />
+              </video>
 
               {/* Controls bar */}
-              <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between rounded-2xl bg-forest-deep/80 p-3 backdrop-blur-md">
+              <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between rounded-2xl bg-black/80 p-3.5 backdrop-blur-md border border-white/15 z-20">
                 <button
                   onClick={togglePlay}
-                  className="flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-wider text-white hover:text-sage-light"
+                  className="flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-wider text-white hover:text-sage transition-colors"
                 >
                   <Play size={16} fill={isPlaying ? "currentColor" : "none"} />
                   {isPlaying ? "Pause" : "Play"}
@@ -172,7 +222,7 @@ function LightboxModal({
 
                 <button
                   onClick={toggleMute}
-                  className="flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-wider text-white hover:text-sage-light"
+                  className="flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-wider text-white hover:text-sage transition-colors"
                 >
                   {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
                   {isMuted ? "Unmute Sound" : "Mute Sound"}
@@ -180,7 +230,7 @@ function LightboxModal({
               </div>
             </div>
           ) : (
-            <div className="flex h-full w-full items-center justify-center min-h-[350px] bg-forest-deep/40">
+            <div className="flex h-full w-full items-center justify-center min-h-[350px] bg-black">
               <Film size={48} className="text-white/20" />
             </div>
           )}
@@ -265,25 +315,31 @@ function PortfolioCard({
     >
       {/* Video */}
       <div className="relative h-full w-full">
-        {isVisible && item.videoSrc && (
-          <video
-            ref={(el) => {
-              if (el) {
-                el.muted = true;
-                el.defaultMuted = true;
-                el.setAttribute("playsinline", "true");
-                el.setAttribute("webkit-playsinline", "true");
-              }
-              videoRef.current = el;
-            }}
-            src={encodeURI(item.videoSrc) + "#t=0.001"}
-            muted
-            loop
-            playsInline
-            preload="auto"
-            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-          />
-        )}
+        {isVisible && item.videoSrc && (() => {
+          const cardSources = getEncodedVideoSources(item.videoSrc);
+          return (
+            <video
+              ref={(el) => {
+                if (el) {
+                  el.muted = true;
+                  el.defaultMuted = true;
+                  el.setAttribute("playsinline", "true");
+                  el.setAttribute("webkit-playsinline", "true");
+                }
+                videoRef.current = el;
+              }}
+              src={cardSources.webm || cardSources.mp4}
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+            >
+              <source src={cardSources.webm} type="video/webm" />
+              <source src={cardSources.mp4} type="video/mp4" />
+            </video>
+          );
+        })()}
 
         {!isVisible && (
           <div className="absolute inset-0 flex items-center justify-center bg-black">
