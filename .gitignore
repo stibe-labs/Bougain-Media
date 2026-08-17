@@ -42,10 +42,11 @@ next-env.d.ts
 # bundles & scripts
 *.bundle
 
-# large media files (managed via Supabase Storage)
+# large media files (raw uncompressed sources)
 public/videos/*.mp4
-public/videos/*.webm
 public/videos/*.mov
+public/videos/Content video/
+public/videos/AI/*.mp4
 public/logos/*.mp4
 
 
