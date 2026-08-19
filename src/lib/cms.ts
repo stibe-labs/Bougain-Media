@@ -96,7 +96,7 @@ export async function getPortfolioItems(): Promise<PortfolioItem[]> {
     if (!Array.isArray(data) || data.length === 0) return portfolio.items;
 
     return data.map((item: any) => {
-      const rawSrc = item.videoSrc || item.video_src || undefined;
+      const rawSrc = item.videoSrc || item.video_src || item.videosrc || undefined;
       const normalizedSrc = normalizeVideoSrc(rawSrc) || rawSrc;
       return {
         id: item.id,

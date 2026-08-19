@@ -7,10 +7,14 @@ export async function GET() {
     const res = await query(
       "SELECT id, title, client, category, type, industry, result, description, image, video_src AS \"videoSrc\", aspect, span, featured, section, order_index FROM portfolio_items ORDER BY order_index ASC"
     );
-    const rows = res.rows.map((row: any) => ({
-      ...row,
-      videoSrc: normalizeVideoSrc(row.videoSrc) || row.videoSrc,
-    }));
+    const rows = res.rows.map((row: any) => {
+      const rawSrc = row.videoSrc || row.videosrc || row.video_src || undefined;
+      const normalizedSrc = normalizeVideoSrc(rawSrc) || rawSrc;
+      return {
+        ...row,
+        videoSrc: normalizedSrc,
+      };
+    });
     return NextResponse.json(rows);
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
