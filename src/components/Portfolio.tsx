@@ -22,13 +22,21 @@ import {
   type PortfolioItem,
   type PortfolioSection,
 } from "@/lib/constants";
+import { getPortfolioItems, normalizeVideoSrc } from "@/lib/cms";
 import { cn } from "@/lib/utils";
-import { getPortfolioItems } from "@/lib/cms";
 import Image from "next/image";
 
 const ease = [0.22, 1, 0.36, 1] as [number, number, number, number];
 
-const safeEncodeURI = (url: string) => encodeURI(decodeURIComponent(url));
+const safeEncodeURI = (url: string) => {
+  if (!url) return "";
+  const normalized = normalizeVideoSrc(url) || url;
+  try {
+    return encodeURI(decodeURIComponent(normalized));
+  } catch {
+    return encodeURI(normalized);
+  }
+};
 
 
 function PortfolioHero() {

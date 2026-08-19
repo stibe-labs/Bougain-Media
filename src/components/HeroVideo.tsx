@@ -4,7 +4,15 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatedMesh } from "@/components/AnimatedMesh";
 import { normalizeVideoSrc } from "@/lib/cms";
 
-const safeEncodeURI = (url: string) => encodeURI(decodeURIComponent(url));
+const safeEncodeURI = (url: string) => {
+  if (!url) return "";
+  const normalized = normalizeVideoSrc(url) || url;
+  try {
+    return encodeURI(decodeURIComponent(normalized));
+  } catch {
+    return encodeURI(normalized);
+  }
+};
 
 export function HeroVideo({
   src = "/videos/AI/happy-2.webm",

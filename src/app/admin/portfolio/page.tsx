@@ -189,13 +189,14 @@ export default function AdminPortfolioPage() {
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((item) => {
-            const rawSrc = normalizeVideoSrc(item.videoSrc) || item.videoSrc;
+            const rawSrc = item.videoSrc ? (normalizeVideoSrc(item.videoSrc) || item.videoSrc) : "";
             const safeEncodeURI = (url: string) => {
               if (!url) return "";
+              const normalized = normalizeVideoSrc(url) || url;
               try {
-                return encodeURI(decodeURIComponent(url));
+                return encodeURI(decodeURIComponent(normalized));
               } catch {
-                return encodeURI(url);
+                return encodeURI(normalized);
               }
             };
             const displayTitle = item.title || rawSrc?.split("/").pop()?.replace(/\.(webm|mp4)$/i, "") || "Untitled Reel";

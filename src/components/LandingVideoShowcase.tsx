@@ -17,10 +17,18 @@ import {
 } from "lucide-react";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { portfolio, type PortfolioItem } from "@/lib/constants";
-import { getPortfolioItems } from "@/lib/cms";
+import { getPortfolioItems, normalizeVideoSrc } from "@/lib/cms";
 import { cn } from "@/lib/utils";
 
-const safeEncodeURI = (url: string) => encodeURI(decodeURIComponent(url));
+const safeEncodeURI = (url: string) => {
+  if (!url) return "";
+  const normalized = normalizeVideoSrc(url) || url;
+  try {
+    return encodeURI(decodeURIComponent(normalized));
+  } catch {
+    return encodeURI(normalized);
+  }
+};
 
 interface VideoCardProps {
   video: PortfolioItem & { videoSrc: string };
