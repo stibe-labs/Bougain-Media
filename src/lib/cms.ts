@@ -31,55 +31,27 @@ export async function uploadMediaAsset(file: File, folder: "videos" | "images" |
   return data.url;
 }
 
-const cleanVideoMap: Record<string, string> = {
-  "TURN UP CROWN PLAZA.webm": "/videos/AI/turn-up-crown-plaza.webm",
-  "BOSS REEL_FINAL.webm": "/videos/AI/boss-reel-final.webm",
-  "chefs kiss_FINAL OUT.webm": "/videos/AI/chefs-kiss-final-out.webm",
-  "first draft emarath.webm": "/videos/AI/first-draft-emarath.webm",
-  "GOT emarath_1.webm": "/videos/AI/got-emarath-1.webm",
-  "Fit&Co Reel 1.webm": "/videos/AI/fit-co-reel-1.webm",
-  "godha reel final.webm": "/videos/AI/godha-reel-final.webm",
-  "HAPPY_2.webm": "/videos/AI/happy-2.webm",
-  "Aicademy New Reel.webm": "/videos/AI/aicademy-new-reel.webm",
-  "Getwork Vid Fdraft 2.webm": "/videos/AI/getwork-vid-fdraft-2.webm",
-  "Emarath Interior Finalll Draft_preview.webm": "/videos/AI/emarath-interior-draft-preview.webm",
-  "Gwnad.webm": "/videos/AI/gwnad.webm",
-  "keyboard reel final draftt.webm": "/videos/AI/keyboard-reel-final-draftt.webm",
-  "R2V2.webm": "/videos/AI/r2v2.webm",
-  "REEL 2 FitGo.webm": "/videos/AI/reel-2-fitgo.webm",
-  "Revathy Reel 1Draft.webm": "/videos/AI/revathy-reel-1draft.webm",
-  "V 3.webm": "/videos/AI/v-3.webm",
-  "V 4.webm": "/videos/AI/v-4.webm",
-  "V4.webm": "/videos/AI/v4-cut.webm",
-  "v2.webm": "/videos/AI/v2.webm",
-  "v3 raw A.webm": "/videos/AI/v3-raw-a.webm",
-  "v6.webm": "/videos/AI/v6.webm",
-  "v7 a.webm": "/videos/AI/v7-a.webm",
-  "vc 1.webm": "/videos/AI/vc-1.webm",
-};
-
 export function normalizeVideoSrc(src?: string | null): string | undefined {
   if (!src) return undefined;
   
   // 1. Remove fragment identifiers (e.g. #t=0.001) and decode URI components
   let clean = decodeURIComponent(src.split("#")[0].trim());
   
-  // 2. Extract filename
+  // 2. Extract exact filename
   const filename = clean.split("/").pop() || "";
-  
-  // 3. Lookup in cleanVideoMap for legacy seeded filenames
-  if (cleanVideoMap[filename]) {
-    return cleanVideoMap[filename];
+  if (!filename) return clean;
+
+  // 3. Rewrite any legacy or current video folder to /videos/AI/<exact-filename>
+  if (
+    clean.includes("/Content_video_webm/") ||
+    clean.includes("/Content video/") ||
+    clean.includes("/content/") ||
+    clean.includes("/videos/")
+  ) {
+    return `/videos/AI/${filename}`;
   }
   
-  // 4. If path refers to legacy Content_video_webm folder, redirect to /videos/AI/
-  if (clean.includes("/Content_video_webm/") || clean.includes("/Content video/") || clean.includes("/content/")) {
-    const slug = filename.toLowerCase().replace(/[^a-z0-9]/g, "-").replace(/-+/g, "-");
-    const testPath = `/videos/AI/${slug}.webm`;
-    return testPath;
-  }
-  
-  // 5. Ensure leading slash for relative paths
+  // 4. Ensure leading slash for relative paths
   if (!clean.startsWith("/") && !clean.startsWith("http://") && !clean.startsWith("https://")) {
     clean = "/" + clean;
   }
