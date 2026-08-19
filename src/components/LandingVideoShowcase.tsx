@@ -203,7 +203,7 @@ export function LandingVideoShowcase() {
     id: "hero-featured",
     title: "HAPPY 2",
     client: "Bougain Media",
-    videoSrc: "/videos/Content_video_webm/HAPPY_2.webm",
+    videoSrc: "/videos/content/happy-2.webm",
   };
 
   const togglePlayMain = () => {

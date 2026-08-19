@@ -634,7 +634,7 @@ export function Portfolio({ standalone = false }: { standalone?: boolean }) {
                     title="Content Videos"
                     label="Content Studio"
                     subtitle="Branded content, commercial reels, and digital marketing films crafted for real brands."
-                    videoSrc={contentVideoItems[0]?.videoSrc || "/videos/Content_video_webm/TURN UP CROWN PLAZA.webm"}
+                    videoSrc={contentVideoItems[0]?.videoSrc || "/videos/content/turn-up-crown-plaza.webm"}
                     itemCount={contentVideoItems.length}
                     icon={<Film size={24} className="text-white" />}
                     index={0}
