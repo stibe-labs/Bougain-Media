@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getPortfolioItems, savePortfolioItem, deletePortfolioItem, uploadMediaAsset } from "@/lib/cms";
+import { getPortfolioItems, savePortfolioItem, deletePortfolioItem, uploadMediaAsset, normalizeVideoSrc } from "@/lib/cms";
 import { PortfolioItem, portfolioCategories } from "@/lib/constants";
 import {
   Plus,
@@ -189,8 +189,17 @@ export default function AdminPortfolioPage() {
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((item) => {
-            const displayTitle = item.title || item.videoSrc?.split("/").pop()?.replace(/\.(webm|mp4)$/i, "") || "Untitled Reel";
-            const encodedSrc = item.videoSrc ? encodeURI(item.videoSrc) : "";
+            const rawSrc = normalizeVideoSrc(item.videoSrc) || item.videoSrc;
+            const safeEncodeURI = (url: string) => {
+              if (!url) return "";
+              try {
+                return encodeURI(decodeURIComponent(url));
+              } catch {
+                return encodeURI(url);
+              }
+            };
+            const displayTitle = item.title || rawSrc?.split("/").pop()?.replace(/\.(webm|mp4)$/i, "") || "Untitled Reel";
+            const encodedSrc = rawSrc ? safeEncodeURI(rawSrc) : "";
             return (
               <div
                 key={item.id}
@@ -222,7 +231,7 @@ export default function AdminPortfolioPage() {
                       <source src={encodedSrc} type="video/mp4" />
                     </video>
                   ) : item.image ? (
-                    <img src={encodeURI(item.image)} alt={displayTitle} className="h-full w-full object-cover" />
+                    <img src={safeEncodeURI(item.image)} alt={displayTitle} className="h-full w-full object-cover" />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center bg-forest-deep">
                       <Film size={24} className="text-white/20" />
