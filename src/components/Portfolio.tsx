@@ -160,7 +160,6 @@ function LightboxModal({
                   }
                   videoRef.current = el;
                 }}
-                src={encodeURI(item.videoSrc)}
                 autoPlay
                 loop
                 muted={isMuted}
@@ -170,7 +169,10 @@ function LightboxModal({
                 onLoadedData={() => setIsLoading(false)}
                 onClick={togglePlay}
                 className="max-h-[80vh] w-full object-contain cursor-pointer relative z-10"
-              />
+              >
+                <source src={encodeURI(item.videoSrc.replace(/\.(webm|mp4)$/i, ".webm"))} type="video/webm" />
+                <source src={encodeURI(item.videoSrc.replace(/\.(webm|mp4)$/i, ".mp4"))} type="video/mp4" />
+              </video>
 
               {/* Controls bar */}
               <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between rounded-2xl bg-black/80 p-3.5 backdrop-blur-md border border-white/15 z-20">
@@ -290,14 +292,16 @@ function PortfolioCard({
               }
               videoRef.current = el;
             }}
-            src={encodeURI(item.videoSrc)}
             autoPlay
             muted
             loop
             playsInline
             preload="metadata"
-            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-          />
+            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+          >
+            <source src={encodeURI(item.videoSrc.replace(/\.(webm|mp4)$/i, ".webm"))} type="video/webm" />
+            <source src={encodeURI(item.videoSrc.replace(/\.(webm|mp4)$/i, ".mp4"))} type="video/mp4" />
+          </video>
         )}
 
         {!isVisible && (
@@ -435,7 +439,6 @@ function CategoryCard({
           }
           videoRef.current = el;
         }}
-        src={encodeURI(videoSrc)}
         muted
         loop
         playsInline
@@ -444,7 +447,10 @@ function CategoryCard({
           "absolute inset-0 h-full w-full object-cover transition-all duration-1000",
           isHovered ? "scale-110 brightness-75" : "scale-100 brightness-50",
         )}
-      />
+      >
+        <source src={encodeURI(videoSrc.replace(/\.(webm|mp4)$/i, ".webm"))} type="video/webm" />
+        <source src={encodeURI(videoSrc.replace(/\.(webm|mp4)$/i, ".mp4"))} type="video/mp4" />
+      </video>
 
       {/* Gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />

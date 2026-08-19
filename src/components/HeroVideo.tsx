@@ -47,7 +47,8 @@ export function HeroVideo({
         }`}
         aria-hidden
       >
-        <source src={src} type={src.endsWith(".webm") ? "video/webm" : "video/mp4"} />
+        <source src={encodeURI(src.replace(/\.(webm|mp4)$/i, ".webm"))} type="video/webm" />
+        <source src={encodeURI(src.replace(/\.(webm|mp4)$/i, ".mp4"))} type="video/mp4" />
       </video>
     </>
   );

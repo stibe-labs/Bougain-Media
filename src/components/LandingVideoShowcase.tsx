@@ -119,13 +119,15 @@ function ReelCard({ video, index, onSelect }: VideoCardProps) {
                 }
                 videoRef.current = el;
               }}
-              src={encodeURI(video.videoSrc)}
               muted
               loop
               playsInline
               preload="metadata"
               className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 pointer-events-none"
-            />
+            >
+              <source src={encodeURI(video.videoSrc.replace(/\.(webm|mp4)$/i, ".webm"))} type="video/webm" />
+              <source src={encodeURI(video.videoSrc.replace(/\.(webm|mp4)$/i, ".mp4"))} type="video/mp4" />
+            </video>
           )}
 
           {/* Fallback ambient glow before load */}
@@ -260,7 +262,6 @@ export function LandingVideoShowcase() {
             <div className="relative aspect-video w-full">
               <video
                 ref={mainVideoRef}
-                src={encodeURI(standaloneHeroVideo.videoSrc)}
                 autoPlay
                 loop
                 muted
@@ -268,7 +269,10 @@ export function LandingVideoShowcase() {
                 preload="auto"
                 onClick={togglePlayMain}
                 className="h-full w-full object-cover cursor-pointer"
-              />
+              >
+                <source src={encodeURI(standaloneHeroVideo.videoSrc.replace(/\.(webm|mp4)$/i, ".webm"))} type="video/webm" />
+                <source src={encodeURI(standaloneHeroVideo.videoSrc.replace(/\.(webm|mp4)$/i, ".mp4"))} type="video/mp4" />
+              </video>
             </div>
           </div>
         </ScrollReveal>
