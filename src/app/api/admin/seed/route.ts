@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { query } from "@/lib/db";
 import { portfolio, services, hero, contact } from "@/lib/constants";
+import { normalizeVideoSrc } from "@/lib/cms";
 
 export async function POST() {
   try {
@@ -12,6 +13,7 @@ export async function POST() {
     // 2. Seed / Upsert Portfolio Items
     for (let index = 0; index < portfolio.items.length; index++) {
       const item = portfolio.items[index];
+      const normalizedSrc = normalizeVideoSrc(item.videoSrc) || item.videoSrc || null;
       const sql = `
         INSERT INTO portfolio_items (id, title, client, category, type, industry, result, description, image, video_src, aspect, span, featured, section, order_index, updated_at)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, now())
@@ -42,11 +44,11 @@ export async function POST() {
         item.result,
         item.description,
         item.image,
-        item.videoSrc || null,
+        normalizedSrc,
         item.aspect || "16:9",
         item.span || "md",
         item.featured || false,
-        item.section || (item.videoSrc?.includes("/AI/") ? "ai-concept-ads" : "video-production"),
+        item.section || (normalizedSrc?.includes("/AI/") || normalizedSrc?.includes(".r2.dev") ? "ai-concept-ads" : "content-videos"),
         index,
       ]);
     }
