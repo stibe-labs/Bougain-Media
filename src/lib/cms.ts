@@ -73,6 +73,8 @@ const cleanVideoFilenameMap: Record<string, string> = {
   "UDIYYA ad raihat.webm": "udiyya-ad-raihat.webm"
 };
 
+const R2_DOMAIN = process.env.NEXT_PUBLIC_R2_PUBLIC_URL || "https://pub-41d833109b8d4143be9228b4d7510632.r2.dev";
+
 export function normalizeVideoSrc(src?: string | null): string | undefined {
   if (!src) return undefined;
 
@@ -87,8 +89,8 @@ export function normalizeVideoSrc(src?: string | null): string | undefined {
   const cleanFilename = cleanVideoFilenameMap[rawFilename] || 
     rawFilename.toLowerCase().replace(/%20/g, "-").replace(/ /g, "-").replace(/_/g, "-").replace(/&/g, "-");
 
-  // 4. Return unified web-safe URL under /videos/AI/
-  return `/videos/AI/${cleanFilename}`;
+  // 4. Return high-performance Cloudflare R2 CDN URL
+  return `${R2_DOMAIN}/${cleanFilename}`;
 }
 
 // Fetch Portfolio Items from Postgres API
