@@ -20,6 +20,8 @@ import { portfolio, type PortfolioItem } from "@/lib/constants";
 import { getPortfolioItems } from "@/lib/cms";
 import { cn } from "@/lib/utils";
 
+const safeEncodeURI = (url: string) => encodeURI(decodeURIComponent(url));
+
 interface VideoCardProps {
   video: PortfolioItem & { videoSrc: string };
   index: number;
@@ -125,8 +127,8 @@ function ReelCard({ video, index, onSelect }: VideoCardProps) {
               preload="metadata"
               className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 pointer-events-none"
             >
-              <source src={encodeURI(video.videoSrc.replace(/\.(webm|mp4)$/i, ".webm"))} type="video/webm" />
-              <source src={encodeURI(video.videoSrc.replace(/\.(webm|mp4)$/i, ".mp4"))} type="video/mp4" />
+              <source src={safeEncodeURI(video.videoSrc.replace(/\.(webm|mp4)$/i, ".webm"))} type="video/webm" />
+              <source src={safeEncodeURI(video.videoSrc.replace(/\.(webm|mp4)$/i, ".mp4"))} type="video/mp4" />
             </video>
           )}
 
@@ -270,8 +272,8 @@ export function LandingVideoShowcase() {
                 onClick={togglePlayMain}
                 className="h-full w-full object-cover cursor-pointer"
               >
-                <source src={encodeURI(standaloneHeroVideo.videoSrc.replace(/\.(webm|mp4)$/i, ".webm"))} type="video/webm" />
-                <source src={encodeURI(standaloneHeroVideo.videoSrc.replace(/\.(webm|mp4)$/i, ".mp4"))} type="video/mp4" />
+                <source src={safeEncodeURI(standaloneHeroVideo.videoSrc.replace(/\.(webm|mp4)$/i, ".webm"))} type="video/webm" />
+                <source src={safeEncodeURI(standaloneHeroVideo.videoSrc.replace(/\.(webm|mp4)$/i, ".mp4"))} type="video/mp4" />
               </video>
             </div>
           </div>

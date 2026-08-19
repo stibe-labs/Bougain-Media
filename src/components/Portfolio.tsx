@@ -28,6 +28,9 @@ import Image from "next/image";
 
 const ease = [0.22, 1, 0.36, 1] as [number, number, number, number];
 
+const safeEncodeURI = (url: string) => encodeURI(decodeURIComponent(url));
+
+
 function PortfolioHero() {
   return (
     <div className="relative overflow-hidden bg-forest-deep">
@@ -170,8 +173,8 @@ function LightboxModal({
                 onClick={togglePlay}
                 className="max-h-[80vh] w-full object-contain cursor-pointer relative z-10"
               >
-                <source src={encodeURI(item.videoSrc.replace(/\.(webm|mp4)$/i, ".webm"))} type="video/webm" />
-                <source src={encodeURI(item.videoSrc.replace(/\.(webm|mp4)$/i, ".mp4"))} type="video/mp4" />
+                <source src={safeEncodeURI(item.videoSrc.replace(/\.(webm|mp4)$/i, ".webm"))} type="video/webm" />
+                <source src={safeEncodeURI(item.videoSrc.replace(/\.(webm|mp4)$/i, ".mp4"))} type="video/mp4" />
               </video>
 
               {/* Controls bar */}
@@ -299,8 +302,8 @@ function PortfolioCard({
             preload="metadata"
             className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
           >
-            <source src={encodeURI(item.videoSrc.replace(/\.(webm|mp4)$/i, ".webm"))} type="video/webm" />
-            <source src={encodeURI(item.videoSrc.replace(/\.(webm|mp4)$/i, ".mp4"))} type="video/mp4" />
+            <source src={safeEncodeURI(item.videoSrc.replace(/\.(webm|mp4)$/i, ".webm"))} type="video/webm" />
+            <source src={safeEncodeURI(item.videoSrc.replace(/\.(webm|mp4)$/i, ".mp4"))} type="video/mp4" />
           </video>
         )}
 
@@ -448,8 +451,8 @@ function CategoryCard({
           isHovered ? "scale-110 brightness-75" : "scale-100 brightness-50",
         )}
       >
-        <source src={encodeURI(videoSrc.replace(/\.(webm|mp4)$/i, ".webm"))} type="video/webm" />
-        <source src={encodeURI(videoSrc.replace(/\.(webm|mp4)$/i, ".mp4"))} type="video/mp4" />
+        <source src={safeEncodeURI(videoSrc.replace(/\.(webm|mp4)$/i, ".webm"))} type="video/webm" />
+        <source src={safeEncodeURI(videoSrc.replace(/\.(webm|mp4)$/i, ".mp4"))} type="video/mp4" />
       </video>
 
       {/* Gradient overlay */}
