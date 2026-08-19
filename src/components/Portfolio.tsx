@@ -664,7 +664,7 @@ export function Portfolio({ standalone = false }: { standalone?: boolean }) {
                     title="AI Videos"
                     label="AI Creative Lab"
                     subtitle="AI-generated concept advertisements and cinematic video explorations."
-                    videoSrc={aiConceptItems[0]?.videoSrc || "/videos/AI/AMRUTH CONCEPT AD.webm"}
+                    videoSrc={aiConceptItems[0]?.videoSrc || "/videos/AI/amruth-concept-ad.webm"}
                     itemCount={aiConceptItems.length}
                     icon={<Sparkles size={24} className="text-white" />}
                     index={1}
