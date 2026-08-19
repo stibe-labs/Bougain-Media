@@ -6,11 +6,8 @@ export async function POST() {
   try {
     const validIds = portfolio.items.map((i) => i.id);
 
-    // 1. Remove stale portfolio items not present in current constants
-    if (validIds.length > 0) {
-      const placeholders = validIds.map((_, i) => `$${i + 1}`).join(",");
-      await query(`DELETE FROM portfolio_items WHERE id NOT IN (${placeholders})`, validIds);
-    }
+    // 1. Remove all old portfolio items to ensure clean seed
+    await query("DELETE FROM portfolio_items");
 
     // 2. Seed / Upsert Portfolio Items
     for (let index = 0; index < portfolio.items.length; index++) {
