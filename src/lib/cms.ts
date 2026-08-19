@@ -84,13 +84,24 @@ const cleanVideoMap: Record<string, string> = {
 
 export function normalizeVideoSrc(src?: string | null): string | undefined {
   if (!src) return undefined;
-  if (src.includes("/Content_video_webm/") || src.includes("/Content video/")) {
-    const filename = src.split("/").pop() || "";
-    const decoded = decodeURIComponent(filename);
-    if (cleanVideoMap[filename]) return cleanVideoMap[filename];
-    if (cleanVideoMap[decoded]) return cleanVideoMap[decoded];
+  
+  // 1. Remove fragment identifiers (e.g. #t=0.001)
+  let clean = src.split("#")[0].trim();
+  
+  // 2. Extract filename and decode URI
+  const rawFilename = clean.split("/").pop() || "";
+  const decodedFilename = decodeURIComponent(rawFilename);
+  
+  // 3. Lookup in cleanVideoMap
+  if (cleanVideoMap[rawFilename]) return cleanVideoMap[rawFilename];
+  if (cleanVideoMap[decodedFilename]) return cleanVideoMap[decodedFilename];
+  
+  // 4. Ensure leading slash for any relative path
+  if (!clean.startsWith("/") && !clean.startsWith("http://") && !clean.startsWith("https://")) {
+    clean = "/" + clean;
   }
-  return src;
+  
+  return clean;
 }
 
 // Fetch Portfolio Items from Postgres API
