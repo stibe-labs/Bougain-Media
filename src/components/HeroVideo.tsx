@@ -2,6 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import { AnimatedMesh } from "@/components/AnimatedMesh";
+import { normalizeVideoSrc } from "@/lib/cms";
+
+const safeEncodeURI = (url: string) => encodeURI(decodeURIComponent(url));
 
 export function HeroVideo({
   src = "/videos/AI/happy-2.webm",
@@ -12,6 +15,7 @@ export function HeroVideo({
   meshRgb?: string;
   meshRgb2?: string;
 }) {
+  const normalizedSrc = normalizeVideoSrc(src) || src;
   const videoRef = useRef<HTMLVideoElement>(null);
   const [showVideo, setShowVideo] = useState(false);
 
@@ -30,7 +34,7 @@ export function HeroVideo({
       video.removeEventListener("canplay", onCanPlay);
       video.removeEventListener("error", onError);
     };
-  }, [src]);
+  }, [normalizedSrc]);
 
   return (
     <>
@@ -47,8 +51,8 @@ export function HeroVideo({
         }`}
         aria-hidden
       >
-        <source src={encodeURI(src.replace(/\.(webm|mp4)$/i, ".webm"))} type="video/webm" />
-        <source src={encodeURI(src.replace(/\.(webm|mp4)$/i, ".mp4"))} type="video/mp4" />
+        <source src={safeEncodeURI(normalizedSrc.replace(/\.(webm|mp4)$/i, ".webm"))} type="video/webm" />
+        <source src={safeEncodeURI(normalizedSrc.replace(/\.(webm|mp4)$/i, ".mp4"))} type="video/mp4" />
       </video>
     </>
   );

@@ -5,6 +5,22 @@ const nextConfig: NextConfig = {
     remotePatterns: [],
     qualities: [60, 75, 85],
   },
+  async rewrites() {
+    return [
+      {
+        source: "/videos/Content_video_webm/:path*",
+        destination: "/videos/AI/:path*",
+      },
+      {
+        source: "/videos/Content%20video/:path*",
+        destination: "/videos/AI/:path*",
+      },
+      {
+        source: "/videos/content/:path*",
+        destination: "/videos/AI/:path*",
+      },
+    ];
+  },
 };
 
 export default nextConfig;
