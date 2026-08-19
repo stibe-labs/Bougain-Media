@@ -282,7 +282,7 @@ export const portfolio: {
   headline: "Selected Work in Motion",
   subtitle: "Content videos, AI concept ads, and commercial video production.",
   items: [
-    // ── Section 1: Content Videos (24 Converted WebM Videos) ──
+    // ── Section 1: Content Videos (24 Compressed Web-Optimized WebM Videos) ──
     {
       id: "cv-turnup-crown-plaza",
       title: "Crown Plaza Turn Up Aftermovie",

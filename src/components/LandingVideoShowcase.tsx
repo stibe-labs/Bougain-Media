@@ -119,11 +119,11 @@ function ReelCard({ video, index, onSelect }: VideoCardProps) {
                 }
                 videoRef.current = el;
               }}
-              src={encodeURI(video.videoSrc) + "#t=0.001"}
+              src={encodeURI(video.videoSrc)}
               muted
               loop
               playsInline
-              preload="auto"
+              preload="metadata"
               className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 pointer-events-none"
             />
           )}
@@ -260,7 +260,7 @@ export function LandingVideoShowcase() {
             <div className="relative aspect-video w-full">
               <video
                 ref={mainVideoRef}
-                src="/videos/Content_video_webm/HAPPY_2.webm"
+                src={encodeURI(standaloneHeroVideo.videoSrc)}
                 autoPlay
                 loop
                 muted

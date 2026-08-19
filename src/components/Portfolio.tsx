@@ -290,12 +290,12 @@ function PortfolioCard({
               }
               videoRef.current = el;
             }}
-            src={encodeURI(item.videoSrc) + "#t=0.001"}
+            src={encodeURI(item.videoSrc)}
             autoPlay
             muted
             loop
             playsInline
-            preload="auto"
+            preload="metadata"
             className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
           />
         )}
@@ -435,11 +435,11 @@ function CategoryCard({
           }
           videoRef.current = el;
         }}
-        src={encodeURI(videoSrc) + "#t=0.001"}
+        src={encodeURI(videoSrc)}
         muted
         loop
         playsInline
-        preload="auto"
+        preload="metadata"
         className={cn(
           "absolute inset-0 h-full w-full object-cover transition-all duration-1000",
           isHovered ? "scale-110 brightness-75" : "scale-100 brightness-50",
