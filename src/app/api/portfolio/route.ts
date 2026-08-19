@@ -1,12 +1,17 @@
 import { NextResponse } from "next/server";
 import { query } from "@/lib/db";
+import { normalizeVideoSrc } from "@/lib/cms";
 
 export async function GET() {
   try {
     const res = await query(
       "SELECT id, title, client, category, type, industry, result, description, image, video_src AS \"videoSrc\", aspect, span, featured, section, order_index FROM portfolio_items ORDER BY order_index ASC"
     );
-    return NextResponse.json(res.rows);
+    const rows = res.rows.map((row: any) => ({
+      ...row,
+      videoSrc: normalizeVideoSrc(row.videoSrc) || row.videoSrc,
+    }));
+    return NextResponse.json(rows);
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
