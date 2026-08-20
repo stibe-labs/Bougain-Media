@@ -471,31 +471,36 @@ function CategoryCard({
       className="group relative cursor-pointer overflow-hidden rounded-[2rem] border border-white/10 shadow-[0_20px_60px_rgba(15,61,46,0.2)] min-h-[340px] sm:min-h-[420px] lg:min-h-[480px]"
     >
       {/* Background video */}
-      <video
-        ref={(el) => {
-          if (el) {
-            el.muted = true;
-            el.defaultMuted = true;
-            el.setAttribute("playsinline", "true");
-            el.setAttribute("webkit-playsinline", "true");
-            const p = el.play();
-            if (p !== undefined) p.catch(() => {});
-          }
-          videoRef.current = el;
-        }}
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="auto"
-        className={cn(
-          "absolute inset-0 h-full w-full object-cover transition-all duration-1000",
-          isHovered ? "scale-110 brightness-75" : "scale-100 brightness-50",
-        )}
-      >
-        <source src={safeEncodeURI(videoSrc.replace(/\.(webm|mp4)$/i, ".webm"))} type="video/webm" />
-        <source src={safeEncodeURI(videoSrc.replace(/\.(webm|mp4)$/i, ".mp4"))} type="video/mp4" />
-      </video>
+      {(() => {
+        const sources = getVideoSources(videoSrc);
+        return (
+          <video
+            ref={(el) => {
+              if (el) {
+                el.muted = true;
+                el.defaultMuted = true;
+                el.setAttribute("playsinline", "true");
+                el.setAttribute("webkit-playsinline", "true");
+                const p = el.play();
+                if (p !== undefined) p.catch(() => {});
+              }
+              videoRef.current = el;
+            }}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            className={cn(
+              "absolute inset-0 h-full w-full object-cover transition-all duration-1000",
+              isHovered ? "scale-110 brightness-75" : "scale-100 brightness-50",
+            )}
+          >
+            {sources?.mp4 && <source src={sources.mp4} type="video/mp4" />}
+            {sources?.webm && <source src={sources.webm} type="video/webm" />}
+          </video>
+        );
+      })()}
 
       {/* Gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
@@ -698,7 +703,7 @@ export function Portfolio({ standalone = false }: { standalone?: boolean }) {
                     title="AI Videos"
                     label="AI Creative Lab"
                     subtitle="AI-generated concept advertisements and cinematic video explorations."
-                    videoSrc={aiConceptItems[0]?.videoSrc || "/videos/AI/amruth-concept-ad.webm"}
+                    videoSrc={aiConceptItems[0]?.videoSrc || "videos/Bougain AI videos/HNA AD GST.webm"}
                     itemCount={aiConceptItems.length}
                     icon={<Sparkles size={24} className="text-white" />}
                     index={1}
