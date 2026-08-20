@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { getVideoSources } from "@/lib/cms";
 
 type ServiceMediaProps = {
   title: string;
@@ -9,6 +10,7 @@ type ServiceMediaProps = {
 
 export function ServiceMedia({ title, image, video, sizes }: ServiceMediaProps) {
   if (video) {
+    const s = getVideoSources(video);
     return (
       <div className="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-110">
         {image && (
@@ -40,8 +42,8 @@ export function ServiceMedia({ title, image, video, sizes }: ServiceMediaProps) 
           className="absolute inset-0 h-full w-full object-cover"
           aria-label={title}
         >
-          <source src={video.replace(/\.(webm|mp4)$/i, ".mp4")} type="video/mp4" />
-          <source src={video.replace(/\.(webm|mp4)$/i, ".webm")} type="video/webm" />
+          {s && <source src={s.mp4} type="video/mp4" />}
+          {s && <source src={s.webm} type="video/webm" />}
         </video>
       </div>
     );

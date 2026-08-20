@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { portfolio, type PortfolioItem } from "@/lib/constants";
-import { getPortfolioItems, normalizeVideoSrc } from "@/lib/cms";
+import { getPortfolioItems, normalizeVideoSrc, getVideoSources } from "@/lib/cms";
 import { cn } from "@/lib/utils";
 
 const safeEncodeURI = (url: string) => {
@@ -149,8 +149,15 @@ function ReelCard({ video, index, onSelect }: VideoCardProps) {
               preload="auto"
               className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 pointer-events-none"
             >
-              <source src={safeEncodeURI(video.videoSrc.replace(/\.(webm|mp4)$/i, ".webm"))} type="video/webm" />
-              <source src={safeEncodeURI(video.videoSrc.replace(/\.(webm|mp4)$/i, ".mp4"))} type="video/mp4" />
+              {(() => {
+                const s = getVideoSources(video.videoSrc);
+                return (
+                  <>
+                    {s && <source src={s.mp4} type="video/mp4" />}
+                    {s && <source src={s.webm} type="video/webm" />}
+                  </>
+                );
+              })()}
             </video>
           )}
 

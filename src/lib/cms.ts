@@ -11,8 +11,10 @@ export interface ServiceItem {
   stats: { value: string; label: string }[];
 }
 
-// Upload file locally to public directory via /api/upload
-export async function uploadMediaAsset(file: File, folder: "videos" | "images" | "services" = "videos"): Promise<string> {
+export const R2_PUBLIC_URL = process.env.NEXT_PUBLIC_R2_PUBLIC_URL || "https://pub-41d833109b8d4143be9228b4d7510632.r2.dev";
+
+// Upload file directly to Cloudflare R2 via /api/upload
+export async function uploadMediaAsset(file: File, folder: string = "videos/Content Videos"): Promise<string> {
   const formData = new FormData();
   formData.append("file", file);
   formData.append("folder", folder);
@@ -31,72 +33,118 @@ export async function uploadMediaAsset(file: File, folder: "videos" | "images" |
   return data.url;
 }
 
+const aiVideoFiles = new Set([
+  "AMRUTH CONCEPT AD",
+  "EASTER VIDEO",
+  "HAYYAK AD VIDEO",
+  "HNA AD GST",
+  "kitkat ad stibe final",
+  "mango bite ad",
+  "milma ad",
+  "RAIHAT AL ZUHAR",
+  "RAIHAT UDIYYA",
+  "solar ad extrawatt",
+  "TOMS PIPES CONCEPT AD",
+  "TOMS PIPES METEOR AD",
+  "toms pipes",
+  "UDDIYA RAIHAT AL ZUHAR",
+  "UDIYYA ad raihat",
+]);
+
+// Map clean / lowercase / legacy paths to proper R2 asset paths
 const cleanVideoMap: Record<string, string> = {
-  "turn-up-crown-plaza.webm": "/videos/AI/AMRUTH%20CONCEPT%20AD.webm",
-  "TURN UP CROWN PLAZA.webm": "/videos/AI/AMRUTH%20CONCEPT%20AD.webm",
-  "boss-reel-final.webm": "/videos/AI/EASTER%20VIDEO.webm",
-  "BOSS REEL_FINAL.webm": "/videos/AI/EASTER%20VIDEO.webm",
-  "chefs-kiss-final-out.webm": "/videos/AI/HAYYAK%20AD%20VIDEO.webm",
-  "chefs kiss_FINAL OUT.webm": "/videos/AI/HAYYAK%20AD%20VIDEO.webm",
-  "first-draft-emarath.webm": "/videos/AI/HNA%20AD%20GST.webm",
-  "first draft emarath.webm": "/videos/AI/HNA%20AD%20GST.webm",
-  "got-emarath-1.webm": "/videos/AI/RAIHAT%20AL%20ZUHAR.webm",
-  "GOT emarath_1.webm": "/videos/AI/RAIHAT%20AL%20ZUHAR.webm",
-  "fit-co-reel-1.webm": "/videos/AI/RAIHAT%20UDIYYA.webm",
-  "Fit&Co Reel 1.webm": "/videos/AI/RAIHAT%20UDIYYA.webm",
-  "godha-reel-final.webm": "/videos/AI/TOMS%20PIPES%20CONCEPT%20AD.webm",
-  "godha reel final.webm": "/videos/AI/TOMS%20PIPES%20CONCEPT%20AD.webm",
-  "happy-2.webm": "/videos/AI/TOMS%20PIPES%20METEOR%20AD.webm",
-  "HAPPY_2.webm": "/videos/AI/TOMS%20PIPES%20METEOR%20AD.webm",
-  "aicademy-new-reel.webm": "/videos/AI/UDDIYA%20RAIHAT%20AL%20ZUHAR.webm",
-  "Aicademy New Reel.webm": "/videos/AI/UDDIYA%20RAIHAT%20AL%20ZUHAR.webm",
-  "getwork-vid-fdraft-2.webm": "/videos/AI/UDIYYA%20ad%20raihat.webm",
-  "Getwork Vid Fdraft 2.webm": "/videos/AI/UDIYYA%20ad%20raihat.webm",
-  "emarath-interior-draft-preview.webm": "/videos/AI/kitkat%20ad%20stibe%20final.webm",
-  "Emarath Interior Finalll Draft_preview.webm": "/videos/AI/kitkat%20ad%20stibe%20final.webm",
-  "gwnad.webm": "/videos/AI/mango%20bite%20ad.webm",
-  "Gwnad.webm": "/videos/AI/mango%20bite%20ad.webm",
-  "keyboard-reel-final-draftt.webm": "/videos/AI/milma%20ad.webm",
-  "keyboard reel final draftt.webm": "/videos/AI/milma%20ad.webm",
-  "r2v2.webm": "/videos/AI/solar%20ad%20extrawatt.webm",
-  "R2V2.webm": "/videos/AI/solar%20ad%20extrawatt.webm",
-  "reel-2-fitgo.webm": "/videos/AI/toms%20pipes.webm",
-  "REEL 2 FitGo.webm": "/videos/AI/toms%20pipes.webm",
-  "revathy-reel-1draft.webm": "/videos/AI/AMRUTH%20CONCEPT%20AD.webm",
-  "Revathy Reel 1Draft.webm": "/videos/AI/AMRUTH%20CONCEPT%20AD.webm",
-  "v-3.webm": "/videos/AI/EASTER%20VIDEO.webm",
-  "V 3.webm": "/videos/AI/EASTER%20VIDEO.webm",
-  "v-4.webm": "/videos/AI/HAYYAK%20AD%20VIDEO.webm",
-  "V 4.webm": "/videos/AI/HAYYAK%20AD%20VIDEO.webm",
-  "v4-cut.webm": "/videos/AI/HNA%20AD%20GST.webm",
-  "V4.webm": "/videos/AI/HNA%20AD%20GST.webm",
-  "v2.webm": "/videos/AI/RAIHAT%20AL%20ZUHAR.webm",
-  "v3-raw-a.webm": "/videos/AI/RAIHAT%20UDIYYA.webm",
-  "v3 raw A.webm": "/videos/AI/RAIHAT%20UDIYYA.webm",
-  "v6.webm": "/videos/AI/TOMS%20PIPES%20CONCEPT%20AD.webm",
-  "v7-a.webm": "/videos/AI/TOMS%20PIPES%20METEOR%20AD.webm",
-  "v7 a.webm": "/videos/AI/TOMS%20PIPES%20METEOR%20AD.webm",
-  "vc-1.webm": "/videos/AI/UDDIYA%20RAIHAT%20AL%20ZUHAR.webm",
-  "vc 1.webm": "/videos/AI/UDDIYA%20RAIHAT%20AL%20ZUHAR.webm"
+  "turn-up-crown-plaza.webm": "videos/Content Videos/turn-up-crown-plaza.webm",
+  "boss-reel-final.webm": "videos/Content Videos/boss-reel-final.webm",
+  "chefs-kiss-final-out.webm": "videos/Content Videos/chefs-kiss-final-out.webm",
+  "first-draft-emarath.webm": "videos/Content Videos/first-draft-emarath.webm",
+  "got-emarath-1.webm": "videos/Content Videos/got-emarath-1.webm",
+  "fit-co-reel-1.webm": "videos/Content Videos/fit-co-reel-1.webm",
+  "godha-reel-final.webm": "videos/Content Videos/godha-reel-final.webm",
+  "happy-2.webm": "videos/Content Videos/happy-2.webm",
+  "aicademy-new-reel.webm": "videos/Content Videos/aicademy-new-reel.webm",
+  "getwork-vid-fdraft-2.webm": "videos/Content Videos/aicademy-new-reel.webm",
+  "emarath-interior-draft-preview.webm": "videos/Content Videos/emarath-interior-draft-preview.webm",
+  "gwnad.webm": "videos/Content Videos/gwnad.webm",
+  "keyboard-reel-final-draftt.webm": "videos/Content Videos/keyboard-reel-final-draftt.webm",
+  "mango-bite-ad.webm": "videos/Content Videos/mango-bite-ad.webm",
+  "revathy-reel-1draft.webm": "videos/Content Videos/revathy-reel-1draft.webm",
+  "solar-ad-extrawatt.webm": "videos/Content Videos/solar-ad-extrawatt.webm",
+  "toms-pipes-concept-ad.webm": "videos/Content Videos/toms-pipes-concept-ad.webm",
+  "toms-pipes.webm": "videos/Content Videos/toms-pipes.webm",
+  "udiyya-ad-raihat.webm": "videos/Content Videos/udiyya-ad-raihat.webm",
+  "v-3.webm": "videos/Content Videos/v-3.webm",
+  "v2.webm": "videos/Content Videos/v2.webm",
+  "v3-raw-a.webm": "videos/Content Videos/v3-raw-a.webm",
+  "v4-cut.webm": "videos/Content Videos/v4-cut.webm",
+  "v6.webm": "videos/Content Videos/v6.webm",
+  "v7-a.webm": "videos/Content Videos/v7-a.webm",
+  "vc-1.webm": "videos/Content Videos/vc-1.webm",
+
+  // AI concept ads
+  "amruth-concept-ad.webm": "videos/Bougain AI videos/AMRUTH CONCEPT AD.webm",
+  "easter-video.webm": "videos/Bougain AI videos/EASTER VIDEO.webm",
+  "hayyak-ad-video.webm": "videos/Bougain AI videos/HAYYAK AD VIDEO.webm",
+  "hna-ad-gst.webm": "videos/Bougain AI videos/HNA AD GST.webm",
+  "kitkat-ad-stibe-final.webm": "videos/Bougain AI videos/kitkat ad stibe final.webm",
+  "milma-ad.webm": "videos/Bougain AI videos/milma ad.webm",
+  "raihat-al-zuhar.webm": "videos/Bougain AI videos/RAIHAT AL ZUHAR.webm",
+  "raihat-udiyya.webm": "videos/Bougain AI videos/RAIHAT UDIYYA.webm",
+  "toms-pipes-meteor-ad.webm": "videos/Bougain AI videos/TOMS PIPES METEOR AD.webm",
+  "uddiya-raihat-al-zuhar.webm": "videos/Bougain AI videos/UDDIYA RAIHAT AL ZUHAR.webm",
 };
 
+/**
+ * Normalizes any video path (relative, local, legacy, or R2) to a canonical R2 public URL
+ */
 export function normalizeVideoSrc(src?: string | null): string | undefined {
   if (!src) return undefined;
 
-  // 1. Remove fragment identifiers (e.g. #t=0.001) and decode URI components
   let clean = decodeURIComponent(src.split("#")[0].trim());
 
-  // 2. Extract exact raw filename
-  const rawFilename = clean.split("/").pop() || "";
-  if (!rawFilename) return clean;
+  // If already a full public R2 URL or external URL, return encoded version
+  if (clean.startsWith("http://") || clean.startsWith("https://")) {
+    return clean;
+  }
 
-  // 3. Match against known clean lookup or compute clean hyphenated name
-  if (cleanVideoMap[rawFilename]) return cleanVideoMap[rawFilename];
+  // Remove leading slashes
+  clean = clean.replace(/^\/+/, "");
 
-  return `/videos/AI/${encodeURIComponent(rawFilename)}`;
+  // If it matches a known alias in cleanVideoMap
+  const fileName = clean.split("/").pop() || "";
+  if (cleanVideoMap[fileName]) {
+    return `${R2_PUBLIC_URL}/${encodeURI(cleanVideoMap[fileName])}`;
+  }
+
+  // If already has folder path
+  if (clean.startsWith("videos/")) {
+    return `${R2_PUBLIC_URL}/${encodeURI(clean)}`;
+  }
+
+  // Check if AI video
+  const baseName = fileName.replace(/\.(webm|mp4)$/i, "");
+  if (aiVideoFiles.has(baseName)) {
+    return `${R2_PUBLIC_URL}/${encodeURI(`videos/Bougain AI videos/${fileName}`)}`;
+  }
+
+  // Default to Content Videos
+  return `${R2_PUBLIC_URL}/${encodeURI(`videos/Content Videos/${fileName}`)}`;
 }
 
-// Fetch Portfolio Items from Postgres API
+/**
+ * Returns dual video source URLs (MP4 for iOS / Safari, WebM for Android / Chrome / Desktop)
+ */
+export function getVideoSources(src?: string | null): { mp4: string; webm: string } | null {
+  if (!src) return null;
+  const normalized = normalizeVideoSrc(src) || src;
+
+  // Derive MP4 and WebM variants
+  const mp4 = normalized.replace(/\.(webm|mp4)$/i, ".mp4");
+  const webm = normalized.replace(/\.(webm|mp4)$/i, ".webm");
+
+  return { mp4, webm };
+}
+
+// Fetch Portfolio Items from Postgres API (or fallback to constants)
 export async function getPortfolioItems(): Promise<PortfolioItem[]> {
   try {
     const res = await fetch("/api/portfolio", { cache: "no-store" });
@@ -121,7 +169,9 @@ export async function getPortfolioItems(): Promise<PortfolioItem[]> {
         aspect: item.aspect || "16:9",
         span: item.span || "md",
         featured: Boolean(item.featured),
-        section: item.section || ((normalizedSrc || "").includes("/AI/") ? "ai-concept-ads" : "content-videos"),
+        section: item.section || (
+          (normalizedSrc || "").toLowerCase().includes("ai") ? "ai-concept-ads" : "content-videos"
+        ),
       };
     });
   } catch {

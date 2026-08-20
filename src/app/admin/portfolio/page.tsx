@@ -228,8 +228,8 @@ export default function AdminPortfolioPage() {
                       preload="auto"
                       className="h-full w-full object-cover"
                     >
-                      <source src={encodedSrc} type="video/webm" />
-                      <source src={encodedSrc} type="video/mp4" />
+                      <source src={encodedSrc.replace(/\.(webm|mp4)$/i, ".mp4")} type="video/mp4" />
+                      <source src={encodedSrc.replace(/\.(webm|mp4)$/i, ".webm")} type="video/webm" />
                     </video>
                   ) : item.image ? (
                     <img src={safeEncodeURI(item.image)} alt={displayTitle} className="h-full w-full object-cover" />

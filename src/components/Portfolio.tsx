@@ -22,7 +22,7 @@ import {
   type PortfolioItem,
   type PortfolioSection,
 } from "@/lib/constants";
-import { getPortfolioItems, normalizeVideoSrc } from "@/lib/cms";
+import { getPortfolioItems, normalizeVideoSrc, getVideoSources } from "@/lib/cms";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 
@@ -181,8 +181,15 @@ function LightboxModal({
                 onClick={togglePlay}
                 className="max-h-[80vh] w-full object-contain cursor-pointer relative z-10"
               >
-                <source src={safeEncodeURI(item.videoSrc.replace(/\.(webm|mp4)$/i, ".webm"))} type="video/webm" />
-                <source src={safeEncodeURI(item.videoSrc.replace(/\.(webm|mp4)$/i, ".mp4"))} type="video/mp4" />
+                {(() => {
+                  const s = getVideoSources(item.videoSrc);
+                  return (
+                    <>
+                      {s && <source src={s.mp4} type="video/mp4" />}
+                      {s && <source src={s.webm} type="video/webm" />}
+                    </>
+                  );
+                })()}
               </video>
 
               {/* Controls bar */}
@@ -321,8 +328,15 @@ function PortfolioCard({
             preload="auto"
             className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
           >
-            <source src={safeEncodeURI(item.videoSrc.replace(/\.(webm|mp4)$/i, ".webm"))} type="video/webm" />
-            <source src={safeEncodeURI(item.videoSrc.replace(/\.(webm|mp4)$/i, ".mp4"))} type="video/mp4" />
+            {(() => {
+              const s = getVideoSources(item.videoSrc);
+              return (
+                <>
+                  {s && <source src={s.mp4} type="video/mp4" />}
+                  {s && <source src={s.webm} type="video/webm" />}
+                </>
+              );
+            })()}
           </video>
         )}
 

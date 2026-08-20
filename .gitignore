@@ -42,11 +42,20 @@ next-env.d.ts
 # bundles & scripts
 *.bundle
 
-# large media files (raw uncompressed sources)
+# open-next & cloudflare wrangler
+.open-next/
+.wrangler/
+
+# large media files (stored in Cloudflare R2)
 public/videos/*.mp4
 public/videos/*.mov
 public/videos/Content video/
-public/videos/AI/*.mp4
+public/videos/Content Videos/
+public/videos/Bougain AI videos/
+public/videos/AI/
 public/logos/*.mp4
+
+# scratch scripts
+scratch/
 
 

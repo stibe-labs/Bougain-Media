@@ -3,6 +3,7 @@ import Image from "next/image";
 import { ArrowRight, ArrowUpRight, Film } from "lucide-react";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { images, portfolio } from "@/lib/constants";
+import { getVideoSources } from "@/lib/cms";
 
 // Find first video-production item with a videoSrc
 const firstVideo = portfolio.items.find(
@@ -91,8 +92,15 @@ export function HomeHighlights() {
                       preload="auto"
                       className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                     >
-                      <source src={item.videoSrc.replace(/\.(webm|mp4)$/i, ".mp4")} type="video/mp4" />
-                      <source src={item.videoSrc.replace(/\.(webm|mp4)$/i, ".webm")} type="video/webm" />
+                      {(() => {
+                        const s = getVideoSources(item.videoSrc);
+                        return (
+                          <>
+                            {s && <source src={s.mp4} type="video/mp4" />}
+                            {s && <source src={s.webm} type="video/webm" />}
+                          </>
+                        );
+                      })()}
                     </video>
                     {/* Play icon hint */}
                     <div className="absolute inset-0 flex items-center justify-center z-10">
