@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
@@ -73,7 +74,7 @@ function PortfolioHero() {
   );
 }
 
-/* ─── Clean Standard Video Modal Window ─── */
+/* ─── Lightbox Modal ─── */
 export function LightboxModal({
   item,
   items,
@@ -90,8 +91,13 @@ export function LightboxModal({
   const currentIndex = items.findIndex((i) => i.id === item.id);
   const hasPrev = currentIndex > 0;
   const hasNext = currentIndex >= 0 && currentIndex < items.length - 1;
+  const [mounted, setMounted] = useState(false);
 
   const sources = useMemo(() => getVideoSources(item.videoSrc), [item.videoSrc]);
+  const videoSrc = useMemo(() => {
+    if (!sources) return "";
+    return sources.webm || sources.mp4 || "";
+  }, [sources]);
 
   const handlePrev = useCallback(() => {
     if (hasPrev) onSelect(items[currentIndex - 1]);
@@ -113,31 +119,22 @@ export function LightboxModal({
 
   useEffect(() => {
     window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
 
-  // Lock body scroll when modal is open (fixes iOS scroll-behind)
+  // Lock scroll
   useEffect(() => {
-    const prevOverflow = document.body.style.overflow;
-    const prevPosition = document.body.style.position;
-    const prevWidth = document.body.style.width;
     const scrollY = window.scrollY;
+    document.documentElement.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
-    document.body.style.position = "fixed";
-    document.body.style.top = `-${scrollY}px`;
-    document.body.style.width = "100%";
     return () => {
-      document.body.style.overflow = prevOverflow;
-      document.body.style.position = prevPosition;
-      document.body.style.top = "";
-      document.body.style.width = prevWidth;
+      document.documentElement.style.overflow = "";
+      document.body.style.overflow = "";
       window.scrollTo(0, scrollY);
     };
   }, []);
 
-  // Autoplay video on mount or when item changes
+  // Autoplay on mount / item change
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -151,43 +148,40 @@ export function LightboxModal({
     }
   }, [item.id, item.videoSrc]);
 
-  // Derive the best playable src
-  const videoSrc = useMemo(() => {
-    if (!sources) return "";
-    return sources.webm || sources.mp4 || "";
-  }, [sources]);
+  // Mount guard for createPortal (SSR safety)
+  useEffect(() => { setMounted(true); }, []);
+  if (!mounted) return null;
 
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.18 }}
-      className="fixed inset-0 z-[9999] flex items-center justify-center select-none"
+  return createPortal(
+    <div
+      className="fixed inset-0 flex items-center justify-center select-none"
       style={{
-        backdropFilter: "blur(10px)",
-        WebkitBackdropFilter: "blur(10px)",
-        backgroundColor: "rgba(0,0,0,0.88)",
+        zIndex: 99999,
+        backgroundColor: "rgba(0,0,0,0.82)",
+        backdropFilter: "blur(8px)",
+        WebkitBackdropFilter: "blur(8px)",
+        animation: "bm-fade-in 0.18s ease forwards",
       }}
       onClick={onClose}
     >
-      <motion.div
-        initial={{ opacity: 0, scale: 0.93, y: 28 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.93, y: 28 }}
-        transition={{ duration: 0.24, ease }}
+      <style>{`
+        @keyframes bm-fade-in { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes bm-slide-up { from { opacity: 0; transform: scale(0.94) translateY(24px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+      `}</style>
+
+      <div
         className={cn(
-          "relative flex flex-col overflow-hidden rounded-2xl bg-[#0a150c] border border-white/15 text-white",
-          "shadow-[0_32px_80px_rgba(0,0,0,0.9)] mx-3",
-          // Width: phone-style for reels, wide for landscape
-          isReel ? "w-full max-w-[340px] sm:max-w-sm" : "w-full max-w-[95vw] sm:max-w-3xl",
-          // Height: always fit within viewport — no scrolling needed
-          "max-h-[calc(100dvh-32px)]"
+          "relative flex flex-col overflow-hidden rounded-2xl bg-[#111c13] border border-white/20 text-white shadow-2xl mx-2 sm:mx-4",
+          isReel ? "w-[90vw] max-w-sm" : "w-[96vw] max-w-4xl"
         )}
+        style={{
+          height: "min(92vh, 860px)",
+          animation: "bm-slide-up 0.22s ease forwards",
+        }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* ── Header ── */}
-        <div className="flex shrink-0 items-center justify-between px-4 py-3 border-b border-white/10">
+        <div className="flex shrink-0 items-center justify-between px-4 py-3 border-b border-white/10 bg-black/30">
           <div className="flex items-center gap-2 truncate mr-3">
             <span className="flex items-center gap-1 rounded-full bg-sage/20 border border-sage/30 px-2.5 py-0.5 text-[11px] font-semibold text-sage shrink-0">
               {isReel ? <Smartphone size={11} /> : <Film size={11} />}
@@ -214,8 +208,8 @@ export function LightboxModal({
           </div>
         </div>
 
-        {/* ── Video — flex-1 fills remaining space, never overflows ── */}
-        <div className="flex-1 min-h-0 overflow-hidden bg-black flex items-center justify-center">
+        {/* ── Video ── fills the remaining height */}
+        <div className="flex-1 min-h-0 bg-black flex items-center justify-center overflow-hidden">
           {videoSrc ? (
             <video
               key={item.id}
@@ -252,11 +246,11 @@ export function LightboxModal({
               )}
             >
               <ChevronLeft size={14} />
-              <span>Previous</span>
+              <span>Prev</span>
             </button>
 
-            <span className="text-xs text-white/50 hidden sm:inline font-sans">
-              ← → keys to navigate
+            <span className="text-xs text-white/50 font-sans">
+              ← → navigate
             </span>
 
             <button
@@ -275,8 +269,9 @@ export function LightboxModal({
             </button>
           </div>
         )}
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>,
+    document.body
   );
 }
 
