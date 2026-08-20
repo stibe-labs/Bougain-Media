@@ -31,12 +31,23 @@ export function HeroVideo({
     const video = videoRef.current;
     if (!video) return;
 
-    const onCanPlay = () => setShowVideo(true);
+    video.muted = true;
+    video.defaultMuted = true;
+    video.setAttribute("playsinline", "true");
+    video.setAttribute("webkit-playsinline", "true");
+
+    const onCanPlay = () => {
+      setShowVideo(true);
+      const p = video.play();
+      if (p !== undefined) p.catch(() => {});
+    };
     const onError = () => setShowVideo(false);
 
     video.addEventListener("canplay", onCanPlay);
     video.addEventListener("error", onError);
     video.load();
+    const p = video.play();
+    if (p !== undefined) p.catch(() => {});
 
     return () => {
       video.removeEventListener("canplay", onCanPlay);
@@ -53,14 +64,14 @@ export function HeroVideo({
         muted
         loop
         playsInline
-        preload="metadata"
+        preload="auto"
         className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${
           showVideo ? "opacity-25" : "opacity-0"
         }`}
         aria-hidden
       >
-        <source src={safeEncodeURI(normalizedSrc.replace(/\.(webm|mp4)$/i, ".webm"))} type="video/webm" />
         <source src={safeEncodeURI(normalizedSrc.replace(/\.(webm|mp4)$/i, ".mp4"))} type="video/mp4" />
+        <source src={safeEncodeURI(normalizedSrc.replace(/\.(webm|mp4)$/i, ".webm"))} type="video/webm" />
       </video>
     </>
   );

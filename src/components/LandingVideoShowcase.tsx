@@ -53,7 +53,18 @@ function ReelCard({ video, index, onSelect }: VideoCardProps) {
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsVisible(true);
-          observer.disconnect();
+          if (videoRef.current) {
+            videoRef.current.muted = true;
+            const p = videoRef.current.play();
+            if (p !== undefined) {
+              p.then(() => setIsPlaying(true)).catch(() => {});
+            }
+          }
+        } else {
+          if (videoRef.current && typeof window !== "undefined" && window.innerWidth < 768) {
+            videoRef.current.pause();
+            setIsPlaying(false);
+          }
         }
       },
       { rootMargin: "150px" },
@@ -126,17 +137,20 @@ function ReelCard({ video, index, onSelect }: VideoCardProps) {
                   el.defaultMuted = true;
                   el.setAttribute("playsinline", "true");
                   el.setAttribute("webkit-playsinline", "true");
+                  const p = el.play();
+                  if (p !== undefined) p.catch(() => {});
                 }
                 videoRef.current = el;
               }}
+              autoPlay
               muted
               loop
               playsInline
-              preload="metadata"
+              preload="auto"
               className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 pointer-events-none"
             >
-              <source src={safeEncodeURI(video.videoSrc.replace(/\.(webm|mp4)$/i, ".webm"))} type="video/webm" />
               <source src={safeEncodeURI(video.videoSrc.replace(/\.(webm|mp4)$/i, ".mp4"))} type="video/mp4" />
+              <source src={safeEncodeURI(video.videoSrc.replace(/\.(webm|mp4)$/i, ".webm"))} type="video/webm" />
             </video>
           )}
 
@@ -280,8 +294,8 @@ export function LandingVideoShowcase() {
                 onClick={togglePlayMain}
                 className="h-full w-full object-cover cursor-pointer"
               >
-                <source src={safeEncodeURI(standaloneHeroVideo.videoSrc.replace(/\.(webm|mp4)$/i, ".webm"))} type="video/webm" />
                 <source src={safeEncodeURI(standaloneHeroVideo.videoSrc.replace(/\.(webm|mp4)$/i, ".mp4"))} type="video/mp4" />
+                <source src={safeEncodeURI(standaloneHeroVideo.videoSrc.replace(/\.(webm|mp4)$/i, ".webm"))} type="video/webm" />
               </video>
             </div>
           </div>

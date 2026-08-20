@@ -181,8 +181,8 @@ function LightboxModal({
                 onClick={togglePlay}
                 className="max-h-[80vh] w-full object-contain cursor-pointer relative z-10"
               >
-                <source src={safeEncodeURI(item.videoSrc.replace(/\.(webm|mp4)$/i, ".webm"))} type="video/webm" />
                 <source src={safeEncodeURI(item.videoSrc.replace(/\.(webm|mp4)$/i, ".mp4"))} type="video/mp4" />
+                <source src={safeEncodeURI(item.videoSrc.replace(/\.(webm|mp4)$/i, ".webm"))} type="video/webm" />
               </video>
 
               {/* Controls bar */}
@@ -239,7 +239,18 @@ function PortfolioCard({
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsVisible(true);
-          observer.disconnect();
+          if (videoRef.current) {
+            videoRef.current.muted = true;
+            const p = videoRef.current.play();
+            if (p !== undefined) {
+              p.then(() => setIsPlaying(true)).catch(() => {});
+            }
+          }
+        } else {
+          if (videoRef.current && typeof window !== "undefined" && window.innerWidth < 768) {
+            videoRef.current.pause();
+            setIsPlaying(false);
+          }
         }
       },
       { rootMargin: "200px" },
@@ -307,11 +318,11 @@ function PortfolioCard({
             muted
             loop
             playsInline
-            preload="metadata"
+            preload="auto"
             className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
           >
-            <source src={safeEncodeURI(item.videoSrc.replace(/\.(webm|mp4)$/i, ".webm"))} type="video/webm" />
             <source src={safeEncodeURI(item.videoSrc.replace(/\.(webm|mp4)$/i, ".mp4"))} type="video/mp4" />
+            <source src={safeEncodeURI(item.videoSrc.replace(/\.(webm|mp4)$/i, ".webm"))} type="video/webm" />
           </video>
         )}
 
@@ -411,7 +422,33 @@ function CategoryCard({
 }) {
   const reduceMotion = useReducedMotion();
   const videoRef = useRef<HTMLVideoElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
+
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          if (videoRef.current) {
+            videoRef.current.muted = true;
+            const p = videoRef.current.play();
+            if (p !== undefined) p.catch(() => {});
+          }
+        } else {
+          if (videoRef.current && typeof window !== "undefined" && window.innerWidth < 768) {
+            videoRef.current.pause();
+          }
+        }
+      },
+      { threshold: 0.15, rootMargin: "100px" },
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   const handleMouseEnter = () => {
     setIsHovered(true);
@@ -431,6 +468,7 @@ function CategoryCard({
 
   return (
     <motion.div
+      ref={cardRef}
       initial={reduceMotion ? false : { opacity: 0, y: 50, scale: 0.96 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.7, delay: index * 0.15, ease }}
@@ -447,20 +485,23 @@ function CategoryCard({
             el.defaultMuted = true;
             el.setAttribute("playsinline", "true");
             el.setAttribute("webkit-playsinline", "true");
+            const p = el.play();
+            if (p !== undefined) p.catch(() => {});
           }
           videoRef.current = el;
         }}
+        autoPlay
         muted
         loop
         playsInline
-        preload="metadata"
+        preload="auto"
         className={cn(
           "absolute inset-0 h-full w-full object-cover transition-all duration-1000",
           isHovered ? "scale-110 brightness-75" : "scale-100 brightness-50",
         )}
       >
-        <source src={safeEncodeURI(videoSrc.replace(/\.(webm|mp4)$/i, ".webm"))} type="video/webm" />
         <source src={safeEncodeURI(videoSrc.replace(/\.(webm|mp4)$/i, ".mp4"))} type="video/mp4" />
+        <source src={safeEncodeURI(videoSrc.replace(/\.(webm|mp4)$/i, ".webm"))} type="video/webm" />
       </video>
 
       {/* Gradient overlay */}
