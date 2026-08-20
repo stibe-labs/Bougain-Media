@@ -172,16 +172,6 @@ function ReelCard({ video, index, onSelect }: VideoCardProps) {
               </div>
             )}
           </div>
-
-          {/* Card Info Badge */}
-          <div className="absolute bottom-3 left-3 right-3 z-10">
-            <span className="font-sans text-[10px] font-bold text-sage-light uppercase tracking-wider block truncate">
-              {video.client || video.industry || "Brand Reel"}
-            </span>
-            <p className="font-display text-xs font-bold text-white truncate mt-0.5">
-              {video.title}
-            </p>
-          </div>
         </div>
       </div>
     </div>

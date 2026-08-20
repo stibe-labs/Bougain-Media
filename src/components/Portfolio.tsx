@@ -333,17 +333,6 @@ function PortfolioCard({
         )}
       </div>
 
-      {/* Top Badges Overlay */}
-      <div className="absolute top-3 left-3 right-3 z-10 flex items-center justify-between pointer-events-none">
-        <span className="rounded-full bg-black/60 backdrop-blur-md px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-sage border border-white/15 truncate max-w-[70%]">
-          {item.category || item.industry || item.client}
-        </span>
-        <span className="flex items-center gap-1 rounded-full bg-white/15 backdrop-blur-md px-2.5 py-1 text-[10px] font-semibold text-white/90 border border-white/20">
-          {isReel ? <Smartphone size={11} /> : <Monitor size={11} />}
-          {isReel ? "9:16 Reel" : "16:9 Film"}
-        </span>
-      </div>
-
       {/* Overlay gradient */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent opacity-70 transition-opacity duration-300 group-hover:opacity-90" />
 
@@ -354,16 +343,6 @@ function PortfolioCard({
             <Play size={18} fill="currentColor" className="ml-0.5 text-white group-hover:text-forest-deep" />
           </div>
         )}
-      </div>
-
-      {/* Card Info Overlay */}
-      <div className="absolute bottom-4 left-4 right-4 z-10">
-        <p className="font-sans text-[11px] font-bold text-sage uppercase tracking-wider block truncate">
-          {item.client}
-        </p>
-        <h3 className="font-display text-base font-bold text-white line-clamp-1 mt-0.5">
-          {item.title}
-        </h3>
       </div>
     </motion.div>
   );
