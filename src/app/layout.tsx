@@ -4,6 +4,8 @@ import "./globals.css";
 import { siteConfig } from "@/lib/constants";
 import { SmoothScroll } from "@/components/SmoothScroll";
 
+import { MobileVideoUnlocker } from "@/components/MobileVideoUnlocker";
+
 const dmSans = DM_Sans({
   subsets: ["latin"],
   variable: "--font-dm-sans",
@@ -54,6 +56,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${dmSans.variable} ${playfair.variable} ${outfit.variable}`}>
       <body className="min-h-screen font-sans">
+        <MobileVideoUnlocker />
         <SmoothScroll>{children}</SmoothScroll>
       </body>
     </html>

@@ -80,15 +80,20 @@ export function HomeHighlights() {
                           el.defaultMuted = true;
                           el.setAttribute("playsinline", "true");
                           el.setAttribute("webkit-playsinline", "true");
+                          const p = el.play();
+                          if (p !== undefined) p.catch(() => {});
                         }
                       }}
-                      src={item.videoSrc}
+                      autoPlay
                       muted
                       loop
                       playsInline
-                      preload="metadata"
+                      preload="auto"
                       className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                    />
+                    >
+                      <source src={item.videoSrc.replace(/\.(webm|mp4)$/i, ".mp4")} type="video/mp4" />
+                      <source src={item.videoSrc.replace(/\.(webm|mp4)$/i, ".webm")} type="video/webm" />
+                    </video>
                     {/* Play icon hint */}
                     <div className="absolute inset-0 flex items-center justify-center z-10">
                       <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/15 backdrop-blur-md opacity-60 group-hover:opacity-100 transition-opacity duration-300">

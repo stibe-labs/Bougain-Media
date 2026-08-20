@@ -27,6 +27,8 @@ export function ServiceMedia({ title, image, video, sizes }: ServiceMediaProps) 
               el.defaultMuted = true;
               el.setAttribute("playsinline", "true");
               el.setAttribute("webkit-playsinline", "true");
+              const p = el.play();
+              if (p !== undefined) p.catch(() => {});
             }
           }}
           autoPlay
@@ -34,11 +36,12 @@ export function ServiceMedia({ title, image, video, sizes }: ServiceMediaProps) 
           loop
           playsInline
           poster={image}
-          preload="metadata"
+          preload="auto"
           className="absolute inset-0 h-full w-full object-cover"
           aria-label={title}
         >
-          <source src={video} type="video/mp4" />
+          <source src={video.replace(/\.(webm|mp4)$/i, ".mp4")} type="video/mp4" />
+          <source src={video.replace(/\.(webm|mp4)$/i, ".webm")} type="video/webm" />
         </video>
       </div>
     );
