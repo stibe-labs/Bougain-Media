@@ -226,8 +226,10 @@ export function LandingVideoShowcase() {
     id: "hero-featured",
     title: "HAPPY 2",
     client: "Bougain Media",
-    videoSrc: "/videos/AI/happy-2.webm",
+    videoSrc: "videos/Content Videos/happy-2.webm",
   };
+
+  const heroSources = getVideoSources(standaloneHeroVideo.videoSrc);
 
   const togglePlayMain = () => {
     if (!mainVideoRef.current) return;
@@ -235,12 +237,13 @@ export function LandingVideoShowcase() {
       mainVideoRef.current.pause();
       setIsPlaying(false);
     } else {
-      mainVideoRef.current.play().catch(() => {});
-      setIsPlaying(true);
+      mainVideoRef.current.muted = isMuted;
+      mainVideoRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
     }
   };
 
-  const toggleMuteMain = () => {
+  const toggleMuteMain = (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (!mainVideoRef.current) return;
     mainVideoRef.current.muted = !isMuted;
     setIsMuted(!isMuted);
@@ -279,21 +282,56 @@ export function LandingVideoShowcase() {
 
         {/* ── Standalone Main Featured Brand Video ── */}
         <ScrollReveal className="mb-20">
-          <div className="relative mx-auto max-w-5xl overflow-hidden rounded-3xl border border-white/15 bg-black/60 shadow-[0_25px_60px_rgba(0,0,0,0.5)]">
+          <div
+            onClick={togglePlayMain}
+            className="group relative mx-auto max-w-5xl overflow-hidden rounded-3xl border border-white/15 bg-black/60 shadow-[0_25px_60px_rgba(0,0,0,0.5)] cursor-pointer"
+          >
             <div className="relative aspect-video w-full">
               <video
-                ref={mainVideoRef}
+                ref={(el) => {
+                  if (el) {
+                    el.muted = true;
+                    el.defaultMuted = true;
+                    el.setAttribute("playsinline", "true");
+                    el.setAttribute("webkit-playsinline", "true");
+                    const p = el.play();
+                    if (p !== undefined) {
+                      p.then(() => setIsPlaying(true)).catch(() => {});
+                    }
+                  }
+                  mainVideoRef.current = el;
+                }}
                 autoPlay
                 loop
                 muted
                 playsInline
                 preload="auto"
-                onClick={togglePlayMain}
-                className="h-full w-full object-cover cursor-pointer"
+                className="h-full w-full object-cover"
               >
-                <source src={safeEncodeURI(standaloneHeroVideo.videoSrc.replace(/\.(webm|mp4)$/i, ".webm"))} type="video/webm" />
-                <source src={safeEncodeURI(standaloneHeroVideo.videoSrc.replace(/\.(webm|mp4)$/i, ".mp4"))} type="video/mp4" />
+                {heroSources?.mp4 && <source src={heroSources.mp4} type="video/mp4" />}
+                {heroSources?.webm && <source src={heroSources.webm} type="video/webm" />}
               </video>
+
+              {/* Pause overlay icon */}
+              <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                {!isPlaying && (
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-md border border-white/30 transition-transform duration-300 group-hover:scale-110">
+                    <Play size={24} fill="currentColor" className="ml-1 text-sage" />
+                  </div>
+                )}
+              </div>
+
+              {/* Quick controls bar at bottom */}
+              <div className="absolute bottom-4 right-4 z-20 flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={toggleMuteMain}
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-md border border-white/20 transition-all hover:bg-black/80 hover:scale-105"
+                  aria-label={isMuted ? "Unmute video" : "Mute video"}
+                >
+                  {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+                </button>
+              </div>
             </div>
           </div>
         </ScrollReveal>
