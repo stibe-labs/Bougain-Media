@@ -63,7 +63,7 @@ export function Stats({ variant = "light" }: { variant?: "light" | "dark" }) {
   return (
     <section
       className={cn(
-        "content-auto relative overflow-hidden section-padding !py-20 md:!py-28",
+        "content-auto relative overflow-hidden section-padding !py-12 md:!py-24",
         isDark ? "bg-forest-deep" : "bg-cream",
       )}
     >
@@ -81,7 +81,7 @@ export function Stats({ variant = "light" }: { variant?: "light" | "dark" }) {
       )}
 
       <div className="container-wide relative">
-        <div className="grid items-end gap-12 lg:grid-cols-[1fr_2fr] lg:gap-20">
+        <div className="grid items-end gap-8 lg:grid-cols-[1fr_2fr] lg:gap-20">
           <ScrollReveal>
             <p
               className={cn(
@@ -93,7 +93,7 @@ export function Stats({ variant = "light" }: { variant?: "light" | "dark" }) {
             </p>
             <h2
               className={cn(
-                "mt-4 max-w-xs font-display text-3xl font-bold leading-tight tracking-tight md:text-4xl",
+                "mt-3 max-w-xs font-display text-2xl font-bold leading-tight tracking-tight md:text-4xl",
                 isDark ? "text-white" : "text-forest-deep",
               )}
             >
@@ -102,7 +102,7 @@ export function Stats({ variant = "light" }: { variant?: "light" | "dark" }) {
             </h2>
           </ScrollReveal>
 
-          <div className="grid grid-cols-2 gap-x-8 gap-y-10 md:grid-cols-4 md:gap-x-6">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-8 md:grid-cols-4 md:gap-x-6">
             {stats.map((stat, i) => (
               <motion.div
                 key={stat.label}
@@ -114,7 +114,7 @@ export function Stats({ variant = "light" }: { variant?: "light" | "dark" }) {
               >
                 <div
                   className={cn(
-                    "font-display text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl",
+                    "font-display text-3xl font-bold tracking-tight md:text-5xl lg:text-6xl",
                     isDark ? "text-gradient" : "text-forest-deep",
                   )}
                 >

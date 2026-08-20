@@ -113,12 +113,29 @@ export function LightboxModal({
 
   useEffect(() => {
     window.addEventListener("keydown", handleKeyDown);
-    document.body.style.overflow = "hidden";
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "unset";
     };
   }, [handleKeyDown]);
+
+  // Lock body scroll when modal is open (fixes iOS scroll-behind)
+  useEffect(() => {
+    const prevOverflow = document.body.style.overflow;
+    const prevPosition = document.body.style.position;
+    const prevWidth = document.body.style.width;
+    const scrollY = window.scrollY;
+    document.body.style.overflow = "hidden";
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = "100%";
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      document.body.style.position = prevPosition;
+      document.body.style.top = "";
+      document.body.style.width = prevWidth;
+      window.scrollTo(0, scrollY);
+    };
+  }, []);
 
   // Autoplay video on mount or when item changes
   useEffect(() => {
@@ -128,95 +145,101 @@ export function LightboxModal({
     const p = video.play();
     if (p !== undefined) {
       p.catch(() => {
-        // If unmuted autoplay blocked by browser policy, fallback to muted
         video.muted = true;
         video.play().catch(() => {});
       });
     }
   }, [item.id, item.videoSrc]);
 
+  // Derive the best playable src
+  const videoSrc = useMemo(() => {
+    if (!sources) return "";
+    return sources.webm || sources.mp4 || "";
+  }, [sources]);
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-3 sm:p-5 md:p-8 select-none"
+      transition={{ duration: 0.18 }}
+      className="fixed inset-0 z-[9999] flex items-center justify-center select-none"
+      style={{
+        backdropFilter: "blur(10px)",
+        WebkitBackdropFilter: "blur(10px)",
+        backgroundColor: "rgba(0,0,0,0.88)",
+      }}
       onClick={onClose}
     >
       <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 15 }}
+        initial={{ opacity: 0, scale: 0.93, y: 28 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: 15 }}
-        transition={{ duration: 0.25, ease }}
+        exit={{ opacity: 0, scale: 0.93, y: 28 }}
+        transition={{ duration: 0.24, ease }}
         className={cn(
-          "relative flex flex-col overflow-hidden rounded-2xl md:rounded-3xl bg-forest-deep border border-white/20 text-white shadow-2xl w-full",
-          isReel ? "max-w-md max-h-[92vh]" : "max-w-4xl max-h-[90vh]"
+          "relative flex flex-col overflow-hidden rounded-2xl bg-[#0a150c] border border-white/15 text-white",
+          "shadow-[0_32px_80px_rgba(0,0,0,0.9)] mx-3",
+          // Width: phone-style for reels, wide for landscape
+          isReel ? "w-full max-w-[340px] sm:max-w-sm" : "w-full max-w-[95vw] sm:max-w-3xl",
+          // Height: always fit within viewport — no scrolling needed
+          "max-h-[calc(100dvh-32px)]"
         )}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header Bar */}
-        <div className="flex items-center justify-between px-5 py-3.5 border-b border-white/10 bg-black/40">
-          <div className="flex items-center gap-2.5 truncate mr-3">
-            <span className="flex items-center gap-1.5 rounded-full bg-sage/20 border border-sage/30 px-2.5 py-0.5 text-xs font-semibold text-sage">
-              {isReel ? <Smartphone size={12} /> : <Film size={12} />}
+        {/* ── Header ── */}
+        <div className="flex shrink-0 items-center justify-between px-4 py-3 border-b border-white/10">
+          <div className="flex items-center gap-2 truncate mr-3">
+            <span className="flex items-center gap-1 rounded-full bg-sage/20 border border-sage/30 px-2.5 py-0.5 text-[11px] font-semibold text-sage shrink-0">
+              {isReel ? <Smartphone size={11} /> : <Film size={11} />}
               {item.category || (isReel ? "Reel" : "Film")}
             </span>
-            <div className="truncate">
-              <h3 className="font-display text-sm md:text-base font-bold text-white truncate">
-                {item.title}
-              </h3>
-              {item.client && (
-                <p className="text-[11px] text-white/60 font-sans truncate">{item.client}</p>
-              )}
+            <div className="truncate min-w-0">
+              <h3 className="font-display text-sm font-bold text-white truncate">{item.title}</h3>
+              {item.client && <p className="text-[11px] text-white/50 truncate">{item.client}</p>}
             </div>
           </div>
-
           <div className="flex items-center gap-2 shrink-0">
             {items.length > 1 && (
-              <span className="text-xs font-mono text-white/50 px-1">
+              <span className="text-[11px] font-mono text-white/40">
                 {currentIndex + 1}/{items.length}
               </span>
             )}
             <button
               onClick={onClose}
-              aria-label="Close modal"
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white/80 hover:bg-white/25 hover:text-white transition-all border border-white/15"
+              aria-label="Close"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white/70 hover:bg-white/20 hover:text-white transition-colors"
             >
-              <X size={18} />
+              <X size={16} />
             </button>
           </div>
         </div>
 
-        {/* Video Player Canvas */}
-        <div className="relative bg-black flex items-center justify-center overflow-hidden">
-          {sources ? (
+        {/* ── Video — flex-1 fills remaining space, never overflows ── */}
+        <div className="flex-1 min-h-0 overflow-hidden bg-black flex items-center justify-center">
+          {videoSrc ? (
             <video
               key={item.id}
               ref={videoRef}
-              src={sources.mp4 || sources.webm}
+              src={videoSrc}
               controls
               autoPlay
               playsInline
-              controlsList="nodownload"
               className={cn(
-                "w-full bg-black object-contain",
-                isReel ? "max-h-[68vh] aspect-[9/16]" : "max-h-[65vh] aspect-video"
+                "block bg-black",
+                isReel ? "h-full w-auto max-w-full" : "w-full h-auto max-h-full"
               )}
-            >
-              {sources.mp4 && <source src={sources.mp4} type="video/mp4" />}
-              {sources.webm && <source src={sources.webm} type="video/webm" />}
-            </video>
+            />
           ) : (
-            <div className="flex flex-col items-center justify-center py-20 text-white/40">
-              <Film size={40} className="mb-2" />
-              <p className="text-sm">Video file not found</p>
+            <div className="flex flex-col items-center justify-center py-16 text-white/40">
+              <Film size={36} className="mb-2" />
+              <p className="text-sm">Video not available</p>
             </div>
           )}
         </div>
 
-        {/* Footer Navigation Bar */}
+        {/* ── Footer nav ── */}
         {items.length > 1 && (
-          <div className="flex items-center justify-between px-5 py-3 border-t border-white/10 bg-black/40">
+          <div className="flex shrink-0 items-center justify-between px-5 py-3 border-t border-white/10 bg-black/40">
             <button
               type="button"
               onClick={handlePrev}
@@ -233,7 +256,7 @@ export function LightboxModal({
             </button>
 
             <span className="text-xs text-white/50 hidden sm:inline font-sans">
-              Use Left / Right arrow keys to navigate
+              ← → keys to navigate
             </span>
 
             <button
@@ -382,8 +405,8 @@ function PortfolioCard({
         )}
       </div>
 
-      {/* Overlay gradient */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-75 transition-opacity duration-300 group-hover:opacity-90" />
+      {/* Subtle vignette overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-80" />
 
       {/* Play icon button */}
       <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
@@ -392,25 +415,7 @@ function PortfolioCard({
         </div>
       </div>
 
-      {/* Card Info Overlay */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5 z-10 pointer-events-none">
-        <div className="flex items-center gap-2 mb-1.5">
-          <span className="rounded-full bg-white/20 border border-white/25 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-sage backdrop-blur-md">
-            {item.category || (isReel ? "Reel" : "Film")}
-          </span>
-          {isReel && (
-            <span className="rounded-full bg-black/40 border border-white/15 px-2 py-0.5 text-[10px] text-white/60 font-mono">
-              9:16
-            </span>
-          )}
-        </div>
-        <h4 className="font-display text-sm sm:text-base font-bold text-white truncate drop-shadow-md">
-          {item.title}
-        </h4>
-        {item.client && (
-          <p className="text-xs text-white/70 font-sans truncate">{item.client}</p>
-        )}
-      </div>
+
     </motion.div>
   );
 }

@@ -33,7 +33,7 @@ export function Hero() {
   return (
     <section
       id="home"
-      className="hero-grain grain-texture relative flex h-[100svh] items-center md:items-start overflow-hidden bg-hero-gradient content-auto"
+      className="hero-grain grain-texture relative flex h-[100svh] min-h-[580px] items-center overflow-hidden bg-hero-gradient content-auto"
       onMouseMove={(event) => {
         if (reduceMotion) return;
         const rect = event.currentTarget.getBoundingClientRect();
@@ -60,7 +60,7 @@ export function Hero() {
 
       <ParticleField mouseRef={mouseRef} />
 
-      <div className="container-wide relative z-10 grid w-full grid-cols-1 px-6 sm:px-8 md:px-12 md:pt-32 lg:grid-cols-[1fr_auto] lg:items-center lg:gap-8 lg:px-16">
+      <div className="container-wide relative z-10 grid w-full grid-cols-1 px-5 sm:px-8 md:px-12 pt-20 pb-8 sm:pt-32 sm:pb-16 md:pt-0 md:pb-0 lg:grid-cols-[1fr_auto] lg:items-center lg:gap-8 lg:px-16">
         <motion.div
           className="max-w-3xl"
           style={{ x: parallaxX, y: parallaxY }}
@@ -81,7 +81,7 @@ export function Hero() {
             initial="hidden"
             animate="visible"
             variants={fadeUp}
-            className="font-hero mt-5 text-[clamp(2.35rem,8.5vw,7.5rem)] font-black uppercase leading-[0.92] tracking-[-0.04em] text-white"
+            className="font-hero mt-4 sm:mt-5 text-[clamp(3.2rem,12vw,7.5rem)] font-black uppercase leading-[0.9] tracking-[-0.04em] text-white"
           >
             <span className="block">
               Your <span className="text-emerald-accent">Growth.</span>
@@ -94,7 +94,7 @@ export function Hero() {
             initial="hidden"
             animate="visible"
             variants={fadeUp}
-            className="mt-6 max-w-lg font-sans text-base leading-relaxed text-white/60 sm:mt-7 sm:text-lg md:max-w-xl"
+            className="mt-4 sm:mt-6 max-w-lg font-sans text-sm sm:text-base leading-relaxed text-white/65 md:text-lg md:max-w-xl"
           >
             {hero.subheadline}
           </motion.p>
@@ -104,23 +104,23 @@ export function Hero() {
             initial="hidden"
             animate="visible"
             variants={fadeUp}
-            className="mt-8 flex flex-row gap-3 sm:mt-9 sm:items-center sm:gap-4"
+            className="mt-6 sm:mt-9 flex flex-row flex-wrap items-center gap-3"
           >
             <Link
               href="/contact"
-              className="group/btn inline-flex min-h-14 flex-1 items-center justify-center gap-1.5 rounded-2xl border border-white bg-white px-4 py-3.5 font-sans text-[13px] font-semibold text-forest-deep transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_20px_48px_rgba(110,235,131,0.25)] sm:flex-none sm:w-auto sm:gap-2.5 sm:px-9 sm:text-base"
+              className="group/btn inline-flex h-12 sm:h-14 items-center justify-center gap-1.5 sm:gap-2 rounded-xl sm:rounded-2xl border border-white bg-white px-3 sm:px-8 font-sans text-[13px] sm:text-base font-semibold text-forest-deep transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_20px_48px_rgba(110,235,131,0.25)]"
             >
-              {hero.primaryCta}
+              <span className="truncate">{hero.primaryCta}</span>
               <ArrowRight
-                size={16}
-                className="transition-transform duration-300 group-hover/btn:translate-x-1"
+                size={15}
+                className="shrink-0 transition-transform duration-300 group-hover/btn:translate-x-1"
               />
             </Link>
             <Link
               href="/portfolio"
-              className="inline-flex min-h-14 flex-1 items-center justify-center gap-1.5 rounded-2xl border border-white/35 bg-transparent px-4 py-3.5 font-sans text-[13px] font-semibold text-white transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-white/60 hover:bg-white/8 sm:flex-none sm:w-auto sm:gap-2.5 sm:px-9 sm:text-base"
+              className="inline-flex h-12 sm:h-14 items-center justify-center rounded-xl sm:rounded-2xl border border-white/35 bg-transparent px-3 sm:px-8 font-sans text-[13px] sm:text-base font-semibold text-white transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-white/60 hover:bg-white/8"
             >
-              {hero.secondaryCta}
+              <span className="truncate">{hero.secondaryCta}</span>
             </Link>
           </motion.div>
         </motion.div>
