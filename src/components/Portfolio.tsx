@@ -73,7 +73,7 @@ function PortfolioHero() {
   );
 }
 
-/* ─── Fullscreen Interactive Lightbox Modal ─── */
+/* ─── Clean Standard Video Modal Window ─── */
 export function LightboxModal({
   item,
   items,
@@ -85,18 +85,7 @@ export function LightboxModal({
   onSelect: (item: PortfolioItem) => void;
   onClose: () => void;
 }) {
-  const [isPlaying, setIsPlaying] = useState(true);
-  const [isMuted, setIsMuted] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const [showHud, setShowHud] = useState(false);
-
-  const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const progressBarRef = useRef<HTMLDivElement>(null);
-
   const isReel = item.aspect === "9:16";
   const currentIndex = items.findIndex((i) => i.id === item.id);
   const hasPrev = currentIndex > 0;
@@ -112,422 +101,157 @@ export function LightboxModal({
     if (hasNext) onSelect(items[currentIndex + 1]);
   }, [hasNext, currentIndex, items, onSelect]);
 
-  const togglePlay = useCallback(() => {
-    const video = videoRef.current;
-    if (!video) return;
-    if (video.paused) {
-      video.play().then(() => setIsPlaying(true)).catch(() => {});
-    } else {
-      video.pause();
-      setIsPlaying(false);
-    }
-    setShowHud(true);
-    setTimeout(() => setShowHud(false), 800);
-  }, []);
-
-  const toggleMute = useCallback(() => {
-    const video = videoRef.current;
-    if (!video) return;
-    video.muted = !video.muted;
-    setIsMuted(video.muted);
-  }, []);
-
-  const toggleFullscreen = useCallback(async () => {
-    const el = containerRef.current;
-    if (!el) return;
-    try {
-      if (!document.fullscreenElement) {
-        if (el.requestFullscreen) {
-          await el.requestFullscreen();
-        } else if ((el as unknown as { webkitRequestFullscreen?: () => Promise<void> }).webkitRequestFullscreen) {
-          await (el as unknown as { webkitRequestFullscreen: () => Promise<void> }).webkitRequestFullscreen();
-        }
-        setIsFullscreen(true);
-      } else {
-        if (document.exitFullscreen) {
-          await document.exitFullscreen();
-        } else if ((document as unknown as { webkitExitFullscreen?: () => Promise<void> }).webkitExitFullscreen) {
-          await (document as unknown as { webkitExitFullscreen: () => Promise<void> }).webkitExitFullscreen();
-        }
-        setIsFullscreen(false);
-      }
-    } catch (err) {
-      console.warn("Fullscreen toggle error:", err);
-    }
-  }, []);
-
-  const handleRestart = useCallback(() => {
-    const video = videoRef.current;
-    if (!video) return;
-    video.currentTime = 0;
-    video.play().then(() => setIsPlaying(true)).catch(() => {});
-  }, []);
-
-  // Keyboard navigation & controls
+  // Keyboard navigation
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
       else if (e.key === "ArrowLeft") handlePrev();
       else if (e.key === "ArrowRight") handleNext();
-      else if (e.key === " " || e.key === "k" || e.key === "K") {
-        e.preventDefault();
-        togglePlay();
-      } else if (e.key === "m" || e.key === "M") {
-        toggleMute();
-      } else if (e.key === "f" || e.key === "F") {
-        toggleFullscreen();
-      }
     },
-    [onClose, handlePrev, handleNext, togglePlay, toggleMute, toggleFullscreen]
+    [onClose, handlePrev, handleNext]
   );
 
   useEffect(() => {
     window.addEventListener("keydown", handleKeyDown);
     document.body.style.overflow = "hidden";
-    const handleFsChange = () => {
-      setIsFullscreen(Boolean(document.fullscreenElement));
-    };
-    document.addEventListener("fullscreenchange", handleFsChange);
-    document.addEventListener("webkitfullscreenchange", handleFsChange);
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
-      document.removeEventListener("fullscreenchange", handleFsChange);
-      document.removeEventListener("webkitfullscreenchange", handleFsChange);
       document.body.style.overflow = "unset";
     };
   }, [handleKeyDown]);
 
-  // Video load & playback initialization
+  // Autoplay video on mount or when item changes
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-
-    setIsLoading(true);
-    setIsPlaying(true);
-    setCurrentTime(0);
-    setDuration(0);
-
-    video.muted = isMuted;
-    video.defaultMuted = isMuted;
-    video.setAttribute("playsinline", "true");
-    video.setAttribute("webkit-playsinline", "true");
-
-    const onTimeUpdate = () => setCurrentTime(video.currentTime);
-    const onLoadedMetadata = () => {
-      setDuration(video.duration || 0);
-      setIsLoading(false);
-    };
-    const onCanPlay = () => setIsLoading(false);
-    const onPlay = () => setIsPlaying(true);
-    const onPause = () => setIsPlaying(false);
-    const onEnded = () => {
-      if (hasNext) {
-        handleNext();
-      } else {
-        setIsPlaying(false);
-      }
-    };
-
-    video.addEventListener("timeupdate", onTimeUpdate);
-    video.addEventListener("loadedmetadata", onLoadedMetadata);
-    video.addEventListener("canplay", onCanPlay);
-    video.addEventListener("play", onPlay);
-    video.addEventListener("pause", onPause);
-    video.addEventListener("ended", onEnded);
-
-    video.load();
+    video.currentTime = 0;
     const p = video.play();
     if (p !== undefined) {
-      p.then(() => {
-        setIsPlaying(true);
-        setIsLoading(false);
-      }).catch(() => {
+      p.catch(() => {
         // If unmuted autoplay blocked by browser policy, fallback to muted
-        if (!video.muted) {
-          video.muted = true;
-          setIsMuted(true);
-          video.play().then(() => {
-            setIsPlaying(true);
-            setIsLoading(false);
-          }).catch(() => {
-            setIsPlaying(false);
-            setIsLoading(false);
-          });
-        } else {
-          setIsPlaying(false);
-          setIsLoading(false);
-        }
+        video.muted = true;
+        video.play().catch(() => {});
       });
     }
-
-    return () => {
-      video.removeEventListener("timeupdate", onTimeUpdate);
-      video.removeEventListener("loadedmetadata", onLoadedMetadata);
-      video.removeEventListener("canplay", onCanPlay);
-      video.removeEventListener("play", onPlay);
-      video.removeEventListener("pause", onPause);
-      video.removeEventListener("ended", onEnded);
-    };
-  }, [item.id, item.videoSrc, hasNext, handleNext, isMuted]);
-
-  const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!progressBarRef.current || !videoRef.current || duration <= 0) return;
-    const rect = progressBarRef.current.getBoundingClientRect();
-    const pos = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-    const newTime = pos * duration;
-    videoRef.current.currentTime = newTime;
-    setCurrentTime(newTime);
-  };
-
-  const formatTime = (secs: number) => {
-    if (isNaN(secs) || secs < 0) return "0:00";
-    const m = Math.floor(secs / 60);
-    const s = Math.floor(secs % 60);
-    return `${m}:${s < 10 ? "0" : ""}${s}`;
-  };
-
-  const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
+  }, [item.id, item.videoSrc]);
 
   return (
     <motion.div
-      ref={containerRef}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-2xl p-2 sm:p-4 md:p-6 select-none overflow-hidden"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-3 sm:p-5 md:p-8 select-none"
       onClick={onClose}
     >
-      {/* Ambient background glow */}
-      <div
-        className="pointer-events-none absolute h-[36rem] w-[36rem] rounded-full bg-sage/15 blur-[140px]"
-        aria-hidden
-      />
-
-      {/* Side Navigation Arrow: Previous */}
-      {hasPrev && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            handlePrev();
-          }}
-          aria-label="Previous video"
-          className="absolute left-3 md:left-6 top-1/2 -translate-y-1/2 z-30 hidden sm:flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-xl border border-white/20 transition-all hover:bg-sage hover:text-forest-deep hover:scale-110 shadow-2xl"
-        >
-          <ChevronLeft size={24} />
-        </button>
-      )}
-
-      {/* Side Navigation Arrow: Next */}
-      {hasNext && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            handleNext();
-          }}
-          aria-label="Next video"
-          className="absolute right-3 md:right-6 top-1/2 -translate-y-1/2 z-30 hidden sm:flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-xl border border-white/20 transition-all hover:bg-sage hover:text-forest-deep hover:scale-110 shadow-2xl"
-        >
-          <ChevronRight size={24} />
-        </button>
-      )}
-
-      {/* Main Modal Card */}
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 15 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 15 }}
-        transition={{ duration: 0.3, ease }}
+        transition={{ duration: 0.25, ease }}
         className={cn(
-          "relative flex flex-col overflow-hidden bg-black/90 border border-white/20 text-white shadow-[0_25px_80px_rgba(0,0,0,0.8)]",
-          isReel
-            ? "w-full max-w-[420px] aspect-[9/16] max-h-[88vh] rounded-[2.5rem]"
-            : "w-full max-w-5xl aspect-video max-h-[85vh] rounded-3xl"
+          "relative flex flex-col overflow-hidden rounded-2xl md:rounded-3xl bg-forest-deep border border-white/20 text-white shadow-2xl w-full",
+          isReel ? "max-w-md max-h-[92vh]" : "max-w-4xl max-h-[90vh]"
         )}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Top Header Bar */}
-        <div className="absolute top-0 left-0 right-0 z-30 flex items-center justify-between p-4 bg-gradient-to-b from-black/85 via-black/40 to-transparent">
-          <div className="flex items-center gap-3">
-            <span className="flex items-center gap-1.5 rounded-full bg-sage/20 border border-sage/30 px-3 py-1 text-xs font-semibold text-sage backdrop-blur-md">
+        {/* Header Bar */}
+        <div className="flex items-center justify-between px-5 py-3.5 border-b border-white/10 bg-black/40">
+          <div className="flex items-center gap-2.5 truncate mr-3">
+            <span className="flex items-center gap-1.5 rounded-full bg-sage/20 border border-sage/30 px-2.5 py-0.5 text-xs font-semibold text-sage">
               {isReel ? <Smartphone size={12} /> : <Film size={12} />}
-              {item.category || "Showreel"}
+              {item.category || (isReel ? "Reel" : "Film")}
             </span>
-            <div className="hidden sm:block">
-              <h3 className="font-display text-sm font-bold text-white truncate max-w-[200px] md:max-w-[320px]">
+            <div className="truncate">
+              <h3 className="font-display text-sm md:text-base font-bold text-white truncate">
                 {item.title}
               </h3>
               {item.client && (
-                <p className="text-[11px] text-white/60 font-sans">{item.client}</p>
+                <p className="text-[11px] text-white/60 font-sans truncate">{item.client}</p>
               )}
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             {items.length > 1 && (
-              <span className="text-xs font-medium text-white/50 px-2">
-                {currentIndex + 1} / {items.length}
+              <span className="text-xs font-mono text-white/50 px-1">
+                {currentIndex + 1}/{items.length}
               </span>
             )}
-
-            {/* Fullscreen Toggle */}
-            <button
-              onClick={toggleFullscreen}
-              aria-label={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-black/50 text-white/80 backdrop-blur-md transition-all hover:bg-white/20 hover:text-white border border-white/15"
-            >
-              {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
-            </button>
-
-            {/* Close Modal Button */}
             <button
               onClick={onClose}
               aria-label="Close modal"
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-black/50 text-white/80 backdrop-blur-md transition-all hover:bg-white/20 hover:text-white border border-white/15"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white/80 hover:bg-white/25 hover:text-white transition-all border border-white/15"
             >
               <X size={18} />
             </button>
           </div>
         </div>
 
-        {/* Video Canvas */}
-        <div
-          onClick={togglePlay}
-          className="relative flex-1 h-full w-full flex items-center justify-center bg-black cursor-pointer overflow-hidden"
-        >
-          {/* Spinner when loading */}
-          {isLoading && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/70 z-10">
-              <div className="h-10 w-10 animate-spin rounded-full border-3 border-sage border-t-transparent mb-3" />
-              <span className="text-xs font-medium text-white/60 tracking-wider">Loading video...</span>
-            </div>
-          )}
-
+        {/* Video Player Canvas */}
+        <div className="relative bg-black flex items-center justify-center overflow-hidden">
           {sources ? (
             <video
+              key={item.id}
               ref={videoRef}
+              src={sources.mp4 || sources.webm}
+              controls
               autoPlay
-              loop
-              muted={isMuted}
               playsInline
-              preload="auto"
-              className="h-full w-full object-contain pointer-events-none"
+              controlsList="nodownload"
+              className={cn(
+                "w-full bg-black object-contain",
+                isReel ? "max-h-[68vh] aspect-[9/16]" : "max-h-[65vh] aspect-video"
+              )}
             >
               {sources.mp4 && <source src={sources.mp4} type="video/mp4" />}
               {sources.webm && <source src={sources.webm} type="video/webm" />}
             </video>
           ) : (
-            <div className="flex flex-col items-center justify-center text-white/40">
+            <div className="flex flex-col items-center justify-center py-20 text-white/40">
               <Film size={40} className="mb-2" />
               <p className="text-sm">Video file not found</p>
             </div>
           )}
-
-          {/* Central Play/Pause Flash Indicator */}
-          <AnimatePresence>
-            {showHud && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.6 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 1.2 }}
-                className="pointer-events-none absolute z-20 flex h-20 w-20 items-center justify-center rounded-full bg-black/70 text-white backdrop-blur-xl border border-white/20 shadow-2xl"
-              >
-                {isPlaying ? (
-                  <Play size={32} fill="currentColor" className="ml-1 text-sage" />
-                ) : (
-                  <Pause size={32} fill="currentColor" className="text-sage" />
-                )}
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Center Play Button (visible when paused) */}
-          {!isPlaying && !isLoading && (
-            <div className="pointer-events-none absolute z-10 flex h-16 w-16 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-md border border-white/25 shadow-2xl transition-transform group-hover:scale-110">
-              <Play size={26} fill="currentColor" className="ml-1 text-sage" />
-            </div>
-          )}
         </div>
 
-        {/* Bottom Custom Glassmorphic Controls Bar */}
-        <div
-          onClick={(e) => e.stopPropagation()}
-          className="absolute bottom-0 left-0 right-0 z-30 flex flex-col p-4 bg-gradient-to-t from-black/90 via-black/60 to-transparent"
-        >
-          {/* Progress Timeline Scrubber */}
-          <div
-            ref={progressBarRef}
-            onClick={handleSeek}
-            className="group/progress relative h-2 w-full cursor-pointer rounded-full bg-white/20 transition-all hover:h-3 mb-3"
-          >
-            {/* Progress Fill */}
-            <div
-              className="absolute left-0 top-0 h-full rounded-full bg-gradient-to-r from-sage-dark via-sage to-sage-light transition-all shadow-[0_0_12px_rgba(77,184,154,0.6)]"
-              style={{ width: `${progressPercent}%` }}
-            />
-            {/* Scrubber Knob */}
-            <div
-              className="absolute top-1/2 -translate-y-1/2 h-3.5 w-3.5 rounded-full bg-white border-2 border-sage shadow-md opacity-0 group-hover/progress:opacity-100 transition-opacity pointer-events-none"
-              style={{ left: `calc(${progressPercent}% - 7px)` }}
-            />
+        {/* Footer Navigation Bar */}
+        {items.length > 1 && (
+          <div className="flex items-center justify-between px-5 py-3 border-t border-white/10 bg-black/40">
+            <button
+              type="button"
+              onClick={handlePrev}
+              disabled={!hasPrev}
+              className={cn(
+                "flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all",
+                hasPrev
+                  ? "bg-white/10 text-white hover:bg-sage hover:text-forest-deep"
+                  : "bg-white/5 text-white/30 cursor-not-allowed"
+              )}
+            >
+              <ChevronLeft size={14} />
+              <span>Previous</span>
+            </button>
+
+            <span className="text-xs text-white/50 hidden sm:inline font-sans">
+              Use Left / Right arrow keys to navigate
+            </span>
+
+            <button
+              type="button"
+              onClick={handleNext}
+              disabled={!hasNext}
+              className={cn(
+                "flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all",
+                hasNext
+                  ? "bg-white/10 text-white hover:bg-sage hover:text-forest-deep"
+                  : "bg-white/5 text-white/30 cursor-not-allowed"
+              )}
+            >
+              <span>Next</span>
+              <ChevronRight size={14} />
+            </button>
           </div>
-
-          {/* Controls row */}
-          <div className="flex items-center justify-between gap-3">
-            {/* Left: Play/Pause, Restart & Time */}
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={togglePlay}
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-md transition-all hover:bg-sage hover:text-forest-deep"
-                aria-label={isPlaying ? "Pause" : "Play"}
-              >
-                {isPlaying ? <Pause size={16} fill="currentColor" /> : <Play size={16} fill="currentColor" className="ml-0.5" />}
-              </button>
-
-              <button
-                type="button"
-                onClick={handleRestart}
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white/80 backdrop-blur-md transition-all hover:bg-white/20 hover:text-white"
-                aria-label="Restart video"
-              >
-                <RotateCcw size={14} />
-              </button>
-
-              <span className="text-xs font-mono text-white/70 ml-1">
-                {formatTime(currentTime)} <span className="text-white/30">/</span> {formatTime(duration)}
-              </span>
-            </div>
-
-            {/* Right: Sound Mute/Unmute & Fullscreen */}
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={toggleMute}
-                className={cn(
-                  "flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold backdrop-blur-md border transition-all",
-                  isMuted
-                    ? "bg-white/10 border-white/20 text-white/70 hover:bg-white/20 hover:text-white"
-                    : "bg-sage/20 border-sage/40 text-sage hover:bg-sage/30"
-                )}
-                aria-label={isMuted ? "Unmute" : "Mute"}
-              >
-                {isMuted ? <VolumeX size={15} /> : <Volume2 size={15} />}
-                <span className="hidden sm:inline text-[11px] uppercase tracking-wider">
-                  {isMuted ? "Unmute" : "Mute"}
-                </span>
-              </button>
-
-              <button
-                type="button"
-                onClick={toggleFullscreen}
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-md transition-all hover:bg-white/20"
-                aria-label={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
-              >
-                {isFullscreen ? <Minimize2 size={15} /> : <Maximize2 size={15} />}
-              </button>
-            </div>
-          </div>
-        </div>
+        )}
       </motion.div>
     </motion.div>
   );
