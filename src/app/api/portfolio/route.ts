@@ -94,6 +94,13 @@ export async function DELETE(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
+    const clearAll = searchParams.get("clearAll");
+
+    if (clearAll === "true" || id === "all") {
+      await query("DELETE FROM portfolio_items");
+      return NextResponse.json({ success: true, message: "Deleted all portfolio items from database" });
+    }
+
     if (!id) {
       return NextResponse.json({ error: "Missing id parameter" }, { status: 400 });
     }
