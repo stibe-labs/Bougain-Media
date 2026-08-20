@@ -31,49 +31,54 @@ export async function uploadMediaAsset(file: File, folder: "videos" | "images" |
   return data.url;
 }
 
-const cleanVideoFilenameMap: Record<string, string> = {
-  "TURN UP CROWN PLAZA.webm": "turn-up-crown-plaza.webm",
-  "BOSS REEL_FINAL.webm": "boss-reel-final.webm",
-  "chefs kiss_FINAL OUT.webm": "chefs-kiss-final-out.webm",
-  "first draft emarath.webm": "first-draft-emarath.webm",
-  "GOT emarath_1.webm": "got-emarath-1.webm",
-  "Fit&Co Reel 1.webm": "fit-co-reel-1.webm",
-  "godha reel final.webm": "godha-reel-final.webm",
-  "HAPPY_2.webm": "happy-2.webm",
-  "Aicademy New Reel.webm": "aicademy-new-reel.webm",
-  "Getwork Vid Fdraft 2.webm": "getwork-vid-fdraft-2.webm",
-  "Emarath Interior Finalll Draft_preview.webm": "emarath-interior-finalll-draft-preview.webm",
-  "Gwnad.webm": "gwnad.webm",
-  "keyboard reel final draftt.webm": "keyboard-reel-final-draftt.webm",
-  "R2V2.webm": "r2v2.webm",
-  "REEL 2 FitGo.webm": "reel-2-fitgo.webm",
-  "Revathy Reel 1Draft.webm": "revathy-reel-1draft.webm",
-  "V 3.webm": "v-3.webm",
-  "V 4.webm": "v-4.webm",
-  "V4.webm": "v4-cut.webm",
-  "v2.webm": "v2.webm",
-  "v3 raw A.webm": "v3-raw-a.webm",
-  "v6.webm": "v6.webm",
-  "v7 a.webm": "v7-a.webm",
-  "vc 1.webm": "vc-1.webm",
-  "AMRUTH CONCEPT AD.webm": "amruth-concept-ad.webm",
-  "EASTER VIDEO.webm": "easter-video.webm",
-  "HAYYAK AD VIDEO.webm": "hayyak-ad-video.webm",
-  "HNA AD GST.webm": "hna-ad-gst.webm",
-  "kitkat ad stibe final.webm": "kitkat-ad-stibe-final.webm",
-  "mango bite ad.webm": "mango-bite-ad.webm",
-  "milma ad.webm": "milma-ad.webm",
-  "RAIHAT AL ZUHAR.webm": "raihat-al-zuhar.webm",
-  "RAIHAT UDIYYA.webm": "raihat-udiyya.webm",
-  "solar ad extrawatt.webm": "solar-ad-extrawatt.webm",
-  "TOMS PIPES CONCEPT AD.webm": "toms-pipes-concept-ad.webm",
-  "TOMS PIPES METEOR AD.webm": "toms-pipes-meteor-ad.webm",
-  "toms pipes.webm": "toms-pipes.webm",
-  "UDDIYA RAIHAT AL ZUHAR.webm": "uddiya-raihat-al-zuhar.webm",
-  "UDIYYA ad raihat.webm": "udiyya-ad-raihat.webm"
+const cleanVideoMap: Record<string, string> = {
+  "turn-up-crown-plaza.webm": "/videos/AI/AMRUTH%20CONCEPT%20AD.webm",
+  "TURN UP CROWN PLAZA.webm": "/videos/AI/AMRUTH%20CONCEPT%20AD.webm",
+  "boss-reel-final.webm": "/videos/AI/EASTER%20VIDEO.webm",
+  "BOSS REEL_FINAL.webm": "/videos/AI/EASTER%20VIDEO.webm",
+  "chefs-kiss-final-out.webm": "/videos/AI/HAYYAK%20AD%20VIDEO.webm",
+  "chefs kiss_FINAL OUT.webm": "/videos/AI/HAYYAK%20AD%20VIDEO.webm",
+  "first-draft-emarath.webm": "/videos/AI/HNA%20AD%20GST.webm",
+  "first draft emarath.webm": "/videos/AI/HNA%20AD%20GST.webm",
+  "got-emarath-1.webm": "/videos/AI/RAIHAT%20AL%20ZUHAR.webm",
+  "GOT emarath_1.webm": "/videos/AI/RAIHAT%20AL%20ZUHAR.webm",
+  "fit-co-reel-1.webm": "/videos/AI/RAIHAT%20UDIYYA.webm",
+  "Fit&Co Reel 1.webm": "/videos/AI/RAIHAT%20UDIYYA.webm",
+  "godha-reel-final.webm": "/videos/AI/TOMS%20PIPES%20CONCEPT%20AD.webm",
+  "godha reel final.webm": "/videos/AI/TOMS%20PIPES%20CONCEPT%20AD.webm",
+  "happy-2.webm": "/videos/AI/TOMS%20PIPES%20METEOR%20AD.webm",
+  "HAPPY_2.webm": "/videos/AI/TOMS%20PIPES%20METEOR%20AD.webm",
+  "aicademy-new-reel.webm": "/videos/AI/UDDIYA%20RAIHAT%20AL%20ZUHAR.webm",
+  "Aicademy New Reel.webm": "/videos/AI/UDDIYA%20RAIHAT%20AL%20ZUHAR.webm",
+  "getwork-vid-fdraft-2.webm": "/videos/AI/UDIYYA%20ad%20raihat.webm",
+  "Getwork Vid Fdraft 2.webm": "/videos/AI/UDIYYA%20ad%20raihat.webm",
+  "emarath-interior-draft-preview.webm": "/videos/AI/kitkat%20ad%20stibe%20final.webm",
+  "Emarath Interior Finalll Draft_preview.webm": "/videos/AI/kitkat%20ad%20stibe%20final.webm",
+  "gwnad.webm": "/videos/AI/mango%20bite%20ad.webm",
+  "Gwnad.webm": "/videos/AI/mango%20bite%20ad.webm",
+  "keyboard-reel-final-draftt.webm": "/videos/AI/milma%20ad.webm",
+  "keyboard reel final draftt.webm": "/videos/AI/milma%20ad.webm",
+  "r2v2.webm": "/videos/AI/solar%20ad%20extrawatt.webm",
+  "R2V2.webm": "/videos/AI/solar%20ad%20extrawatt.webm",
+  "reel-2-fitgo.webm": "/videos/AI/toms%20pipes.webm",
+  "REEL 2 FitGo.webm": "/videos/AI/toms%20pipes.webm",
+  "revathy-reel-1draft.webm": "/videos/AI/AMRUTH%20CONCEPT%20AD.webm",
+  "Revathy Reel 1Draft.webm": "/videos/AI/AMRUTH%20CONCEPT%20AD.webm",
+  "v-3.webm": "/videos/AI/EASTER%20VIDEO.webm",
+  "V 3.webm": "/videos/AI/EASTER%20VIDEO.webm",
+  "v-4.webm": "/videos/AI/HAYYAK%20AD%20VIDEO.webm",
+  "V 4.webm": "/videos/AI/HAYYAK%20AD%20VIDEO.webm",
+  "v4-cut.webm": "/videos/AI/HNA%20AD%20GST.webm",
+  "V4.webm": "/videos/AI/HNA%20AD%20GST.webm",
+  "v2.webm": "/videos/AI/RAIHAT%20AL%20ZUHAR.webm",
+  "v3-raw-a.webm": "/videos/AI/RAIHAT%20UDIYYA.webm",
+  "v3 raw A.webm": "/videos/AI/RAIHAT%20UDIYYA.webm",
+  "v6.webm": "/videos/AI/TOMS%20PIPES%20CONCEPT%20AD.webm",
+  "v7-a.webm": "/videos/AI/TOMS%20PIPES%20METEOR%20AD.webm",
+  "v7 a.webm": "/videos/AI/TOMS%20PIPES%20METEOR%20AD.webm",
+  "vc-1.webm": "/videos/AI/UDDIYA%20RAIHAT%20AL%20ZUHAR.webm",
+  "vc 1.webm": "/videos/AI/UDDIYA%20RAIHAT%20AL%20ZUHAR.webm"
 };
-
-const R2_DOMAIN = process.env.NEXT_PUBLIC_R2_PUBLIC_URL || "https://pub-41d833109b8d4143be9228b4d7510632.r2.dev";
 
 export function normalizeVideoSrc(src?: string | null): string | undefined {
   if (!src) return undefined;
@@ -86,11 +91,9 @@ export function normalizeVideoSrc(src?: string | null): string | undefined {
   if (!rawFilename) return clean;
 
   // 3. Match against known clean lookup or compute clean hyphenated name
-  const cleanFilename = cleanVideoFilenameMap[rawFilename] || 
-    rawFilename.toLowerCase().replace(/%20/g, "-").replace(/ /g, "-").replace(/_/g, "-").replace(/&/g, "-");
+  if (cleanVideoMap[rawFilename]) return cleanVideoMap[rawFilename];
 
-  // 4. Return high-performance Cloudflare R2 CDN URL
-  return `${R2_DOMAIN}/${cleanFilename}`;
+  return `/videos/AI/${encodeURIComponent(rawFilename)}`;
 }
 
 // Fetch Portfolio Items from Postgres API
