@@ -149,8 +149,8 @@ function ReelCard({ video, index, onSelect }: VideoCardProps) {
               preload="auto"
               className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 pointer-events-none"
             >
-              <source src={safeEncodeURI(video.videoSrc.replace(/\.(webm|mp4)$/i, ".mp4"))} type="video/mp4" />
               <source src={safeEncodeURI(video.videoSrc.replace(/\.(webm|mp4)$/i, ".webm"))} type="video/webm" />
+              <source src={safeEncodeURI(video.videoSrc.replace(/\.(webm|mp4)$/i, ".mp4"))} type="video/mp4" />
             </video>
           )}
 
@@ -294,8 +294,8 @@ export function LandingVideoShowcase() {
                 onClick={togglePlayMain}
                 className="h-full w-full object-cover cursor-pointer"
               >
-                <source src={safeEncodeURI(standaloneHeroVideo.videoSrc.replace(/\.(webm|mp4)$/i, ".mp4"))} type="video/mp4" />
                 <source src={safeEncodeURI(standaloneHeroVideo.videoSrc.replace(/\.(webm|mp4)$/i, ".webm"))} type="video/webm" />
+                <source src={safeEncodeURI(standaloneHeroVideo.videoSrc.replace(/\.(webm|mp4)$/i, ".mp4"))} type="video/mp4" />
               </video>
             </div>
           </div>

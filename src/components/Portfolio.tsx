@@ -181,8 +181,8 @@ function LightboxModal({
                 onClick={togglePlay}
                 className="max-h-[80vh] w-full object-contain cursor-pointer relative z-10"
               >
-                <source src={safeEncodeURI(item.videoSrc.replace(/\.(webm|mp4)$/i, ".mp4"))} type="video/mp4" />
                 <source src={safeEncodeURI(item.videoSrc.replace(/\.(webm|mp4)$/i, ".webm"))} type="video/webm" />
+                <source src={safeEncodeURI(item.videoSrc.replace(/\.(webm|mp4)$/i, ".mp4"))} type="video/mp4" />
               </video>
 
               {/* Controls bar */}
@@ -321,8 +321,8 @@ function PortfolioCard({
             preload="auto"
             className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
           >
-            <source src={safeEncodeURI(item.videoSrc.replace(/\.(webm|mp4)$/i, ".mp4"))} type="video/mp4" />
             <source src={safeEncodeURI(item.videoSrc.replace(/\.(webm|mp4)$/i, ".webm"))} type="video/webm" />
+            <source src={safeEncodeURI(item.videoSrc.replace(/\.(webm|mp4)$/i, ".mp4"))} type="video/mp4" />
           </video>
         )}
 
@@ -500,8 +500,8 @@ function CategoryCard({
           isHovered ? "scale-110 brightness-75" : "scale-100 brightness-50",
         )}
       >
-        <source src={safeEncodeURI(videoSrc.replace(/\.(webm|mp4)$/i, ".mp4"))} type="video/mp4" />
         <source src={safeEncodeURI(videoSrc.replace(/\.(webm|mp4)$/i, ".webm"))} type="video/webm" />
+        <source src={safeEncodeURI(videoSrc.replace(/\.(webm|mp4)$/i, ".mp4"))} type="video/mp4" />
       </video>
 
       {/* Gradient overlay */}
