@@ -8,6 +8,7 @@ import {
   Pause,
   Volume2,
   VolumeX,
+  Maximize2,
   ArrowUpRight,
   Film,
   ChevronLeft,
@@ -18,6 +19,7 @@ import {
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { portfolio, type PortfolioItem } from "@/lib/constants";
 import { getPortfolioItems, normalizeVideoSrc, getVideoSources } from "@/lib/cms";
+import { LightboxModal } from "@/components/Portfolio";
 import { cn } from "@/lib/utils";
 
 const safeEncodeURI = (url: string) => {
@@ -189,6 +191,7 @@ export function LandingVideoShowcase() {
   const [items, setItems] = useState<PortfolioItem[]>(portfolio.items);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
+  const [activeModalItem, setActiveModalItem] = useState<PortfolioItem | null>(null);
   const mainVideoRef = useRef<HTMLVideoElement>(null);
   const sliderRef = useRef<HTMLDivElement>(null);
 
@@ -331,6 +334,18 @@ export function LandingVideoShowcase() {
                 >
                   {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
                 </button>
+
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveModalItem(standaloneHeroVideo as unknown as PortfolioItem);
+                  }}
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-md border border-white/20 transition-all hover:bg-black/80 hover:scale-105"
+                  aria-label="Play in Fullscreen Popup"
+                >
+                  <Maximize2 size={16} />
+                </button>
               </div>
             </div>
           </div>
@@ -345,7 +360,7 @@ export function LandingVideoShowcase() {
                 Mobile Screen Showcase
               </p>
               <h3 className="font-display text-2xl font-bold text-white md:text-3xl mt-1">
-                Hover to Preview Mobile Video Reels
+                Hover or Tap to Play in Full Screen
               </h3>
             </div>
 
@@ -374,7 +389,11 @@ export function LandingVideoShowcase() {
           >
             {allReelCards.map((video, idx) => (
               <div key={video.id} className="snap-start">
-                <ReelCard video={video} index={idx} />
+                <ReelCard
+                  video={video}
+                  index={idx}
+                  onSelect={(v) => setActiveModalItem(v)}
+                />
               </div>
             ))}
           </div>
@@ -391,6 +410,18 @@ export function LandingVideoShowcase() {
           </Link>
         </ScrollReveal>
       </div>
+
+      {/* Fullscreen Video Popup Lightbox Modal */}
+      <AnimatePresence>
+        {activeModalItem && (
+          <LightboxModal
+            item={activeModalItem}
+            items={items}
+            onSelect={(item) => setActiveModalItem(item)}
+            onClose={() => setActiveModalItem(null)}
+          />
+        )}
+      </AnimatePresence>
     </section>
   );
 }

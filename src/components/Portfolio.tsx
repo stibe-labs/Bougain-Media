@@ -48,33 +48,23 @@ const safeEncodeURI = (url: string) => {
 function PortfolioHero() {
   return (
     <div className="relative overflow-hidden bg-forest-deep">
-      <Image
-        src={images.cta}
-        alt=""
-        fill
-        priority
-        quality={60}
-        sizes="100vw"
-        className="object-cover opacity-20"
-        aria-hidden
-      />
       <div
-        className="pointer-events-none absolute right-0 top-1/4 h-[28rem] w-[28rem] rounded-full bg-sage/20 blur-[100px]"
+        className="pointer-events-none absolute right-0 top-1/4 h-[24rem] w-[24rem] rounded-full bg-sage/15 blur-[90px]"
         aria-hidden
       />
-      <div className="absolute inset-0 bg-gradient-to-b from-forest-deep/50 via-forest-deep/88 to-forest-deep" />
-      <div className="bg-grid absolute inset-0 opacity-20" />
+      <div className="absolute inset-0 bg-gradient-to-b from-forest-deep/60 via-forest-deep/90 to-forest-deep" />
+      <div className="bg-grid absolute inset-0 opacity-15" />
       <div className="grain-texture absolute inset-0" />
 
-      <div className="container-wide relative z-10 px-4 pb-20 pt-28 sm:px-5 sm:pb-24 sm:pt-36 md:px-8 md:pb-28 md:pt-44 lg:px-12">
+      <div className="container-wide relative z-10 px-4 pb-12 pt-24 sm:px-6 sm:pb-14 sm:pt-28 md:px-8 md:pb-16 md:pt-32">
         <ScrollReveal className="max-w-3xl">
           <p className="font-sans text-xs font-semibold uppercase tracking-[0.28em] text-sage">
             {portfolio.label}
           </p>
-          <h1 className="mt-5 font-display text-5xl font-bold tracking-tight text-white md:text-6xl lg:text-7xl">
+          <h1 className="mt-4 font-display text-4xl font-bold tracking-tight text-white md:text-5xl lg:text-6xl">
             {portfolio.headline}
           </h1>
-          <p className="mt-6 max-w-lg font-sans text-lg leading-relaxed text-white/65 md:text-xl">
+          <p className="mt-4 max-w-xl font-sans text-base leading-relaxed text-white/70 md:text-lg">
             {portfolio.subtitle}
           </p>
         </ScrollReveal>
@@ -84,7 +74,7 @@ function PortfolioHero() {
 }
 
 /* ─── Fullscreen Interactive Lightbox Modal ─── */
-function LightboxModal({
+export function LightboxModal({
   item,
   items,
   onSelect,
@@ -622,8 +612,8 @@ function PortfolioCard({
       onMouseLeave={handleMouseLeave}
       onClick={handleTap}
       className={cn(
-        "group relative cursor-pointer overflow-hidden rounded-[1.5rem] mb-5 break-inside-avoid",
-        "shadow-[0_12px_40px_rgba(15,61,46,0.12)] border border-white/10 bg-black",
+        "group relative cursor-pointer overflow-hidden rounded-[1.8rem] mb-5 break-inside-avoid",
+        "shadow-[0_12px_40px_rgba(15,61,46,0.12)] border border-white/15 bg-black transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_20px_50px_rgba(77,184,154,0.25)]",
         isReel ? "aspect-[9/16]" : "aspect-[16/9]",
       )}
     >
@@ -669,225 +659,33 @@ function PortfolioCard({
       </div>
 
       {/* Overlay gradient */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent opacity-70 transition-opacity duration-300 group-hover:opacity-90" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-75 transition-opacity duration-300 group-hover:opacity-90" />
 
-      {/* Play icon hint */}
+      {/* Play icon button */}
       <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
-        {!isPlaying && (
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-md border border-white/30 shadow-xl transition-transform duration-300 group-hover:scale-110 group-hover:bg-sage group-hover:text-forest-deep">
-            <Play size={18} fill="currentColor" className="ml-0.5 text-white group-hover:text-forest-deep" />
-          </div>
-        )}
-      </div>
-    </motion.div>
-  );
-}
-
-/* ─── Section Header ─── */
-function SectionHeader({
-  label,
-  title,
-  subtitle,
-}: {
-  label: string;
-  title: string;
-  subtitle?: string;
-}) {
-  return (
-    <ScrollReveal className="mb-10 md:mb-14">
-      <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
-        <div>
-          <p className="font-sans text-xs font-semibold uppercase tracking-[0.28em] text-sage">
-            {label}
-          </p>
-          <h2 className="mt-3 font-display text-3xl font-bold text-forest-deep md:text-4xl lg:text-5xl">
-            {title}
-          </h2>
+        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-md border border-white/30 shadow-2xl transition-all duration-300 group-hover:scale-115 group-hover:bg-sage group-hover:text-forest-deep">
+          <Play size={22} fill="currentColor" className="ml-1 text-white group-hover:text-forest-deep" />
         </div>
-        {subtitle && (
-          <p className="max-w-sm font-sans text-sm leading-relaxed text-grey-muted md:text-right">
-            {subtitle}
-          </p>
-        )}
       </div>
-    </ScrollReveal>
-  );
-}
 
-/* ─── Category Card (Landing View) ─── */
-function CategoryCard({
-  title,
-  label,
-  subtitle,
-  videoSrc,
-  itemCount,
-  icon,
-  index,
-  onClick,
-}: {
-  title: string;
-  label: string;
-  subtitle: string;
-  videoSrc: string;
-  itemCount: number;
-  icon: React.ReactNode;
-  index: number;
-  onClick: () => void;
-}) {
-  const reduceMotion = useReducedMotion();
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [isHovered, setIsHovered] = useState(false);
-
-  useEffect(() => {
-    const el = cardRef.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          if (videoRef.current) {
-            videoRef.current.muted = true;
-            const p = videoRef.current.play();
-            if (p !== undefined) p.catch(() => {});
-          }
-        } else {
-          if (videoRef.current && typeof window !== "undefined" && window.innerWidth < 768) {
-            videoRef.current.pause();
-          }
-        }
-      },
-      { threshold: 0.15, rootMargin: "100px" },
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  const handleMouseEnter = () => {
-    setIsHovered(true);
-    if (videoRef.current) {
-      videoRef.current.muted = true;
-      const p = videoRef.current.play();
-      if (p !== undefined) p.catch(() => {});
-    }
-  };
-
-  const handleMouseLeave = () => {
-    setIsHovered(false);
-    if (videoRef.current) {
-      videoRef.current.pause();
-    }
-  };
-
-  return (
-    <motion.div
-      ref={cardRef}
-      initial={reduceMotion ? false : { opacity: 0, y: 50, scale: 0.96 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.7, delay: index * 0.15, ease }}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      onClick={onClick}
-      className="group relative cursor-pointer overflow-hidden rounded-[2rem] border border-white/10 shadow-[0_20px_60px_rgba(15,61,46,0.2)] min-h-[340px] sm:min-h-[420px] lg:min-h-[480px]"
-    >
-      {/* Background video */}
-      {(() => {
-        const sources = getVideoSources(videoSrc);
-        return (
-          <video
-            ref={(el) => {
-              if (el) {
-                el.muted = true;
-                el.defaultMuted = true;
-                el.setAttribute("playsinline", "true");
-                el.setAttribute("webkit-playsinline", "true");
-                const p = el.play();
-                if (p !== undefined) p.catch(() => {});
-              }
-              videoRef.current = el;
-            }}
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="auto"
-            className={cn(
-              "absolute inset-0 h-full w-full object-cover transition-all duration-1000",
-              isHovered ? "scale-110 brightness-75" : "scale-100 brightness-50",
-            )}
-          >
-            {sources?.mp4 && <source src={sources.mp4} type="video/mp4" />}
-            {sources?.webm && <source src={sources.webm} type="video/webm" />}
-          </video>
-        );
-      })()}
-
-      {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
-      <div className={cn(
-        "absolute inset-0 bg-gradient-to-br transition-opacity duration-700",
-        isHovered ? "opacity-40" : "opacity-60",
-        index === 0
-          ? "from-forest-deep/80 via-transparent to-transparent"
-          : "from-indigo-900/60 via-transparent to-transparent",
-      )} />
-
-      {/* Content */}
-      <div className="relative z-10 flex h-full flex-col justify-between p-8 sm:p-10 md:p-12">
-        {/* Top: icon & count badge */}
-        <div className="flex items-start justify-between">
-          <div className={cn(
-            "flex h-14 w-14 items-center justify-center rounded-2xl border backdrop-blur-xl transition-all duration-500",
-            isHovered
-              ? "bg-sage/30 border-sage/40 scale-110"
-              : "bg-white/10 border-white/20",
-          )}>
-            {icon}
-          </div>
-          <motion.div
-            initial={{ opacity: 0, x: 10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.4 + index * 0.15 }}
-            className="flex items-center gap-2 rounded-full bg-white/10 border border-white/20 backdrop-blur-md px-4 py-1.5"
-          >
-            <span className="text-sm font-semibold text-white">{itemCount}</span>
-            <span className="text-xs text-white/60">videos</span>
-          </motion.div>
-        </div>
-
-        {/* Bottom: text + CTA */}
-        <div>
-          <p className="font-sans text-[11px] font-bold uppercase tracking-[0.3em] text-sage mb-3">
-            {label}
-          </p>
-          <h2 className="font-display text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
-            {title}
-          </h2>
-          <p className="mt-3 max-w-md font-sans text-sm leading-relaxed text-white/60 sm:text-base">
-            {subtitle}
-          </p>
-
-          <div className={cn(
-            "mt-6 flex items-center gap-3 transition-all duration-500",
-            isHovered ? "translate-x-2" : "",
-          )}>
-            <div className={cn(
-              "flex h-11 w-11 items-center justify-center rounded-full transition-all duration-500",
-              isHovered
-                ? "bg-sage text-forest-deep scale-110"
-                : "bg-white/15 text-white border border-white/20",
-            )}>
-              <ArrowUpRight size={18} />
-            </div>
-            <span className={cn(
-              "font-sans text-sm font-semibold uppercase tracking-wider transition-colors duration-300",
-              isHovered ? "text-sage" : "text-white/70",
-            )}>
-              Explore Collection
+      {/* Card Info Overlay */}
+      <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5 z-10 pointer-events-none">
+        <div className="flex items-center gap-2 mb-1.5">
+          <span className="rounded-full bg-white/20 border border-white/25 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-sage backdrop-blur-md">
+            {item.category || (isReel ? "Reel" : "Film")}
+          </span>
+          {isReel && (
+            <span className="rounded-full bg-black/40 border border-white/15 px-2 py-0.5 text-[10px] text-white/60 font-mono">
+              9:16
             </span>
-          </div>
+          )}
         </div>
+        <h4 className="font-display text-sm sm:text-base font-bold text-white truncate drop-shadow-md">
+          {item.title}
+        </h4>
+        {item.client && (
+          <p className="text-xs text-white/70 font-sans truncate">{item.client}</p>
+        )}
       </div>
     </motion.div>
   );
@@ -897,7 +695,7 @@ function CategoryCard({
 export function Portfolio({ standalone = false }: { standalone?: boolean }) {
   const [items, setItems] = useState<PortfolioItem[]>(portfolio.items);
   const [activeModalItem, setActiveModalItem] = useState<PortfolioItem | null>(null);
-  const [activeCategory, setActiveCategory] = useState<"content-videos" | "ai-concept-ads" | null>(null);
+  const [activeTab, setActiveTab] = useState<"all" | "content-videos" | "ai-concept-ads">("all");
 
   useEffect(() => {
     async function fetchDynamicData() {
@@ -910,7 +708,7 @@ export function Portfolio({ standalone = false }: { standalone?: boolean }) {
   }, []);
 
   const contentVideoItems = useMemo(
-    () => items.filter((item) => item.section === "content-videos"),
+    () => items.filter((item) => item.section === "content-videos" || (!item.section && !item.videoSrc?.includes("/AI/"))),
     [items],
   );
   const aiConceptItems = useMemo(
@@ -918,40 +716,17 @@ export function Portfolio({ standalone = false }: { standalone?: boolean }) {
       items.filter(
         (item) =>
           item.section === "ai-concept-ads" ||
-          (!item.section && item.videoSrc?.includes("/AI/")),
+          item.videoSrc?.includes("/AI/") ||
+          item.videoSrc?.includes("Bougain AI videos"),
       ),
     [items],
   );
 
-  const handleBack = () => {
-    setActiveCategory(null);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  const currentCategoryItems = useMemo(
-    () =>
-      activeCategory === "content-videos"
-        ? contentVideoItems
-        : activeCategory === "ai-concept-ads"
-          ? aiConceptItems
-          : [],
-    [activeCategory, contentVideoItems, aiConceptItems],
-  );
-
-  const activeSectionTitle =
-    activeCategory === "content-videos"
-      ? "Content Videos"
-      : "AI Concept Ads";
-
-  const activeSectionLabel =
-    activeCategory === "content-videos"
-      ? "Content Studio"
-      : "AI Creative Lab";
-
-  const activeSectionSubtitle =
-    activeCategory === "content-videos"
-      ? "Branded content, commercial reels, and digital marketing films."
-      : "AI-generated concept advertisements and video explorations.";
+  const filteredItems = useMemo(() => {
+    if (activeTab === "content-videos") return contentVideoItems;
+    if (activeTab === "ai-concept-ads") return aiConceptItems;
+    return items;
+  }, [activeTab, contentVideoItems, aiConceptItems, items]);
 
   return (
     <>
@@ -960,193 +735,140 @@ export function Portfolio({ standalone = false }: { standalone?: boolean }) {
       <section
         id="portfolio"
         className={cn(
-          "content-auto relative overflow-hidden bg-white section-padding",
-          standalone && "!pt-14 md:!pt-20",
+          "content-auto relative overflow-hidden bg-white",
+          standalone ? "py-8 md:py-14" : "section-padding"
         )}
       >
         <div className="container-wide relative">
-          <AnimatePresence mode="wait">
-            {/* ═══════════════════════════════════════════ */}
-            {/* CATEGORY LANDING VIEW                       */}
-            {/* ═══════════════════════════════════════════ */}
-            {activeCategory === null && (
-              <motion.div
-                key="category-landing"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.45, ease }}
+          {/* Header for non-standalone mode (Home page embed) */}
+          {!standalone && (
+            <ScrollReveal className="mb-10 max-w-2xl">
+              <p className="font-sans text-xs font-semibold uppercase tracking-[0.28em] text-sage">
+                {portfolio.label}
+              </p>
+              <h2 className="mt-3 font-display text-4xl font-bold tracking-tight text-forest-deep md:text-5xl">
+                {portfolio.headline}
+              </h2>
+              <p className="mt-4 max-w-lg font-sans text-base leading-relaxed text-grey-muted md:text-lg">
+                {portfolio.subtitle}
+              </p>
+            </ScrollReveal>
+          )}
+
+          {/* Clean Category Filter Tabs */}
+          <div className="mb-8 md:mb-12 flex flex-wrap items-center justify-between gap-4 border-b border-grey-light/60 pb-6">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+              <button
+                type="button"
+                onClick={() => setActiveTab("all")}
+                className={cn(
+                  "flex items-center gap-2 rounded-full px-5 py-2.5 font-sans text-xs sm:text-sm font-semibold transition-all duration-300",
+                  activeTab === "all"
+                    ? "bg-forest-deep text-white shadow-lg scale-105"
+                    : "bg-forest-cream/70 text-forest-deep/70 hover:bg-forest-cream hover:text-forest-deep"
+                )}
               >
-                {!standalone && (
-                  <ScrollReveal className="mb-12 max-w-2xl">
-                    <p className="font-sans text-xs font-semibold uppercase tracking-[0.28em] text-sage">
-                      {portfolio.label}
-                    </p>
-                    <h2 className="mt-4 font-display text-4xl font-bold tracking-tight text-forest-deep md:text-5xl">
-                      {portfolio.headline}
-                    </h2>
-                    <p className="mt-5 max-w-lg font-sans text-base leading-relaxed text-grey-muted md:text-lg">
-                      {portfolio.subtitle}
-                    </p>
-                  </ScrollReveal>
+                <span>All Films</span>
+                <span className={cn(
+                  "rounded-full px-2 py-0.5 text-[11px] font-bold",
+                  activeTab === "all" ? "bg-white/20 text-white" : "bg-forest-deep/10 text-forest-deep"
+                )}>
+                  {items.length}
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveTab("content-videos")}
+                className={cn(
+                  "flex items-center gap-2 rounded-full px-5 py-2.5 font-sans text-xs sm:text-sm font-semibold transition-all duration-300",
+                  activeTab === "content-videos"
+                    ? "bg-forest-deep text-white shadow-lg scale-105"
+                    : "bg-forest-cream/70 text-forest-deep/70 hover:bg-forest-cream hover:text-forest-deep"
                 )}
-
-                {standalone && (
-                  <ScrollReveal className="mb-12 text-center max-w-2xl mx-auto">
-                    <p className="font-sans text-xs font-semibold uppercase tracking-[0.28em] text-sage">
-                      Choose a collection
-                    </p>
-                    <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-forest-deep md:text-4xl">
-                      Explore Our Work
-                    </h2>
-                    <p className="mt-4 font-sans text-base leading-relaxed text-grey-muted">
-                      Select a category to dive into our portfolio of creative work.
-                    </p>
-                  </ScrollReveal>
-                )}
-
-                {/* Two Category Cards */}
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8">
-                  <CategoryCard
-                    title="Content Videos"
-                    label="Content Studio"
-                    subtitle="Branded content, commercial reels, and digital marketing films crafted for real brands."
-                    videoSrc={contentVideoItems[0]?.videoSrc || "/videos/AI/turn-up-crown-plaza.webm"}
-                    itemCount={contentVideoItems.length}
-                    icon={<Film size={24} className="text-white" />}
-                    index={0}
-                    onClick={() => {
-                      setActiveCategory("content-videos");
-                      window.scrollTo({ top: 0, behavior: "smooth" });
-                    }}
-                  />
-                  <CategoryCard
-                    title="AI Videos"
-                    label="AI Creative Lab"
-                    subtitle="AI-generated concept advertisements and cinematic video explorations."
-                    videoSrc={aiConceptItems[0]?.videoSrc || "videos/Bougain AI videos/HNA AD GST.webm"}
-                    itemCount={aiConceptItems.length}
-                    icon={<Sparkles size={24} className="text-white" />}
-                    index={1}
-                    onClick={() => {
-                      setActiveCategory("ai-concept-ads");
-                      window.scrollTo({ top: 0, behavior: "smooth" });
-                    }}
-                  />
-                </div>
-
-                {standalone && (
-                  <ScrollReveal delay={100} className="mt-20 text-center md:mt-28">
-                    <div className="mx-auto max-w-xl rounded-3xl bg-forest-deep p-8 text-white md:p-12">
-                      <Sparkles className="mx-auto text-sage" size={32} />
-                      <h3 className="mt-4 font-display text-2xl font-bold md:text-3xl">
-                        Have a campaign or video shoot in mind?
-                      </h3>
-                      <p className="mt-3 font-sans text-sm leading-relaxed text-white/70">
-                        Let&apos;s build something visually extraordinary together.
-                      </p>
-                      <div className="mt-8 flex justify-center">
-                        <Button href="/contact" variant="primary" size="lg">
-                          Start a Conversation
-                          <ArrowUpRight size={18} />
-                        </Button>
-                      </div>
-                    </div>
-                  </ScrollReveal>
-                )}
-
-                {!standalone && (
-                  <ScrollReveal delay={160} className="mt-14 text-center">
-                    <Button href="/portfolio" variant="secondary" size="md">
-                      Explore full portfolio
-                      <ArrowUpRight size={16} />
-                    </Button>
-                  </ScrollReveal>
-                )}
-              </motion.div>
-            )}
-
-            {/* ═══════════════════════════════════════════ */}
-            {/* CATEGORY DETAIL VIEW                        */}
-            {/* ═══════════════════════════════════════════ */}
-            {activeCategory !== null && (
-              <motion.div
-                key={`category-${activeCategory}`}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 30 }}
-                transition={{ duration: 0.5, ease }}
               >
-                {/* Back Button */}
-                <motion.button
-                  initial={{ opacity: 0, x: -15 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.15 }}
-                  onClick={handleBack}
-                  className="mb-8 flex items-center gap-2 font-sans text-sm font-semibold uppercase tracking-wider text-sage hover:text-forest-deep transition-colors group"
-                >
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full border border-sage/30 bg-sage/10 transition-all group-hover:bg-sage group-hover:text-forest-deep">
-                    <ArrowUpRight size={14} className="rotate-[225deg]" />
-                  </div>
-                  Back to Categories
-                </motion.button>
+                <Film size={14} />
+                <span>Content Studio</span>
+                <span className={cn(
+                  "rounded-full px-2 py-0.5 text-[11px] font-bold",
+                  activeTab === "content-videos" ? "bg-white/20 text-white" : "bg-forest-deep/10 text-forest-deep"
+                )}>
+                  {contentVideoItems.length}
+                </span>
+              </button>
 
-                {/* Section Header */}
-                <SectionHeader
-                  label={activeSectionLabel}
-                  title={activeSectionTitle}
-                  subtitle={activeSectionSubtitle}
+              <button
+                type="button"
+                onClick={() => setActiveTab("ai-concept-ads")}
+                className={cn(
+                  "flex items-center gap-2 rounded-full px-5 py-2.5 font-sans text-xs sm:text-sm font-semibold transition-all duration-300",
+                  activeTab === "ai-concept-ads"
+                    ? "bg-forest-deep text-white shadow-lg scale-105"
+                    : "bg-forest-cream/70 text-forest-deep/70 hover:bg-forest-cream hover:text-forest-deep"
+                )}
+              >
+                <Sparkles size={14} />
+                <span>AI Creative Lab</span>
+                <span className={cn(
+                  "rounded-full px-2 py-0.5 text-[11px] font-bold",
+                  activeTab === "ai-concept-ads" ? "bg-white/20 text-white" : "bg-forest-deep/10 text-forest-deep"
+                )}>
+                  {aiConceptItems.length}
+                </span>
+              </button>
+            </div>
+
+            <p className="hidden md:block text-xs font-sans text-grey-muted">
+              Tap any video to play with sound and full screen
+            </p>
+          </div>
+
+          {/* Direct Video Masonry Grid */}
+          <motion.div
+            layout
+            className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-5"
+          >
+            <AnimatePresence mode="popLayout">
+              {filteredItems.map((item, i) => (
+                <PortfolioCard
+                  key={item.id}
+                  item={item}
+                  index={i}
+                  onSelect={(selected) => setActiveModalItem(selected)}
                 />
+              ))}
+            </AnimatePresence>
+          </motion.div>
 
-                {/* Video Masonry Grid */}
-                <motion.div
-                  layout
-                  className="columns-1 sm:columns-2 lg:columns-3 gap-5 space-y-5"
-                >
-                  <AnimatePresence mode="popLayout">
-                    {currentCategoryItems.map((item, i) => (
-                      <PortfolioCard
-                        key={item.id}
-                        item={item}
-                        index={i}
-                        onSelect={(selected) => setActiveModalItem(selected)}
-                      />
-                    ))}
-                  </AnimatePresence>
-                </motion.div>
-
-                {/* CTA at bottom */}
-                {standalone && (
-                  <ScrollReveal delay={100} className="mt-20 text-center md:mt-28">
-                    <div className="mx-auto max-w-xl rounded-3xl bg-forest-deep p-8 text-white md:p-12">
-                      <Sparkles className="mx-auto text-sage" size={32} />
-                      <h3 className="mt-4 font-display text-2xl font-bold md:text-3xl">
-                        Have a campaign or video shoot in mind?
-                      </h3>
-                      <p className="mt-3 font-sans text-sm leading-relaxed text-white/70">
-                        Let&apos;s build something visually extraordinary together.
-                      </p>
-                      <div className="mt-8 flex justify-center">
-                        <Button href="/contact" variant="primary" size="lg">
-                          Start a Conversation
-                          <ArrowUpRight size={18} />
-                        </Button>
-                      </div>
-                    </div>
-                  </ScrollReveal>
-                )}
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {/* Bottom CTA for Standalone Portfolio Page */}
+          {standalone && (
+            <ScrollReveal delay={100} className="mt-20 text-center md:mt-28">
+              <div className="mx-auto max-w-xl rounded-3xl bg-forest-deep p-8 text-white md:p-12">
+                <Sparkles className="mx-auto text-sage" size={32} />
+                <h3 className="mt-4 font-display text-2xl font-bold md:text-3xl">
+                  Have a campaign or video shoot in mind?
+                </h3>
+                <p className="mt-3 font-sans text-sm leading-relaxed text-white/70">
+                  Let&apos;s build something visually extraordinary together.
+                </p>
+                <div className="mt-8 flex justify-center">
+                  <Button href="/contact" variant="primary" size="lg">
+                    Start a Conversation
+                    <ArrowUpRight size={18} />
+                  </Button>
+                </div>
+              </div>
+            </ScrollReveal>
+          )}
         </div>
       </section>
 
-      {/* Lightbox Modal */}
+      {/* Fullscreen Video Popup Lightbox Modal */}
       <AnimatePresence>
         {activeModalItem && (
           <LightboxModal
             item={activeModalItem}
-            items={currentCategoryItems.length > 0 ? currentCategoryItems : items}
+            items={filteredItems.length > 0 ? filteredItems : items}
             onSelect={(item) => setActiveModalItem(item)}
             onClose={() => setActiveModalItem(null)}
           />
