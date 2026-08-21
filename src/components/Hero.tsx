@@ -66,15 +66,6 @@ export function Hero() {
           style={{ x: parallaxX, y: parallaxY }}
           transition={{ type: "spring", stiffness: 50, damping: 22 }}
         >
-          <motion.p
-            custom={0}
-            initial="hidden"
-            animate="visible"
-            variants={fadeUp}
-            className="font-sans text-[11px] font-semibold uppercase tracking-[0.32em] text-white/50 sm:text-xs"
-          >
-            {siteConfig.name}
-          </motion.p>
 
           <motion.h1
             custom={1}
@@ -104,7 +95,7 @@ export function Hero() {
             initial="hidden"
             animate="visible"
             variants={fadeUp}
-            className="mt-6 sm:mt-9 flex flex-row flex-wrap items-center gap-3"
+            className="mt-6 sm:mt-9 flex flex-row flex-wrap items-center gap-3 lg:hidden"
           >
             <Link
               href="/contact"

@@ -11,6 +11,7 @@ type LogoProps = {
   dark?: boolean;
   type?: "full" | "icon";
   size?: "sm" | "md" | "lg" | "xl" | "2xl";
+  noLink?: boolean;
 };
 
 const sizes = {
@@ -27,6 +28,7 @@ export function Logo({
   dark,
   type = "full",
   size = "md",
+  noLink = false,
 }: LogoProps) {
   const useWhite = onDarkBg ?? dark ?? false;
 
@@ -41,11 +43,11 @@ export function Logo({
 
   const dim = sizes[size][type];
 
-  return (
-    <Link
-      href="/"
+  const imageContent = (
+    <div
       className={cn(
-        "relative inline-block shrink-0 bg-transparent transition-opacity hover:opacity-90",
+        "relative inline-block shrink-0 bg-transparent",
+        !noLink && "transition-opacity hover:opacity-90",
         className,
       )}
       style={{ width: dim.w, height: dim.h }}
@@ -58,6 +60,14 @@ export function Logo({
         className="bg-transparent object-contain object-left"
         priority
       />
+    </div>
+  );
+
+  if (noLink) return imageContent;
+
+  return (
+    <Link href="/" className="inline-block transition-opacity hover:opacity-90">
+      {imageContent}
     </Link>
   );
 }

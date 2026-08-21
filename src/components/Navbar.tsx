@@ -71,12 +71,26 @@ export function Navbar() {
       )}
     >
       <div className="container-wide flex h-16 items-center justify-between px-4 sm:h-20 sm:px-5 md:px-8 lg:px-12">
-        <Logo
-          onDarkBg={onHero}
-          type="icon"
-          size="md"
-          className="shrink-0 bg-transparent"
-        />
+        <Link
+          href="/"
+          className="flex items-center gap-3 transition-opacity hover:opacity-90"
+        >
+          <Logo
+            onDarkBg={onHero}
+            type="icon"
+            size="md"
+            noLink
+            className="shrink-0 bg-transparent"
+          />
+          <span
+            className={cn(
+              "hidden select-none font-sans text-[11px] font-semibold uppercase tracking-[0.32em] sm:text-xs lg:block pt-1",
+              onHero ? "text-white/60" : "text-forest-deep/60",
+            )}
+          >
+            Bougain Mediaa
+          </span>
+        </Link>
 
         <nav className="hidden items-center gap-1 lg:flex">
           {navbarLinks.map((link, index) => {
